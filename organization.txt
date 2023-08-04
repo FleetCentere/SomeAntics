@@ -2,6 +2,7 @@ Project:
     run.py
     notes.txt
     organization.txt
+    .gitignore
     /ProjectFiles
         __init__.py
         routes.py
