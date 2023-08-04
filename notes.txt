@@ -1,0 +1,83 @@
+pip install
+- flask
+- flask-sqlalchemy
+- wtforms
+- datetime
+- pytz
+
+-----
+
+to get secret key:
+>>> import secrets
+>>> n = secrets.token_hex(16)
+>>> print(n) 
+aaefde41a18eaf43211ee2c144660fa2
+
+-----
+
+to set up virtual environment:
+[deactivate if need to exit prior]
+python3 -m venv venv
+.\venv\Scripts\activate
+
+-----
+
+example sqlalchemy in python interpreter:
+PS C:\Users\mcgra\Documents\coding\coding_practice> python
+Python 3.11.3 (tags/v3.11.3:f3909b8, Apr  4 2023, 23:49:59) [MSC v.1934 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from cs50class1 import db, Ticker                           
+>>> from sqlalchemy import text
+>>> db.execute(text("SELECT * FROM tickers WHERE MarketCap > 1000")).fetchall()
+[(1, 'SUMITOMO MITSUI FINL GROUP I SPONSORED ADR', 'SSUMY', 3655.8, 'Diversified Industrial Goods Wholesale'), (2, 'Apple', 'AAPL', 3041.3, 'Computers, Phones & Household Electronics'), (3, 'MICROSOFT CORP', 'MSFT', 2585.1, 'Software & IT Services'), (4, 'ALPHABET INC', 'GOOGL', 1515.4, 'Software & IT Services'), (5, 'AMAZON COM INC', 'AMZN', 1333.4, 'Diversified Retail'), (6, 'NVIDIA CORPORATION', 'NVDA', 1105.8, 'Semiconductors & Semiconductor Equipment')]
+
+>>> db.execute(text("DROP TABLE tickers"))
+
+-----
+
+code for companies/sqlalchemy
+from sqlalchemy and plugging companies into website page
+from flask import Flask, render_template
+from cs50class1 import db, Ticker
+import os
+from sqlalchemy import create_engine, text, Column, String, Integer
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+import random
+import math
+
+app = Flask(__name__)
+
+engine = create_engine(os.getenv("DATABASE_URL"))
+db = scoped_session(sessionmaker(bind=engine))
+
+@app.route("/")
+def home():
+    limit = 10
+    companies = db.execute(text("SELECT * FROM tickers LIMIT :n"), {"n": limit}).fetchall()
+    number = db.execute(text("SELECT COUNT(*) from tickers")).fetchone()
+    return render_template("home.html", companies=companies, number=number[0])
+
+@app.route("/randomCo")
+def randomCo():
+    rn = random.random()
+    number = db.execute(text("SELECT COUNT(*) from tickers")).fetchone()[0]
+    company_id = math.floor((rn * number))
+    company = db.execute(text("SELECT * FROM tickers WHERE id = :company_id"), {"company_id": company_id}).fetchone()
+    return render_template("randomCo.html", company=company, number=number, company_id=company_id)
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+-----
+
+linking to github:
+git init
+git add [files to add]
+git commit -m "[text note about commit]"
+git remote add origin https://github.com/FleetCentere/SomeAntics
+git push -u origin master
+
+-----
+
