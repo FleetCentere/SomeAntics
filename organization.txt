@@ -1,0 +1,26 @@
+Project:
+    run.py
+    notes.txt
+    organization.txt
+    /ProjectFiles
+        __init__.py
+        routes.py
+        models.py
+        forms.py
+
+        /SECDocs
+            all SEC docs
+            
+        /templates
+            layout.html - base layout for every page
+            home.html - homepage
+            about.html - about
+            ideas.html - notes for page
+            
+            
+        /static
+            henry.jpeg
+            lightning.jpeg
+            main.css
+
+    
