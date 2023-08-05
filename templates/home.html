@@ -21,7 +21,12 @@
         </ul>
     </div>
     <div class="home-right-side">
-        
+        {% for message in messages %}
+        <div class="message">
+            <h3>{{ message["title"] }}</h3>
+            <p>{{ message["content"] }}</p>
+        </div>
+        {% endfor %}
     </div>
 </div>
 

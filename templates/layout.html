@@ -21,6 +21,7 @@
            <div class="navbar-left">
                 <img src="{{ url_for('static', filename='logo.jpg') }}" class="navbar-logo" alt="Website Logo">
                 <a href="{{ url_for('home') }}" class="navbar-home">Home</a>
+                <a href="{{ url_for('create') }}" class="navbar-home">Create</a>
                 {# <a href="{{ url_for('holder_results') }}" class="navbar-search">Holder Search</a> #}
                 {# <a href="{{ url_for('company_webpage') }}" class="navbar-search">Financials Overview</a> #}
                 {# <a href="{{ url_for('new_post') }}" class="navbar-search">New Post</a> #}
@@ -29,11 +30,16 @@
            <div class="navbar-right">
                 <a href="{{ url_for('about') }}" class="navbar-about">About</a>
            </div>
-
         </nav>
     </header>
     <main>
         <!-- import content from external html file -->
+        <div>
+            {% for message in get_flashed_messages() %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        </div>
+        <hr>
         {% block content %}
         {% endblock %}
 

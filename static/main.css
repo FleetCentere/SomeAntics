@@ -97,3 +97,21 @@ a {
 .about-right {
     background-color: lightblue;
 }
+
+.message {
+    padding: 10px;
+    margin: 5px;
+    background-color: lightseagreen;
+}
+
+.alert {
+    padding: 20px;
+    margin: 5px;
+    color: #970020;
+    background-color: #ffd5de;
+}
+
+.postForm {
+    padding: 5px;
+    margin: 5px;
+}
