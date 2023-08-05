@@ -1,20 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>{{ ticker.upper() }}</h1>
+<h2>{{ ticker.upper() }}</h2>
 
 <table>
     <thead>
         <tr>
-            <td>Year</td>
-            <td>Revenue</td>
+            <th>Year</th>
+            <th>Revenue</th>
         </tr>
     </thead>
     <tbody>
         {% for year in years %}
         <tr>
             <td>{{ year }}</td>
-            <td>{{ financials["RevenueFromContractWithCustomerExcludingAssessedTax"][year] }}</td>
+            <td>${{ financials["RevenueFromContractWithCustomerExcludingAssessedTax"][year] }}</td>
         </tr>
         {% endfor %}
     </tbody>

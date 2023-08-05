@@ -24,7 +24,7 @@ footer {
     padding: 1rem;
 }
 
-h1 {
+h1, h2 {
     margin: 10px;
 }
 
@@ -61,8 +61,8 @@ h1 {
 .navbar-search,
 .navbar-about,
 .navbar-home {
-    margin: 1rem;
-    padding: 10px;
+    margin: 10px;
+    padding: 5px;
     /* border-width: thin; */
     /* border-style: dotted; */
     /* align-self: center; */
@@ -114,4 +114,30 @@ a {
 .postForm {
     padding: 5px;
     margin: 5px;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 10px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 5px 20px;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+
+th {
+    padding: 12px 0 12px 0;
+    text-align: center;
+    background-color: hsl(202, 66%, 29%);
+    color: white;
 }

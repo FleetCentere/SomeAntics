@@ -97,3 +97,9 @@ def create():
             messages.append({"title": title, "content": content})
             return redirect(url_for("home"))
     return render_template("create.html")
+
+    <label for="content">Message Content</label>
+    <br>
+    <textarea name="content" placeholder="Message content" rows="15" cols="60">{{ request.form["content"] }}</textarea>
+    <br>
+    <button type="submit">Submit</button>
