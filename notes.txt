@@ -4,6 +4,7 @@ pip install
 - wtforms
 - datetime
 - pytz
+- requests
 
 ------
 
