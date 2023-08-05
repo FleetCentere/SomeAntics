@@ -3,4 +3,20 @@
 
 <h1>Companies</h1>
 
+<form method="post" class="postForm">
+    <label for="ticker">Ticker</label>
+    <br>
+    <input type="text" name="ticker" placeholder="Company Ticker" value="{{ request.form['ticker'] }}">
+    <br>
+
+    <label for="startYear">Start Year</label>
+    <br>
+    <input type="text" name="startYear" placeholder="Starting Year" value="{{ request.form['startYear'] }}">
+    <br>
+    <button type="submit">Submit</button>
+
+
+</form>
+
+
 {% endblock %}

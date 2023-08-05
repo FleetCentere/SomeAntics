@@ -1,11 +1,10 @@
 Project:
     run.py
-    notes.txt
-    organization.txt
-    .gitignore
+    
     /ProjectFiles
         __init__.py
         routes.py
+        secFinancials.py - script for getting financials of a ticker
         models.py
         forms.py
 
@@ -17,11 +16,21 @@ Project:
             home.html - homepage
             about.html - about
             ideas.html - notes for page
+            content.html - page for submitting new content
+            people.html - page for submitting updates/new people to db
+            pressRelease.html - page for submitting PRs
+            companies.html - page for submitting company info for retrieval from company.html
+            company.html - page for retrieval of company info
+            events.html - page for submitting new events
             
             
         /static
             henry.jpeg
             lightning.jpeg
             main.css
+            
+        notes.txt
+        organization.txt
+        .gitignore
 
     

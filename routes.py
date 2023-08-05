@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, request, flash
 from ProjectFiles import app #, db
+from ProjectFiles.secFinancials import finSearch
 
 
 messages = [{"title": "First Message", "content": "First message content"}, {"title": "Second message", "content": "Second message content"}]
@@ -25,9 +26,13 @@ def events():
 def people():
     return render_template("people.html")
 
-@app.route("/companies")
+@app.route("/companies", methods=["GET", "POST"])
 def companies():
-    
+    if request.method == "POST":
+        ticker = request.form["ticker"]
+        startYear = request.form["startYear"]
+        financials, years = finSearch(ticker, startYear)
+        return render_template("company.html", ticker=ticker, financials=financials, years=years)
     return render_template("companies.html")
 
 @app.route("/content")

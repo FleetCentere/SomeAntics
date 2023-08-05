@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>{{ ticker.upper() }}</h1>
+
+<table>
+    <thead>
+        <tr>
+            <td>Year</td>
+            <td>Revenue</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for year in years %}
+        <tr>
+            <td>{{ year }}</td>
+            <td>{{ financials["RevenueFromContractWithCustomerExcludingAssessedTax"][year] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

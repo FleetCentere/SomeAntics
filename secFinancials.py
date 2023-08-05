@@ -1,6 +1,6 @@
 import requests, json, sys
 
-def financials_search(ticker):
+def finSearch(ticker, startYear):
     # define headers dictionary for SEC API
     headers = {"User-Agent": "mcgrathan@gmail.com"}
 
@@ -10,7 +10,7 @@ def financials_search(ticker):
     # get company CIK from "tickers" file
     CIK = []
     for row in tickers:
-        if tickers[row]["ticker"] == ticker:
+        if tickers[row]["ticker"] == ticker.upper():
             CIK.append(str(tickers[row]["cik_str"]).zfill(10))
     
     cik_str = CIK[0]
@@ -26,7 +26,14 @@ def financials_search(ticker):
             i = j
             accounting = name
 
-    years = [2019, 2020, 2021, 2022]
+    years = []
+    endYear = 2022
+    if int(startYear) == int(endYear):
+        years = [startYear]
+    else:
+        number = int(endYear) - int(startYear) + 1
+        for i in range(number):
+            years.append(int(startYear) + i)
     financials_list = ["Assets", "RevenueFromContractWithCustomerExcludingAssessedTax", "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", 
             "CostOfRevenue", "DepreciationDepletionAndAmortization", "GeneralAndAdministrativeExpense", "GrossProfit", 
             "IncomeTaxExpenseBenefit", "Liabilities", "LongTermDebt", "NetCashProvidedByUsedInFinancingActivities", 
@@ -54,7 +61,7 @@ if len(sys.argv) == 1:
 else:
     ticker = sys.argv[1]
 
-
 if __name__ == "__main__":
-    table = financials_search(ticker)
+    startYear = 2018
+    table = finSearch(ticker, startYear)
     print(table)
