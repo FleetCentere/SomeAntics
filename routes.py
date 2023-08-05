@@ -13,17 +13,27 @@ def home():
 def about():
     return render_template("about.html")
 
-@app.route("/create", methods=["GET", "POST"])
-def create():
-    if request.method == "POST":
-        title = request.form["title"]
-        content = request.form["content"]
+@app.route("/pressRelease")
+def pressRelease():
+    return render_template("pressRelease.html")
 
-        if not title:
-            flash("Title is required")
-        elif not content:
-            flash("Content is required")
-        else:
-            messages.append({"title": title, "content": content})
-            return redirect(url_for("home"))
-    return render_template("create.html")
+@app.route("/events")
+def events():
+    return render_template("events.html")
+
+@app.route("/people")
+def people():
+    return render_template("people.html")
+
+@app.route("/companies")
+def companies():
+    
+    return render_template("companies.html")
+
+@app.route("/content")
+def content():
+    return render_template("content.html")
+
+@app.route("/ideas")
+def ideas():
+    return render_template("ideas.html")
