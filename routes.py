@@ -31,8 +31,8 @@ def companies():
     if request.method == "POST":
         ticker = request.form["ticker"]
         startYear = request.form["startYear"]
-        financials, years = finSearch(ticker, startYear)
-        return render_template("company.html", ticker=ticker, financials=financials, years=years)
+        companyName, financials, years = finSearch(ticker, startYear)
+        return render_template("company.html", companyName=companyName, ticker=ticker, financials=financials, years=years)
     return render_template("companies.html")
 
 @app.route("/content")

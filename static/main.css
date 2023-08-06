@@ -141,3 +141,9 @@ th {
     background-color: hsl(202, 66%, 29%);
     color: white;
 }
+
+.columnBreak {
+    background-color: white;
+    padding: 5px;
+    border: none;
+}

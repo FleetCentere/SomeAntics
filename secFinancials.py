@@ -21,6 +21,7 @@ def finSearch(ticker, startYear):
     # company_concept = requests.get(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik_str}.json", headers=headers).json()
     company_facts = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik_str}.json", headers=headers).json()
 
+    companyName = company_facts["entityName"]
     # determine what accounting format is used for given company in variable 'accounting'
     # i stores what nth key is the accounting key in the 'facts' dictionary
     i = 0
@@ -41,8 +42,8 @@ def finSearch(ticker, startYear):
             years.append(int(startYear) + i)
     
     # list of desired financials to track
-    financials_list = ["Assets", "RevenueFromContractWithCustomerExcludingAssessedTax", "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", 
-            "CostOfRevenue", "DepreciationDepletionAndAmortization", "GeneralAndAdministrativeExpense", "GrossProfit", 
+    financials_list = ["Assets", "RevenueFromContractWithCustomerExcludingAssessedTax", "CashCashEquivalentsAndShortTermInvestments", 
+            "CostOfGoodsAndServicesSold", "DepreciationDepletionAndAmortization", "GeneralAndAdministrativeExpense", "GrossProfit", 
             "IncomeTaxExpenseBenefit", "Liabilities", "LongTermDebt", "NetCashProvidedByUsedInFinancingActivities", 
             "NetCashProvidedByUsedInInvestingActivities", "NetCashProvidedByUsedInOperatingActivities"]
 
@@ -57,20 +58,23 @@ def finSearch(ticker, startYear):
             for year in years:
                 for row in source:
                     dateFormat = "%Y-%m-%d"
-                    days = (datetime.strptime(row["end"], dateFormat) - datetime.strptime(row["start"], dateFormat)).days
+                    try:
+                        days = (datetime.strptime(row["end"], dateFormat) - datetime.strptime(row["start"], dateFormat)).days
+                    except KeyError:
+                        days = 365
                     if row["fp"] == "FY" and row["fy"] == year and 360 <= days <= 370:
-                        financials[key][year] = format(round(row["val"]/1000000),",")
+                        financials[key][year] = "({:,})".format(abs(round(row["val"]/1000000))) if row["val"] < 0 else "{:,}".format(round(row["val"]/1000000))                        
         except KeyError:
             financials[key] = "na"
     if __name__ == "__main__":
-        rev_source = company_facts["facts"][accounting]["RevenueFromContractWithCustomerExcludingAssessedTax"]["units"]["USD"]
-        # for row in rev_source:
-        #     print(row)
-        return financials, years, rev_source
+        one_source = company_facts["facts"][accounting]["CashCashEquivalentsAndShortTermInvestments"]["units"]["USD"]
+        for row in one_source:
+            print(row)
+        return companyName, financials, years, one_source
     
-    rev_source = company_facts["facts"][accounting]["RevenueFromContractWithCustomerExcludingAssessedTax"]["units"]["USD"]
+    # one_source = company_facts["facts"][accounting]["CashCashEquivalentsAndShortTermInvestments"]["units"]["USD"]
 
-    return financials, years
+    return companyName, financials, years
 
 
 if len(sys.argv) == 1:
