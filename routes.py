@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, request, flash
 from ProjectFiles import app #, db
 from ProjectFiles.secFinancials import finSearch
+from ProjectFiles.holderSearch import holderSearch
 
 
 messages = [{"title": "First Message", "content": "First message content"}, {"title": "Second message", "content": "Second message content"}]
@@ -31,8 +32,10 @@ def companies():
     if request.method == "POST":
         ticker = request.form["ticker"]
         startYear = request.form["startYear"]
+        holderCount = request.form["holderCount"]
         companyName, financials, years = finSearch(ticker, startYear)
-        return render_template("company.html", companyName=companyName, ticker=ticker, financials=financials, years=years)
+        holderTable, last_row, CUSIP = holderSearch(ticker, holderCount)
+        return render_template("company.html", companyName=companyName, ticker=ticker, financials=financials, years=years, holderTable=holderTable, last_row=last_row)
     return render_template("companies.html")
 
 @app.route("/content")

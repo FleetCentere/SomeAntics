@@ -22,18 +22,19 @@ def finSearch(ticker, startYear):
     company_facts = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik_str}.json", headers=headers).json()
 
     companyName = company_facts["entityName"]
+    # sharesOut = company_facts["facts"]["dei"]["EntityCommonStockSharesOutstanding"]
+    # floatOut = company_facts["facts"]["dei"]["EntityPublicFloat"]
+    
     # determine what accounting format is used for given company in variable 'accounting'
     # i stores what nth key is the accounting key in the 'facts' dictionary
-    i = 0
     accounting = "na"
     for j, name in enumerate(list(company_facts["facts"].keys())):
-        if name == "us-gaap" or "ifrs-full":
-            i = j
+        if name == "us-gaap" or name == "ifrs-full":
             accounting = name
 
     # generate a list storing the years for tracking
     years = []
-    endYear = 2022
+    endYear = 2023
     if int(startYear) == int(endYear):
         years = [startYear]
     else:
@@ -41,15 +42,61 @@ def finSearch(ticker, startYear):
         for i in range(number):
             years.append(int(startYear) + i)
     
-    # list of desired financials to track
-    financials_list = ["Assets", "RevenueFromContractWithCustomerExcludingAssessedTax", "CashCashEquivalentsAndShortTermInvestments", 
-            "CostOfGoodsAndServicesSold", "DepreciationDepletionAndAmortization", "GeneralAndAdministrativeExpense", "GrossProfit", 
-            "IncomeTaxExpenseBenefit", "Liabilities", "LongTermDebt", "NetCashProvidedByUsedInFinancingActivities", 
-            "NetCashProvidedByUsedInInvestingActivities", "NetCashProvidedByUsedInOperatingActivities"]
+    # cash
+    cash = ["CashCashEquivalentsAndShortTermInvestments",
+            "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
+            "CashAndCashEquivalentsAtCarryingValue",
+            "Cash"]
+    
+    # assets
+    assets = ["Assets"]
+
+    # liabilities
+    liabilities = ["Liabilities"]
+
+    # debt
+    debt = ["DebtInstrumentFaceAmount",
+            "LongTermDebt"]
+
+    # revenue
+    revenue = ["RevenueFromContractWithCustomerExcludingAssessedTax",
+                "Revenues",
+                "InterestIncomeExpenseNet",
+                "Revenue"]
+
+    # COGS
+    cogs = ["CostOfGoodsAndServicesSold",
+            "CostOfRevenue"]
+
+    # grossprofit
+    grossprofit = ["GrossProfit"]
+
+    # CFO
+    cfo = ["NetCashProvidedByUsedInOperatingActivities"]
+
+    # CFI
+    cfi = ["NetCashProvidedByUsedInInvestingActivities"]
+
+    # CFF
+    cff = ["NetCashProvidedByUsedInFinancingActivities"]
+
+    # order based on output: cash, assets, liabilities, debt, rev, cogs, gp, cfo, cfi, cff
+    financialsList = [cash, assets, liabilities, debt, revenue, cogs, grossprofit, cfo, cfi, cff]
+
+    # i is an element which is a list (cash list, revenue list, etc); j is an element of the i-th list [cash, revenue] list
+    for n, i in enumerate(financialsList):
+        for j in i:
+            try:
+                test = company_facts["facts"][accounting][j]
+                financialsList[n] = j
+                break
+            except KeyError:
+                financialsList[n] = "na"
+                pass
 
     # financials is a dictionary to store keys from financials_list with values of dictionaries for the years-values
     financials = {}
-    for i in financials_list:
+    for i in financialsList:
         financials[i] = {}
     
     for key in financials.keys():
@@ -66,15 +113,17 @@ def finSearch(ticker, startYear):
                         financials[key][year] = "({:,})".format(abs(round(row["val"]/1000000))) if row["val"] < 0 else "{:,}".format(round(row["val"]/1000000))                        
         except KeyError:
             financials[key] = "na"
+    
     if __name__ == "__main__":
-        one_source = company_facts["facts"][accounting]["CashCashEquivalentsAndShortTermInvestments"]["units"]["USD"]
+        one_source = company_facts["facts"][accounting]["CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents"]["units"]["USD"]
         for row in one_source:
             print(row)
         return companyName, financials, years, one_source
     
     # one_source = company_facts["facts"][accounting]["CashCashEquivalentsAndShortTermInvestments"]["units"]["USD"]
 
-    return companyName, financials, years
+    # output wants to be companyName, financials, years
+    return companyName, financials, years #, one_source
 
 
 if len(sys.argv) == 1:
@@ -84,5 +133,5 @@ else:
 
 if __name__ == "__main__":
     startYear = 2018
-    table = finSearch(ticker, startYear)
-    print(table)
+    companyName, financials, years, one_source = finSearch(ticker, startYear)
+    print(financials)

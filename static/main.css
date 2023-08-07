@@ -136,7 +136,7 @@ tr:hover {
 }
 
 th {
-    padding: 12px 0 12px 0;
+    padding: 12px;
     text-align: center;
     background-color: hsl(202, 66%, 29%);
     color: white;

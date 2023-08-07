@@ -11,7 +11,6 @@
             <th>Assets</th>
             <th>Liabilities</th>
             <th>Debt</th>
-            <th class="columnBreak"></th>
             <th>Revenue</th>
             <th>COGS</th>
             <th>Gross Profit</th>
@@ -22,24 +21,50 @@
     </thead>
     <tbody>
         {% for year in years %}
-        {% if year %}
-        <tr>
-            <td>{{ year }}</td>
-            <td>${{ financials["CashCashEquivalentsAndShortTermInvestments"][year] }}</td>
-            <td>${{ financials["Assets"][year] }}</td>
-            <td>${{ financials["Liabilities"][year] }}</td>
-            <td>${{ financials["LongTermDebt"][year] }}</td>
-            <td class="columnBreak"></td>
-            <td>${{ financials["RevenueFromContractWithCustomerExcludingAssessedTax"][year] }}</td>
-            <td>${{ financials["CostOfGoodsAndServicesSold"][year] }}</td>
-            <td>${{ financials["GrossProfit"][year] }}</td>
-            <td>${{ financials["NetCashProvidedByUsedInOperatingActivities"][year] }}</td>
-            <td>${{ financials["NetCashProvidedByUsedInInvestingActivities"][year] }}</td>
-            <td>${{ financials["NetCashProvidedByUsedInFinancingActivities"][year] }}</td>
-        </tr>
-        {% endif %}
+            <tr>
+                <td>{{ year }}</td>
+                {% for i in financials %}
+                    {% if year %}
+                        <td>${{ financials[i][year] }}</td>
+                    {% endif %}
+            {% endfor %}
+            </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<h2 class="holder-output-header">
+    {% if last_row > 1 %}
+        Top {{ last_row }} Holders for {{ ticker.upper() }}
+    {% elif last_row == 1 %}
+        Top {{ last_row }} Holder for {{ ticker.upper() }}
+    {% else %}
+        No Holders for {{ ticker.upper() }}; CUSIP is {{ cusip }}
+    {% endif %}
+</h2>
+{% if last_row >=1 %}
+    <table class="holderTable">
+        <thead>
+            <tr>
+                <th class="holderTableHeader" style="text-align: left">Number</th>
+                <th class="holderTableHeader" style="text-align: left">Fund Name</th>
+                <th class="holderTableHeader" style="text-align: center">Number of Securities</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in holderTable %}
+                <tr>
+                    <td class="holderRow">{{ row[0] }}</td>
+                    <td class="holderRow" style="text-align: left">{{ row[1] }}</td>
+                    <td class="holderRow" style="text-align: center">{{ row[2] }}</td>
+                </tr>  
+            
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No holders to display</p>
+{% endif %}
+
 
 {% endblock %}

@@ -7,6 +7,9 @@ Project:
         secFinancials.py - script for getting financials of a ticker
         models.py
         forms.py
+        cusipLookup.py - cusip = f(ticker)
+        holderSearch.py - holderTable, last_row, cusip = f(ticker, holderCount)
+        secTest.py - test companies for codes for financial categories
 
         /SECDocs
             all SEC docs

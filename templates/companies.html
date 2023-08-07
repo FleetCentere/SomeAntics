@@ -5,14 +5,17 @@
 
 <form method="post" class="postForm">
     <label for="ticker">Ticker</label>
-    <br>
-    <input type="text" name="ticker" placeholder="Company Ticker" value="{{ request.form['ticker'] }}">
+    <input type="text" name="ticker" placeholder="Company Ticker" autocomplete="off" value="{{ request.form['ticker'] }}">
     <br>
 
     <label for="startYear">Start Year</label>
+    <input type="text" name="startYear" placeholder="Starting Year" autocomplete="off" value="{{ request.form['startYear'] }}">
     <br>
-    <input type="text" name="startYear" placeholder="Starting Year" value="{{ request.form['startYear'] }}">
+
+    <label for="holderCount">Number of Holders</label>
+    <input type="number" name="holderCount" autocomplete="off" value="{{ request.form['holderCount'] }}">
     <br>
+
     <button type="submit">Submit</button>
 
 
