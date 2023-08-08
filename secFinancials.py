@@ -55,8 +55,9 @@ def finSearch(ticker, startYear):
     liabilities = ["Liabilities"]
 
     # debt
-    debt = ["DebtInstrumentFaceAmount",
-            "LongTermDebt"]
+    debt = ["DebtInstrumentPrincipalOutstanding",
+            "LongTermDebt",
+            "DebtInstrumentFaceAmount",]
 
     # revenue
     revenue = ["RevenueFromContractWithCustomerExcludingAssessedTax",

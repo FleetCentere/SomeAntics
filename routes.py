@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, redirect, request, flash
 from ProjectFiles import app #, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
+from ProjectFiles.forms import pressReleaseForm
 
 
 messages = [{"title": "First Message", "content": "First message content"}, {"title": "Second message", "content": "Second message content"}]
@@ -15,9 +16,18 @@ def home():
 def about():
     return render_template("about.html")
 
-@app.route("/pressRelease")
+@app.route("/pressRelease", methods=["POST", "GET"])
 def pressRelease():
-    return render_template("pressRelease.html")
+    pressReleaseList = None
+    form = pressReleaseForm()
+    if form.validate_on_submit():
+        contentDate = form.contentDate.data
+        company = form.company.data
+        ticker = form.ticker.data
+        link = form.link.data
+        pressReleaseList = {"contentDate": contentDate, "company": company, "ticker": ticker, "link": link}
+        # entry for date/time of the post itself
+    return render_template("pressRelease.html", form=form, pressReleaseList=pressReleaseList)
 
 @app.route("/events")
 def events():

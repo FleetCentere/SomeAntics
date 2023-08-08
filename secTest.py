@@ -70,13 +70,16 @@ def main(ticker):
     # order based on output: cash, assets, liabilities, debt, rev, cogs, gp, cfo, cfi, cff
     lists = [cash, assets, liabilities, debt, revenue, cogs, grossprofit, cfo, cfi, cff]
     
+    maxYear = 2022
     # # i is an element of lists (cash, revenue, etc); j is an element of the [cash, revenue] list
     for n, i in enumerate(lists):
         for j in i:
             try:
-                test = company_facts["facts"][accounting][j]
-                lists[n] = j
-                break
+                test = company_facts["facts"][accounting][j]["units"]["USD"]
+                for row in test:
+                    if row["fy"] == maxYear:
+                        lists[n] = j
+                        break
             except KeyError:
                 lists[n] = "na"
                 pass

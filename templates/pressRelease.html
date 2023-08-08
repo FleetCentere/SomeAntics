@@ -1,6 +1,50 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>Press Releases to Submit</h1>
+<h1>Press Releases</h1>
+
+
+{% if pressReleaseList %}
+    <table>
+        <thead>
+            <tr>
+                {% for key in pressReleaseList.keys() %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+            </tr>  
+        </thead>
+        <tbody>
+            <tr>
+            {% for key in pressReleaseList.keys() %}
+                <td>{{ pressReleaseList[key] }}</td>
+            {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
+{% else %}
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+
+        <p>
+            {{ form.contentDate.label }}
+            {{ form.contentDate }}
+        </p>
+        <p>
+            {{ form.company.label }}
+            {{ form.company }}
+        </p>
+        <p>
+            {{ form.ticker.label }}
+            {{ form.ticker }}
+        </p>
+        <p>
+            {{ form.link.label }}
+            {{ form.link }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+
+{% endif %}
 
 {% endblock %}
