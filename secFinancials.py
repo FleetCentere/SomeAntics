@@ -67,7 +67,8 @@ def finSearch(ticker, startYear):
 
     # COGS
     cogs = ["CostOfGoodsAndServicesSold",
-            "CostOfRevenue"]
+            "CostOfRevenue",
+            "CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"]
 
     # grossprofit
     grossprofit = ["GrossProfit"]

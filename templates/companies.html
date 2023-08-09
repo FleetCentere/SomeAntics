@@ -3,23 +3,94 @@
 
 <h1>Companies</h1>
 
-<form method="post" class="postForm">
-    <label for="ticker">Ticker</label>
-    <input type="text" name="ticker" placeholder="Company Ticker" autocomplete="off" value="{{ request.form['ticker'] }}">
-    <br>
+{% if companyInfo %}
+    <h2>{{ companyInfo["companyName"] }} ({{ companyInfo["ticker"].upper() }})</h2>
 
-    <label for="startYear">Start Year</label>
-    <input type="text" name="startYear" placeholder="Starting Year" autocomplete="off" value="{{ request.form['startYear'] }}">
-    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Cash</th>
+                <th>Assets</th>
+                <th>Liabilities</th>
+                <th>Debt</th>
+                <th>Revenue</th>
+                <th>COGS</th>
+                <th>Gross Profit</th>
+                <th>CFO</th>
+                <th>CFI</th>
+                <th>CFF</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for year in years %}
+                <tr>
+                    <td>{{ year }}</td>
+                    {% for i in financials %}
+                        {% if year %}
+                            <td>${{ financials[i][year] }}</td>
+                        {% endif %}
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    <label for="holderCount">Number of Holders</label>
-    <input type="number" name="holderCount" autocomplete="off" value="{{ request.form['holderCount'] }}">
-    <br>
+    <h2 class="holder-output-header">
+        {% if last_row > 1 %}
+            Top {{ last_row }} Holders for {{ companyInfo["ticker"].upper() }}
+        {% elif last_row == 1 %}
+            Top {{ last_row }} Holder for {{ companyInfo["ticker"].upper() }}
+        {% else %}
+            No Holders for {{ companyInfo["ticker"].upper() }}; CUSIP is {{ cusip }}
+        {% endif %}
+    </h2>
+    {% if last_row >=1 %}
+        <table class="holderTable">
+            <thead>
+                <tr>
+                    <th class="holderTableHeader" style="text-align: left">Number</th>
+                    <th class="holderTableHeader" style="text-align: left">Fund Name</th>
+                    <th class="holderTableHeader" style="text-align: center">Number of Securities</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in holderTable %}
+                    <tr>
+                        <td class="holderRow">{{ row[0] }}</td>
+                        <td class="holderRow" style="text-align: left">{{ row[1] }}</td>
+                        <td class="holderRow" style="text-align: center">{{ row[2] }}</td>
+                    </tr>  
+                
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No holders to display</p>
+    {% endif %}
 
-    <button type="submit">Submit</button>
 
+{% else %}
 
+<form action="" method="POST" novalidate>
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.ticker.label }}
+        {{ form.ticker }}
+    </p>
+    <p>
+        {{ form.startYear.label }}
+        {{ form.startYear }}
+    </p>
+    <p>
+        {{ form.holderCount.label }}
+        {{ form.holderCount }}
+    </p>
+    
+    <p>{{ form.submit() }}</p>
 </form>
+{% endif %}
 
 
 {% endblock %}

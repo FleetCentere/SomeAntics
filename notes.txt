@@ -5,6 +5,7 @@ pip install
 - datetime
 - pytz
 - requests
+- flask-migrate
 
 ------
 
@@ -103,3 +104,22 @@ def create():
     <textarea name="content" placeholder="Message content" rows="15" cols="60">{{ request.form["content"] }}</textarea>
     <br>
     <button type="submit">Submit</button>
+
+    ----
+
+    old company table:
+    <tr>
+            <td>{{ year }}</td>
+            <td>${{ financials[list(financials.keys())[0]][year] }}</td>
+            <td>${{ financials["CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents"][year] }}</td>
+            <td>${{ financials["Assets"][year] }}</td>
+            <td>${{ financials["Liabilities"][year] }}</td>
+            <td>${{ financials["LongTermDebt"][year] }}</td>
+            <td class="columnBreak"></td>
+            <td>${{ financials["RevenueFromContractWithCustomerExcludingAssessedTax"][year] }}</td>
+            <td>${{ financials["CostOfGoodsAndServicesSold"][year] }}</td>
+            <td>${{ financials["GrossProfit"][year] }}</td>
+            <td>${{ financials["NetCashProvidedByUsedInOperatingActivities"][year] }}</td>
+            <td>${{ financials["NetCashProvidedByUsedInInvestingActivities"][year] }}</td>
+            <td>${{ financials["NetCashProvidedByUsedInFinancingActivities"][year] }}</td>
+        </tr>

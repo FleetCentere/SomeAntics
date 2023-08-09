@@ -147,3 +147,11 @@ th {
     padding: 5px;
     border: none;
 }
+
+form {
+    margin: 10px;
+}
+
+.errorMessage {
+    color: red;
+}   

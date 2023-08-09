@@ -53,7 +53,9 @@ def main(ticker):
                 "Revenue"]
 
     # COGS
-    cogs = ["CostOfGoodsAndServicesSold"]
+    cogs = ["CostOfGoodsAndServicesSold",
+            "CostOfRevenue",
+            "CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"]
 
     # grossprofit
     grossprofit = ["GrossProfit"]

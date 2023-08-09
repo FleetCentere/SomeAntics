@@ -23,24 +23,43 @@
     </table>
 
 {% else %}
-    <form action="" method="POST">
+    <form action="" method="POST" novalidate>
         {{ form.hidden_tag() }}
 
         <p>
             {{ form.contentDate.label }}
-            {{ form.contentDate }}
+            {{ form.contentDate }}<br>
+            {% for error in form.contentDate.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.company.label }}
-            {{ form.company }}
+            {{ form.company }}<br>
+            {% for error in form.company.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.ticker.label }}
-            {{ form.ticker }}
+            {{ form.ticker }}<br>
+            {% for error in form.ticker.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.product.label }}
+            {{ form.product }}<br>
+            {% for error in form.product.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.link.label }}
-            {{ form.link }}
+            {{ form.link }}<br>
+            {% for error in form.link.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>{{ form.submit() }}</p>
     </form>
