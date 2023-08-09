@@ -123,3 +123,27 @@ def create():
             <td>${{ financials["NetCashProvidedByUsedInInvestingActivities"][year] }}</td>
             <td>${{ financials["NetCashProvidedByUsedInFinancingActivities"][year] }}</td>
         </tr>
+
+-----
+
+(venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> flask --app ProjectFiles shell
+Python 3.11.3 (tags/v3.11.3:f3909b8, Apr  4 2023, 23:49:59) [MSC v.1934 64 bit (AMD64)] on win32
+App: ProjectFiles
+Instance: C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\instance
+>>> from ProjectFiles.models import pressReleases
+>>> test = pressReleases(company="testCo", ticker="tsco", link="wwww.google.com", datePosted="2020-01-09")
+>>> test
+<CompanyPost testCo>
+
+-----
+
+(venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> $env:FLASK_APP = "ProjectFiles"
+(venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> flask db init
+Creating directory 'C:\\Users\\mcgra\\OneDrive\\Desktop\\AHM Docs\\Coding\\Project\\migrations' ...  done
+Creating directory 'C:\\Users\\mcgra\\OneDrive\\Desktop\\AHM Docs\\Coding\\Project\\migrations\\versions' ...  done
+Generating C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\migrations\alembic.ini ...  done
+Generating C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\migrations\env.py ...  done
+Generating C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\migrations\README ...  done
+Generating C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\migrations\script.py.mako ...  done
+Please edit configuration/connection/logging settings in 'C:\\Users\\mcgra\\OneDrive\\Desktop\\AHM Docs\\Coding\\Project\\migrations\\alembic.ini' before proceeding.        
+(venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> 
