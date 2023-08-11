@@ -1,16 +1,25 @@
 from flask import Flask, render_template, url_for, redirect, request, flash
-from ProjectFiles import app #, db
+from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import pressReleaseForm, companyForm
-
+from ProjectFiles.forms import pressReleaseForm, companyForm, loginForm
+from ProjectFiles.models import pressReleases, events, content, people, Users
 
 messages = [{"title": "First Message", "content": "First message content"}, {"title": "Second message", "content": "Second message content"}]
 
 @app.route("/")
 @app.route("/home")
 def home():
+
     return render_template("home.html", messages=messages)
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = loginForm()
+    if form.validate_on_submit():
+        flash("Login requested for user {}, remember me={}".format(form.username.data, form.remember_me.data))
+        return redirect(url_for("home"))
+    return render_template("login.html", form=form)
 
 @app.route("/about")
 def about():

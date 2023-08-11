@@ -147,3 +147,18 @@ Generating C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\migrations\RE
 Generating C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\migrations\script.py.mako ...  done
 Please edit configuration/connection/logging settings in 'C:\\Users\\mcgra\\OneDrive\\Desktop\\AHM Docs\\Coding\\Project\\migrations\\alembic.ini' before proceeding.        
 (venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> 
+
+-----
+password hashing:
+(venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> flask shell
+Python 3.11.3 (tags/v3.11.3:f3909b8, Apr  4 2023, 23:49:59) [MSC v.1934 64 bit (AMD64)] on win32
+App: ProjectFiles
+Instance: C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\instance
+>>> u = Users(username="Andrew", email="test@gmail.com")
+>>> u.set_password("test_password")
+>>> u.password_hash
+'pbkdf2:sha256:600000$vz7QmcnnPvdCZrsd$af5cf47c6fa755d7b5c137ce14755456e6c710adc630d206ed3b4ca4ffd5545b'
+>>> u.check_password("test_password")
+True
+>>> u.check_password("test_passworda") 
+False
