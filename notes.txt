@@ -6,6 +6,7 @@ pip install
 - pytz
 - requests
 - flask-migrate
+- email-validator
 
 ------
 
@@ -162,3 +163,39 @@ Instance: C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\instance
 True
 >>> u.check_password("test_passworda") 
 False
+
+-----
+
+users:
+- Andrew, test
+- Ben, test2
+- zkxq4jw, ProjectFiles
+
+-----
+
+(venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> flask shell
+Python 3.11.3 (tags/v3.11.3:f3909b8, Apr  4 2023, 23:49:59) [MSC v.1934 64 bit (AMD64)] on win32
+App: ProjectFiles
+Instance: C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\instance
+>>> Users.query.all()
+[<User Andrew>, <User Ben>, <User zkxq4jw>]
+>>> Users.query.filter_by(username="zkxq4jw")
+<flask_sqlalchemy.query.Query object at 0x0000023823CC1D10>
+>>> u = Users.query.filter_by(username="zkxq4jw") 
+>>> u.email
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+AttributeError: 'Query' object has no attribute 'email'
+>>> u
+<flask_sqlalchemy.query.Query object at 0x0000023823CC2090>
+>>> u = Users.query.filter_by(username="zkxq4jw").first()
+>>> u.email
+'mcgrathan@gmail.com'
+>>> u.password
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+AttributeError: 'Users' object has no attribute 'password'
+>>> u.password_hash
+'pbkdf2:sha256:600000$x7CwbqNyQ9izgMdA$0aad1e4d3fdf7e0bae752e0db9b2b3f1b41ffe984717c225e74629e450de4c4c'
+>>> u.check_password("ProjectFiles")
+True

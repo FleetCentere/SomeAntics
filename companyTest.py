@@ -6,7 +6,6 @@ headers = {"User-Agent": "mcgrathan@gmail.com"}
 
 # get company tickers from SEC API with headers and convert into JSON format
 tickers = requests.get("https://www.sec.gov/files/company_tickers.json", headers=headers).json()
-max = len(tickers)
 
 def main(ticker):
     # get company CIK from "tickers" file
@@ -19,7 +18,6 @@ def main(ticker):
     cik_str = CIK[0]
 
     # company_submissions = requests.get(f"https://data.sec.gov/submissions/CIK{cik_str}.json", headers=headers).json()
-    # company_concept = requests.get(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik_str}.json", headers=headers).json()
     company_facts = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik_str}.json", headers=headers).json()
     
     # determine what accounting format is used for given company in variable 'accounting'

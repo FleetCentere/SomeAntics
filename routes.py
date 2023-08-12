@@ -1,27 +1,39 @@
 from flask import Flask, render_template, url_for, redirect, request, flash
+from flask_login import current_user, login_user, logout_user, login_required
+from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import pressReleaseForm, companyForm, loginForm
+from ProjectFiles.forms import pressReleaseForm, companyForm, loginForm, RegistrationForm
 from ProjectFiles.models import pressReleases, events, content, people, Users
 
-messages = [{"title": "First Message", "content": "First message content"}, {"title": "Second message", "content": "Second message content"}]
+messages = [{"title": "First Message", "content": "First message content"}, 
+            {"title": "Second message", "content": "Second message content"}]
 
 @app.route("/")
 @app.route("/home")
 def home():
-
     return render_template("home.html", messages=messages)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("home"))
     form = loginForm()
     if form.validate_on_submit():
-        flash("Login requested for user {}, remember me={}".format(form.username.data, form.remember_me.data))
-        return redirect(url_for("home"))
+        user = Users.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash("Invalid username or password")
+            return redirect(url_for("login"))
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get("next")
+        if not next_page or url_parse(next_page).netloc != "":
+            next_page = url_for("home")
+        return redirect(next_page)
     return render_template("login.html", form=form)
 
 @app.route("/about")
+@login_required
 def about():
     return render_template("about.html")
 
@@ -68,3 +80,22 @@ def content():
 @app.route("/ideas")
 def ideas():
     return render_template("ideas.html")
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return render_template("home.html")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("home"))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = Users(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash("You are now registered")
+        return redirect(url_for("login"))
+    return render_template("register.html", form=form)

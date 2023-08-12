@@ -33,19 +33,28 @@
                 {# <a href="{{ url_for('all_posts') }}" class="navbar-link">All Posts</a> #}
            </div>
            <div class="navbar-right">
-                <a href="{{ url_for('login') }}" class="navbar-link">Login</a>
+                {% if current_user.is_anonymous %}
+                    <a href="{{ url_for('login') }}" class="navbar-link">Log In</a>
+                {% else %}
+                    <a href="{{ url_for('logout') }}" class="navbar-link">Log Out</a>    
+                {% endif %}
                 <a href="{{ url_for('about') }}" class="navbar-link">About</a>
            </div>
         </nav>
     </header>
     <main>
-        <!-- import content from external html file -->
+        <!-- Username if logged in -->
+        {% if current_user.username %}
+            <h1>Hello {{ current_user.username }}!</h1>
+        {% endif %}
+        <!-- Flashed Messages -->
         <div>
             {% for message in get_flashed_messages() %}
                 <div class="alert">{{ message }}</div>
             {% endfor %}
         </div>
         <hr>
+        <!-- import content from external html file -->
         {% block content %}
         {% endblock %}
 
