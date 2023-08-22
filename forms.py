@@ -12,6 +12,21 @@ class pressReleaseForm(FlaskForm):
     product = StringField("Content Product", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
+class ideaForm(FlaskForm):
+    category = StringField("Category", validators=[DataRequired()])
+    link = StringField("Link", validators=[DataRequired()])
+    note = StringField("Note", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+class contentForm(FlaskForm):
+    contentDate = DateField("Date of Content Creation", validators=[DataRequired()])
+    contentType = StringField("Type of Content", validators=[DataRequired()])
+    creator = StringField("Content Creator", validators=[DataRequired()])
+    link = StringField("Link")
+    note = StringField("Note about content")
+    contentRating = IntegerField("Rating of content")
+    submit = SubmitField("Submit")
+
 class companyForm(FlaskForm):
     ticker = StringField("Company Ticker", validators=[DataRequired()])
     startYear = IntegerField("Start Year", validators=[DataRequired(), NumberRange(2018, 2023)])

@@ -22,6 +22,18 @@ class Users(UserMixin, db.Model):
     def __repr__(self):
         return f"<User {self.username}>"
 
+class Ideas(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(250))
+    link = db.Column(db.String(250))
+    note = db.Column(db.Text)
+    status = db.Column(db.String(50))
+    dateEntered = db.Column(db.Date, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"{self.company}: {self.product} on {self.datePosted}"
+
+
 class pressReleases(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     company = db.Column(db.String(250))
@@ -29,6 +41,7 @@ class pressReleases(db.Model):
     link = db.Column(db.String(100))
     product = db.Column(db.String(50))
     datePosted = db.Column(db.Date, index=True)
+    dateEntered = db.Column(db.Date, default=datetime.utcnow)
 
     def __repr__(self):
         return f"{self.company}: {self.product} on {self.datePosted}"
@@ -49,7 +62,9 @@ class content(db.Model):
     contentCreator = db.Column(db.String(100))
     dateMade = db.Column(db.Date)
     link = db.Column(db.String(300))
-    dateConsumed = db.Column(db.Date, index=True)
+    dateConsumed = db.Column(db.Date, default=datetime.utcnow, index=True)
+    contentRating = db.Column(db.Integer)
+    note = db.Column(db.Text)
 
     def __repr__(self):
         return f"{self.contentType} by {self.contentCreator}"

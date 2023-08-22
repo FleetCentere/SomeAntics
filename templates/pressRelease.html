@@ -9,15 +9,19 @@
         <thead>
             <tr>
                 {% for key in pressReleaseList.keys() %}
-                    <th>{{ key }}</th>
+                    <th>{{ key.title() }}</th>
                 {% endfor %}
             </tr>  
         </thead>
         <tbody>
             <tr>
             {% for key in pressReleaseList.keys() %}
-                <td>{{ pressReleaseList[key] }}</td>
-            {% endfor %}
+                {% if key == "link" %}
+                    <td><a href="{{ pressReleaseList[key] }}" style="color: blue">Link</a></td>
+                {% else %}
+                    <td>{{ pressReleaseList[key] }}</td>
+                {% endif %}
+            {% endfor %}   
             </tr>
         </tbody>
     </table>
@@ -25,7 +29,8 @@
 {% else %}
     <form action="" method="POST" novalidate>
         {{ form.hidden_tag() }}
-
+        <fieldset>
+        <legend>Enter Information</legend>
         <p>
             {{ form.contentDate.label }}
             {{ form.contentDate }}<br>
@@ -62,6 +67,7 @@
             {% endfor %}
         </p>
         <p>{{ form.submit() }}</p>
+    </fieldset>
     </form>
 
 {% endif %}

@@ -3,4 +3,80 @@
 
 <h1>Content</h1>
 
+
+{% if contentList %}
+    <table>
+        <thead>
+            <tr>
+                {% for key in contentList.keys() %}
+                    <th>{{ key.title() }}</th>
+                {% endfor %}
+            </tr>  
+        </thead>
+        <tbody>
+            <tr>
+            {% for key in contentList.keys() %}
+                {% if key == "link" %}
+                    <td><a href="{{ contentList[key] }}" style="color: blue">Link</a></td>
+                {% else %}
+                    <td>{{ contentList[key] }}</td>
+                {% endif %}
+            {% endfor %}   
+            </tr>
+        </tbody>
+    </table>
+
+{% else %}
+    <form action="" method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <fieldset>
+        <legend>Enter Information</legend>
+        <p>
+            {{ form.contentDate.label }}
+            {{ form.contentDate }}<br>
+            {% for error in form.contentDate.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.contentType.label }}
+            {{ form.contentType }}<br>
+            {% for error in form.contentType.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.creator.label }}
+            {{ form.creator }}<br>
+            {% for error in form.creator.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.link.label }}
+            {{ form.link }}<br>
+            {% for error in form.link.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.note.label }}
+            {{ form.note }}<br>
+            {% for error in form.note.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.contentRating.label }}
+            {{ form.contentRating }}<br>
+            {% for error in form.contentRating.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </fieldset>
+    </form>
+
+{% endif %}
+
 {% endblock %}

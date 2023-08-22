@@ -34,9 +34,9 @@
            </div>
            <div class="navbar-right">
                 {% if current_user.is_anonymous %}
-                    <a href="{{ url_for('login') }}" class="navbar-link">Log In</a>
+                    <a href="{{ url_for('login') }}" class="navbar-link login">Log In</a>
                 {% else %}
-                    <a href="{{ url_for('logout') }}" class="navbar-link">Log Out</a>    
+                    <a href="{{ url_for('logout') }}" class="navbar-link logout">Log Out</a>    
                 {% endif %}
                 <a href="{{ url_for('about') }}" class="navbar-link">About</a>
            </div>

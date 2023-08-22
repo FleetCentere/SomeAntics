@@ -1,6 +1,67 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>Ideas</h1>
+<h1>Ideas and To-Do's</h1>
+
+
+{% if ideas %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date Added</th>
+                <th>Category</th>
+                <th>Note</th>
+                <th>Link</th>
+                <th>Status</th>
+                <th>Options</th>
+            </tr>  
+        </thead>
+        <tbody>
+            {% for idea in ideas %}
+            <tr>
+                <td>{{ idea.dateEntered }}</td>
+                <td>{{ idea.category }}</td>
+                <td>{{ idea.note }}</td>
+                <td><a href="{{ idea.link }}">Link</a></td>
+                <td>{{ idea.status }}</td>
+                <td><button class="updateButton" data-update-url="{{ url_for('update_post', id=post.id) }}">Update</button> / 
+                    <button class="deleteButton" data-delete-url="{{ url_for('delete_post', id=post.id) }}">Delete</button></td>
+            </tr>
+            </tr>
+            {% endfor %}  
+        </tbody>
+    </table>
+
+    <hr>
+
+{% endif %}
+<form action="" method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <fieldset>
+    <legend>Enter Information</legend>
+    <p>
+        {{ form.category.label }}
+        {{ form.category }}<br>
+        {% for error in form.category.errors %}
+            <span class="errorMessage">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.link.label }}
+        {{ form.link }}<br>
+        {% for error in form.link.errors %}
+            <span class="errorMessage">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.note.label }}
+        {{ form.note }}<br>
+        {% for error in form.note.errors %}
+            <span class="errorMessage">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</fieldset>
+</form>
 
 {% endblock %}

@@ -36,19 +36,14 @@ h1, h2 {
 
 }
 
-.navbar-left {
+.navbar-left,
+.navbar-right {
     justify-content: space-between;
     display: flex;
     align-items: center;
     /* padding: 1rem; */
     flex-wrap: wrap;
     vertical-align: middle;
-}
-
-.navbar-right {
-    /* padding: 1rem; */
-    flex-wrap: wrap;
-    display: flex;
 }
 
 .navbar-logo {
@@ -67,6 +62,15 @@ h1, h2 {
     border-radius: 8px;
     background-color: white;
     font-size: small;
+}
+
+.login {
+    background-color: green;
+    color: white;
+}
+
+.logout {
+    background-color: lightpink; 
 }
 
 a {
@@ -152,4 +156,39 @@ form {
 
 .errorMessage {
     color: red;
+}
+
+/* update modal content */
+.updateModal,
+.deleteModal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.update-modal-content,
+.delete-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+.update-modal-actions,
+.delete-modal-actions {
+    margin-top: 20px;
+}
+
+.confirmButton {
+    background-color: #dc3545;
+    color: #fff;
 }
