@@ -1,33 +1,65 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="home-page-columns">
-    <div class="home-left-side">
-        <h3>Press release storage; db: PRs, linked to companies, products</h3>
-        <h3>Event logging (mornings, afternoons, evenings); db: Events, linked to people, companies, PRs</h3>
-        <h3>Interactions with people; db: People</h3>
-        <h3>Company overview pages (financials, holders, stored analysis); db: Companies</h3>
-        <h3>Content (podcasts, movies, TV, etc); db: Content</h3>
-        <h3>To Do / plan for future?</h3>
-        <br>
-        <h3>Databases</h3>
-        <ul>
-            <li>Press Releases</li>
-            <li>My daily events</li>
-            <li>People</li>
-            <li>Companies</li>
-            <li>Content</li>
-
-        </ul>
+<h1>Home Page</h1>
+<section class="mainSection">
+    <div class="leftSection">
+        <h2>Daily Overview</h2>
+        <div>Time</div>
+        <div>S&P 500</div>
+        <div>Next Pats Game / Opponent</div>
+        <div>Next Bruins Game / Opponent</div>
     </div>
-    <div class="home-right-side">
-        {% for message in messages %}
-        <div class="message">
-            <h3>{{ message["title"] }}</h3>
-            <p>{{ message["content"] }}</p>
+    
+    <div class="centerSection">
+        <div class="topSection">
+            <div class="box box1">
+                <div class="boxTitle"><h2>Tasks</h2><a href="{{ url_for('new_task') }}" class="addButton">Add Task</a></div>
+                <table class="taskDisplayTable">
+                    <thead>
+                        <tr>
+                            <th>Date Added</th>
+                            <th>Category</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                        <tr>
+                            <td>{{ task.dateEntered }}</td>
+                            <td>{{ task.taskCategory }}</td>
+                            <td>{{ task.taskName }}</td>
+                            <td>{{ task.taskStatus }}</td>
+                            <td><a href="#">Details</a> / <a href=#>Edit</a> / <a href=#>Delete</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="box box2">
+                <h2>News</h2>
+            </div>
+            <div class="box box3">
+                <h2>Content</h2>
+            </div>
+            <div class="box box4">
+                <h2>Events</h2>
+            </div>
         </div>
-        {% endfor %}
+        <!-- <hr> -->
+        <div class="bottomSection">
+            <h2>Headlines</h2>
+        </div>
     </div>
-</div>
+
+
+    <div class="rightSection">
+        <h2>Daily Inputs</h2>
+    </div>
+
+</section>
+
 
 {% endblock content %}

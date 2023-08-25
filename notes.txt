@@ -199,3 +199,90 @@ AttributeError: 'Users' object has no attribute 'password'
 'pbkdf2:sha256:600000$x7CwbqNyQ9izgMdA$0aad1e4d3fdf7e0bae752e0db9b2b3f1b41ffe984717c225e74629e450de4c4c'
 >>> u.check_password("ProjectFiles")
 True
+
+-----
+
+>>> db.metadata.tables 
+FacadeDict({'users': Table('users', MetaData(), Column('id', Integer(), table=<users>, primary_key=True, nullable=False), Column('username', String(length=50), table=<users>), Column('password_hash', String(length=128), table=<users>), Column('email', String(length=120), table=<users>), schema=None), 'ideas': Table('ideas', MetaData(), Column('id', Integer(), table=<ideas>, primary_key=True, nullable=False), Column('category', String(length=250), table=<ideas>), Column('link', String(length=250), table=<ideas>), Column('note', Text(), table=<ideas>), Column('status', String(length=50), table=<ideas>), Column('dateEntered', Date(), table=<ideas>, default=CallableColumnDefault(<function datetime.utcnow at 0x000001773C715800>)), Column('dateEdited', Date(), table=<ideas>), schema=None), 'press_releases': Table('press_releases', MetaData(), Column('id', Integer(), table=<press_releases>, primary_key=True, nullable=False), Column('company', String(length=250), table=<press_releases>), Column('ticker', String(length=10), table=<press_releases>), Column('link', String(length=100), table=<press_releases>), Column('product', String(length=50), table=<press_releases>), Column('datePosted', Date(), table=<press_releases>), Column('dateEntered', Date(), table=<press_releases>, default=CallableColumnDefault(<function datetime.utcnow at 0x000001773C716520>)), schema=None), 'events': Table('events', MetaData(), Column('id', Integer(), table=<events>, primary_key=True, nullable=False), Column('eventType', String(length=50), table=<events>), Column('eventDatetime', DateTime(), table=<events>, default=CallableColumnDefault(<function datetime.utcnow at 0x000001773C7172E0>)), Column('duration', Integer(), table=<events>), schema=None), 'content': Table('content', MetaData(), Column('id', Integer(), table=<content>, primary_key=True, nullable=False), Column('dateConsumed', Date(), table=<content>, default=CallableColumnDefault(<function datetime.utcnow at 0x000001773C717EC0>)), Column('dateMade', Date(), table=<content>), Column('contentType', String(length=50), table=<content>), Column('contentCreator', String(length=100), table=<content>), Column('contentLink', String(length=300), table=<content>), Column('contentRating', Integer(), table=<content>), Column('contentNote', Text(), table=<content>), schema=None), 'people': Table('people', MetaData(), Column('id', Integer(), table=<people>, primary_key=True, nullable=False), Column('person', String(length=50), table=<people>), Column('place', String(length=100), table=<people>), Column('date', Date(), table=<people>), schema=None)})
+>>> db.metadata.tables.keys()
+dict_keys(['users', 'ideas', 'press_releases', 'events', 'content', 'people'])
+>>> Users.query.all()
+[<User Andrew>, <User Ben>, <User zkxq4jw>]
+
+-----
+
+@login.user_loader
+def load_user(id):
+    return Users.query.get(int(id))
+
+class Users(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50))
+    password_hash = db.Column(db.String(128))
+    email = db.Column(db.String(120))
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f"<User {self.username}>"
+
+class Ideas(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(250))
+    link = db.Column(db.String(250))
+    note = db.Column(db.Text)
+    status = db.Column(db.String(50))
+    dateEntered = db.Column(db.Date, default=datetime.utcnow)
+    dateEdited = db.Column(db.Date, default=None, nullable=True)
+
+    def __repr__(self):
+        return f"{self.category} on {self.dateEntered}"
+
+
+class pressReleases(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    company = db.Column(db.String(250))
+    ticker = db.Column(db.String(10))
+    link = db.Column(db.String(100))
+    product = db.Column(db.String(50))
+    datePosted = db.Column(db.Date, index=True)
+    dateEntered = db.Column(db.Date, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"{self.company}: {self.product} on {self.datePosted}"
+
+class events(db.Model):
+    # for events like exercise, meetings
+    id = db.Column(db.Integer, primary_key=True)
+    eventType = db.Column(db.String(50))
+    eventDatetime = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    duration = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"{self.eventType} on {self.eventDate}"
+
+class Content(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    dateConsumed = db.Column(db.Date, default=datetime.utcnow, index=True)
+    dateMade = db.Column(db.Date)
+    contentType = db.Column(db.String(50)) # podcast, movies, shows, youtube, articles
+    contentCreator = db.Column(db.String(100))
+    contentLink = db.Column(db.String(300))
+    contentRating = db.Column(db.Integer)
+    contentNote = db.Column(db.Text)
+
+    def __repr__(self):
+        return f"{self.contentType} by {self.contentCreator}"
+
+class people(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    person = db.Column(db.String(50))
+    place = db.Column(db.String(100))
+    date = db.Column(db.Date)
+
+    def __repr__(self):
+        return f"{self.person} on {self.date}"

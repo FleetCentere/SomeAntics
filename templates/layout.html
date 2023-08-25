@@ -21,12 +21,12 @@
            <div class="navbar-left">
                 <img src="{{ url_for('static', filename='logo.jpg') }}" class="navbar-logo" alt="Website Logo">
                 <a href="{{ url_for('home') }}" class="navbar-link">Home</a>
-                <a href="{{ url_for('pressRelease') }}" class="navbar-link">Press Release</a>
-                <a href="{{ url_for('events') }}" class="navbar-link">Events</a>
-                <a href="{{ url_for('people') }}" class="navbar-link">People</a>
-                <a href="{{ url_for('companies') }}" class="navbar-link">Companies</a>
-                <a href="{{ url_for('content') }}" class="navbar-link">Content</a>
-                <a href="{{ url_for('ideas') }}" class="navbar-link">To Do / Ideas</a>
+                {# <a href="{{ url_for('pressRelease') }}" class="navbar-link">Press Release</a> #}
+                {# <a href="{{ url_for('events') }}" class="navbar-link">Events</a> #}
+                {# <a href="{{ url_for('people') }}" class="navbar-link">People</a> #}
+                {# <a href="{{ url_for('companies') }}" class="navbar-link">Companies</a> #}
+                {# <a href="{{ url_for('content') }}" class="navbar-link">Content</a> #}
+                {# <a href="{{ url_for('ideas') }}" class="navbar-link">To Do / Ideas</a> #}
                 {# <a href="{{ url_for('holder_results') }}" class="navbar-link">Holder Search</a> #}
                 {# <a href="{{ url_for('company_webpage') }}" class="navbar-link">Financials Overview</a> #}
                 {# <a href="{{ url_for('new_post') }}" class="navbar-link">New Post</a> #}
@@ -56,8 +56,8 @@
         <hr>
         <!-- import content from external html file -->
         {% block content %}
-        {% endblock %}
 
+        {% endblock %}
     </main>
     <footer>
         A Henry C. M. Production &copy; 2023
