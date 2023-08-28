@@ -5,10 +5,10 @@
 <section class="mainSection">
     <div class="leftSection">
         <h2>Daily Overview</h2>
-        <div>Time</div>
-        <div>S&P 500</div>
-        <div>Next Pats Game / Opponent</div>
-        <div>Next Bruins Game / Opponent</div>
+        <ul>
+            <li>Time: {{ time }}</li><br>
+            <li>S&P 500: {{ sp }}</li>
+        </ul>
     </div>
     
     <div class="centerSection">
@@ -32,34 +32,192 @@
                             <td>{{ task.taskCategory }}</td>
                             <td>{{ task.taskName }}</td>
                             <td>{{ task.taskStatus }}</td>
-                            <td><a href="#">Details</a> / <a href=#>Edit</a> / <a href=#>Delete</a></td>
+                            <td><button class="updateButton" data-update-url="{{ url_for('update_task', id=task.id) }}">Edit</button> / 
+                                <button class="deleteButton" data-delete-url="{{ url_for('delete_task', id=task.id) }}">Delete</button></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+            
             <div class="box box2">
-                <h2>News</h2>
+                <div class="boxTitle"><h2>News</h2><a href="{{ url_for('new_news') }}" class="addButton">Add News</a></div>
+                <table class="newsDisplayTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Title</th>
+                            <th>Link</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in newsItems %}
+                        <tr>
+                            <td>{{ item.newsDatePosted }}</td>
+                            <td>{{ item.newsType }}</td>
+                            <td>{{ item.newsTitle }}</td>
+                            <td><a href="{{ item.NewsLink }}" target="_blank" rel="noopener noreferrer">Link</a></td>
+                            <td><button class="updateButton" data-update-url="{{ url_for('update_news', id=item.id) }}">Edit</button> / 
+                                <button class="deleteButton" data-delete-url="{{ url_for('delete_news', id=item.id) }}">Delete</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            
             <div class="box box3">
-                <h2>Content</h2>
+                <div class="boxTitle"><h2>Content</h2><a href="{{ url_for('new_content') }}" class="addButton">Add Content</a></div>
+                <table class="contentDisplayTable">
+                    <thead>
+                        <tr>
+                            <th>Date Added</th>
+                            <th>Type</th>
+                            <th>Creator</th>
+                            <th>Subject</th>
+                            <th>Link</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for content in contents %}
+                        <tr>
+                            <td>{{ content.dateConsumed }}</td>
+                            <td>{{ content.contentType }}</td>
+                            <td>{{ content.contentCreator }}</td>
+                            <td>{{ content.contentSubject }}</td>
+                            <td><a href="{{ content.contentLink }}" target="_blank" rel="noopener noreferrer">Link</a></td>
+                            <td><button class="updateButton" data-update-url="{{ url_for('update_content', id=content.id) }}">Edit</button> / 
+                                <button class="deleteButton" data-delete-url="{{ url_for('delete_content', id=content.id) }}">Delete</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            
             <div class="box box4">
                 <h2>Events</h2>
             </div>
+
         </div>
-        <!-- <hr> -->
         <div class="bottomSection">
-            <h2>Headlines</h2>
+            <h2>Auto Generated Headlines</h2>
         </div>
     </div>
+</div>
 
 
     <div class="rightSection">
-        <h2>Daily Inputs</h2>
+        
+        <ul>
+            <li>Morning</li>
+            <li>Afternoon</li>
+            <li>Evening</li>
+            <li>Weight</li>
+        </ul>
     </div>
 
 </section>
 
+    <!-- Change Modal -->
+    <div class="updateModal" id="updateModal">
+        <div class="update-modal-content">
+            <p>Are you sure you want to Update?</p>
+            <div class="update-modal-actions">
+                <button class="updateCancelButton">Cancel</button>
+                <button class="updateConfirmButton">Confirm Update</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="deleteModal" id="deleteModal">
+        <div class="delete-modal-content">
+            <p>Are you sure you want to delete?</p>
+            <div class="delete-modal-actions">
+                <button class="deleteCancelButton">Cancel</button>
+                <button class="deleteConfirmButton">Confirm Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Script for Update Modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const updateButtons = document.querySelectorAll('.updateButton');
+            const modal = document.getElementById('updateModal');
+            const updateCancelButtons = document.querySelectorAll('.updateCancelButton');
+            const updateConfirmButtons = document.querySelectorAll('.updateConfirmButton');
+
+            let updateUrl; // Variable to store the update URL
+
+            // Show modal when any update button is clicked
+            updateButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    // Get the URL for the update action from the data attribute
+                    updateUrl = button.getAttribute('data-update-url');
+                    modal.style.display = 'block';
+                });
+            });
+
+            // Hide modal when any cancel button is clicked
+            updateCancelButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            });
+
+            // Perform the update action when any confirm button is clicked
+            updateConfirmButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    
+                    // Redirect to the update URL after confirmation
+                    window.location.href = updateUrl;
+
+                    // Hide the modal after confirmation (optional)
+                    modal.style.display = 'none';
+                });
+            });
+    });
+
+
+    // Script for Delete Modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.deleteButton');
+        const modal = document.getElementById('deleteModal');
+        const deleteCancelButtons = document.querySelectorAll('.deleteCancelButton');
+        const deleteConfirmButtons = document.querySelectorAll('.deleteConfirmButton');
+
+        let deleteUrl; // Variable to store the delete URL
+
+        // Show modal when any delete button is clicked
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Get the URL for the delete action from the data attribute
+                deleteUrl = button.getAttribute('data-delete-url');
+                modal.style.display = 'block';
+            });
+        });
+
+        // Hide modal when any cancel button is clicked
+        deleteCancelButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        });
+
+        // Perform the delete action when any confirm button is clicked
+        deleteConfirmButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Redirect to the delete URL after confirmation
+                window.location.href = deleteUrl;
+
+                // Hide the modal after confirmation (optional)
+                modal.style.display = 'none';
+            });
+        });
+    });
+    </script>
 
 {% endblock content %}

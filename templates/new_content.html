@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<form action="" method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <fieldset>
+    <legend>Enter New Content</legend>
+        <p>
+            {{ form.dateMade.label }}
+            {{ form.dateMade }}<br>
+            {% for error in form.dateMade.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.contentType.label }}
+            {{ form.contentType }}<br>
+            {% for error in form.contentType.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.contentCreator.label }}
+            {{ form.contentCreator }}<br>
+            {% for error in form.contentCreator.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.contentLink.label }}
+            {{ form.contentLink }}<br>
+            {% for error in form.contentLink.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.contentRating.label }}
+            {{ form.contentRating }}<br>
+            {% for error in form.contentRating.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.contentSubject.label }}
+            {{ form.contentSubject }}<br>
+            {% for error in form.contentSubject.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.contentNote.label }}
+            {{ form.contentNote }}<br>
+            {% for error in form.contentNote.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </fieldset>
+</form>
+
+{% endblock %}

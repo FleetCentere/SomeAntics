@@ -5,15 +5,25 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, newTaskForm # pressReleaseForm, companyForm, contentForm, ideaForm
+from ProjectFiles.forms import loginForm, RegistrationForm, newTaskForm, newContentForm, newNewsForm # pressReleaseForm, companyForm, contentForm, ideaForm
 from ProjectFiles.models import userTable, taskTable, newsTable, eventTable, contentTable, peopleTable, exerciseTable, weightTable
+from ProjectFiles.stockPrice import sp500
 
 @app.route("/")
 @app.route("/home")
 def home():
+    n = 8 # number of items to display in any given fieldset
     if current_user.is_authenticated:
-        tasks = taskTable.query.all()
-        return render_template("home.html", tasks=tasks)
+        tasks = taskTable.query.filter_by(user_id=current_user.id).limit(n).all()
+        contents = contentTable.query.filter_by(user_id=current_user.id).limit(n).all()
+        newsItems = newsTable.query.filter_by(user_id=current_user.id).limit(n).all()
+        time = datetime.now()  
+        displayTime = time.strftime("%I:%M %p")
+        sp = sp500()
+        sp = f"{sp:.2f}"
+        if displayTime.startswith("0"):
+            displayTime = displayTime[1:]
+        return render_template("home.html", tasks=tasks, contents=contents, newsItems=newsItems, time=displayTime, sp=sp)
     return redirect(url_for("login"))
 
 @app.route("/login", methods=["GET", "POST"])
@@ -66,11 +76,165 @@ def new_task():
         taskName = form.taskName.data
         taskLink = form.taskLink.data
         taskNote = form.taskNote.data
-        task = taskTable(taskCategory=taskCategory, taskName=taskName, taskLink=taskLink, taskNote=taskNote)
+        task = taskTable(taskCategory=taskCategory, taskName=taskName, taskLink=taskLink, taskNote=taskNote, author=current_user)
         db.session.add(task)
         db.session.commit()
         return redirect(url_for("home"))
     return render_template("new_task.html", form=form)
+
+@app.route("/update_task/<int:id>", methods=["POST", "GET"])
+@login_required
+def update_task(id):
+    task = taskTable.query.get_or_404(id)
+    if taskItem.author != current_user:
+        flask("You are not authorized to update this item")
+        return redirect(url_for("home"))
+    form = newTaskForm()
+    if form.validate_on_submit():
+        task.taskCategory = form.taskCategory.data
+        task.taskName = form.taskName.data
+        task.taskLink = form.taskLink.data
+        task.taskNote = form.taskNote.data
+        db.session.commit()
+        flash("Your task has been updated")
+        return redirect(url_for("home"))
+    elif request.method == "GET":
+        form.taskCategory.data = task.taskCategory
+        form.taskName.data = task.taskName
+        form.taskLink.data = task.taskLink
+        form.taskNote.data = task.taskNote
+        return render_template("new_task.html", form=form)
+
+@app.route("/delete_task/<int:id>")
+@login_required
+def delete_task(id):
+    task = taskTable.query.get_or_404(id)
+    if task.author == current_user:
+        db.session.delete(task)
+        db.session.commit()
+        flash("Task successfully deleted")
+        return redirect(url_for("home"))
+    else:
+        flash("User not authorized to delete")
+        return redirect(url_for("home"))
+
+@app.route("/new_content", methods=["POST", "GET"])
+@login_required
+def new_content():
+    form = newContentForm()
+    if form.validate_on_submit():
+        newContent = contentTable(dateMade=form.dateMade.data, 
+                                  contentType=form.contentType.data, 
+                                  contentCreator=form.contentCreator.data, 
+                                  contentLink=form.contentLink.data, 
+                                  contentRating=form.contentRating.data, 
+                                  contentSubject=form.contentSubject.data, 
+                                  contentNote=form.contentNote.data, 
+                                  author=current_user)
+        db.session.add(newContent)
+        db.session.commit()
+        return redirect(url_for("home"))
+    return render_template("new_content.html", form=form)
+
+@app.route("/update_content/<int:id>", methods=["POST", "GET"])
+@login_required
+def update_content(id):
+    contentItem = contentTable.query.get_or_404(id)
+    if contentItem.author != current_user:
+        flask("You are not authorized to update this item")
+        return redirect(url_for("home"))
+    form = newContentForm()
+    if form.validate_on_submit():
+        contentItem.dateMade = form.dateMade.data
+        contentItem.contentType = form.contentType.data
+        contentItem.contentCreator = form.contentCreator.data
+        contentItem.contentLink = form.contentLink.data
+        contentItem.contentRating = form.contentRating.data
+        contentItem.contentSubject = form.contentSubject.data
+        contentItem.contentNote = form.contentNote.data
+        db.session.commit()
+        flash("Your content has been updated")
+        return redirect(url_for("home"))
+    elif request.method == "GET":
+        form.dateMade.data = contentItem.dateMade
+        form.contentType.data = contentItem.contentType
+        form.contentCreator.data = contentItem.contentCreator
+        form.contentLink.data = contentItem.contentLink
+        form.contentRating.data = contentItem.contentRating
+        form.contentSubject.data = contentItem.contentSubject
+        form.contentNote.data = contentItem.contentNote
+        return render_template("new_content.html", form=form)
+
+@app.route("/delete_content/<int:id>")
+@login_required
+def delete_content(id):
+    contentItem = contentTable.query.get_or_404(id)
+    if contentItem.author == current_user:
+        db.session.delete(contentItem)
+        db.session.commit()
+        flash("Content successfully deleted")
+        return redirect(url_for("home"))
+    else:
+        flash("User not authorized to delete")
+        return redirect(url_for("home"))
+
+#### News ####
+@app.route("/new_news", methods=["POST", "GET"])
+@login_required
+def new_news():
+    form = newNewsForm()
+    if form.validate_on_submit():
+        newNews = newsTable(newsType=form.newsType.data, 
+                            newsTitle=form.newsTitle.data, 
+                            newsNote=form.newsNote.data, 
+                            newsLink=form.newsLink.data, 
+                            newsTicker=form.newsTicker.data, 
+                            newsDatePosted=form.newsDatePosted.data,
+                            author=current_user)
+        db.session.add(newNews)
+        db.session.commit()
+        return redirect(url_for("home"))
+    return render_template("new_news.html", form=form)
+
+@app.route("/update_news/<int:id>", methods=["POST", "GET"])
+@login_required
+def update_news(id):
+    newsItem = newsTable.query.get_or_404(id)
+    if newsItem.author != current_user:
+        flash("You are not authorized to update this item")
+        return redirect(url_for("home"))
+    form = newNewsForm()
+    if form.validate_on_submit():
+        newsItem.newsType = form.newsType.data
+        newsItem.newsTitle = form.newsTitle.data
+        newsItem.newsNote = form.newsNote.data
+        newsItem.newsLink = form.newsLink.data
+        newsItem.newsTicker = form.newsTicker.data
+        newsItem.newsDatePosted = form.newsDatePosted.data
+        db.session.commit()
+        flash("Your news item has been updated")
+        return redirect(url_for("home"))
+    elif request.method == "GET":
+        form.newsType.data = newsItem.newsType
+        form.newsTitle.data = newsItem.newsTitle
+        form.newsNote.data = newsItem.newsNote
+        form.newsLink.data = newsItem.newsLink
+        form.newsTicker.data = newsItem.newsTicker
+        form.newsDatePosted.data = newsItem.newsDatePosted
+        return render_template("new_news.html", form=form)
+
+@app.route("/delete_news/<int:id>")
+@login_required
+def delete_news(id):
+    newsItem = newsTable.query.get_or_404(id)
+    if newsItem.author == current_user:
+        db.session.delete(newsItem)
+        db.session.commit()
+        flash("News item successfully deleted")
+        return redirect(url_for("home"))
+    else:
+        flash("User not authorized to delete")
+        return redirect(url_for("home"))
 
 # @app.route("/pressRelease", methods=["POST", "GET"])
 # def pressRelease():

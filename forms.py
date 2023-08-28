@@ -34,6 +34,25 @@ class newTaskForm(FlaskForm):
     taskNote = TextAreaField("Note")
     submit = SubmitField("Add Task")
 
+class newContentForm(FlaskForm):
+    dateMade = DateField("Date of Content Creation", validators=[DataRequired()])
+    contentType = StringField("Type", validators=[DataRequired()])
+    contentCreator = StringField("Creator", validators=[DataRequired()])
+    contentLink = StringField("Link", validators=[DataRequired()])
+    contentRating = IntegerField("Rating", validators=[DataRequired()])
+    contentSubject = StringField("Subject", validators=[DataRequired()])
+    contentNote = TextAreaField("Note")
+    submit = SubmitField("Add Content")
+
+class newNewsForm(FlaskForm):
+    newsType = StringField("Type", validators=[DataRequired()])
+    newsTitle = StringField("Title", validators=[DataRequired()])
+    newsNote = TextAreaField("Note")
+    newsLink = StringField("Link", validators=[DataRequired()])
+    newsTicker = StringField("Ticker", validators=[DataRequired()])
+    newsDatePosted = DateField("Date of Event", validators=[DataRequired()])
+    submit = SubmitField("Add News")
+
 # class pressReleaseForm(FlaskForm):
 #     contentDate = DateField("Date of Content Creation", validators=[DataRequired()])
 #     company = StringField("Company Name", validators=[DataRequired()])
