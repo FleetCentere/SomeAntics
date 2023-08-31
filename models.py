@@ -22,7 +22,8 @@ class userTable(UserMixin, db.Model):
     news = db.relationship("newsTable", backref="author", lazy="dynamic")
     events = db.relationship("eventTable", backref="author", lazy="dynamic")
     contents = db.relationship("contentTable", backref="author", lazy="dynamic")
-    people = db.relationship("peopleTable", backref="author", lazy="dynamic")
+    peopleEvents = db.relationship("peopleEvents", backref="author", lazy="dynamic")
+    persons = db.relationship("personsTable", backref="author", lazy="dynamic")
     exercise = db.relationship("exerciseTable", backref="author", lazy="dynamic")
     weight = db.relationship("weightTable", backref="author", lazy="dynamic")
     company = db.relationship("companyTable", backref="author", lazy="dynamic")
@@ -76,7 +77,7 @@ class eventTable(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
 
     def __repr__(self):
-        return f"{self.eventType} on {self.eventDate}"
+        return f"{self.eventType} on {self.eventDatetime}"
 
 class contentTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -93,16 +94,27 @@ class contentTable(db.Model):
     def __repr__(self):
         return f"{self.contentType} by {self.contentCreator} about {self.contentSubject}"
 
-class peopleTable(db.Model):
+class peopleEvents(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    person = db.Column(db.String(50))
     place = db.Column(db.String(100))
     date = db.Column(db.Date)
     note = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
+    person_id = db.Column(db.Integer, db.ForeignKey("persons_table.id"))
 
     def __repr__(self):
         return f"{self.person} on {self.date}"
+
+class personsTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
+    person = db.Column(db.String(50))
+    personBackground = db.Column(db.Text)
+    personBirthday = db.Column(db.Date)
+    peopleEvents = db.Relationship("peopleEvents", backref="events", lazy="dynamic")
+
+    def __repr__(self):
+        return f"{self.person}"
 
 class exerciseTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -124,3 +136,7 @@ class companyTable(db.Model):
     companyPost = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
     news_id = db.Column(db.Integer, db.ForeignKey("news_table.id"))
+
+class ideaTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    note = db.Column(db.Text)

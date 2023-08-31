@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, DateField, SubmitField, IntegerField, BooleanField, TextAreaField
+from wtforms import StringField, PasswordField, DateField, SubmitField, IntegerField, BooleanField, TextAreaField, FloatField, DateTimeField
 from wtforms.validators import DataRequired, NumberRange, Email, EqualTo, ValidationError
 from ProjectFiles.models import userTable
 
@@ -26,6 +26,12 @@ class RegistrationForm(FlaskForm):
         user = userTable.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError("Please use a different email address")
+
+class editProfileForm(FlaskForm):
+    password_check = PasswordField("Confirm Prior Password")
+    password = PasswordField("Password", validators=[DataRequired()])
+    confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password")])
+    submit = SubmitField("Register")
 
 class newTaskForm(FlaskForm):
     taskCategory = StringField("Category", validators=[DataRequired()])
@@ -53,32 +59,16 @@ class newNewsForm(FlaskForm):
     newsDatePosted = DateField("Date of Event", validators=[DataRequired()])
     submit = SubmitField("Add News")
 
-# class pressReleaseForm(FlaskForm):
-#     contentDate = DateField("Date of Content Creation", validators=[DataRequired()])
-#     company = StringField("Company Name", validators=[DataRequired()])
-#     ticker = StringField("Company Ticker", default="na")
-#     link = StringField("Link", validators=[DataRequired()])
-#     product = StringField("Content Product", validators=[DataRequired()])
-#     submit = SubmitField("Submit")
+class newEventForm(FlaskForm):
+    eventType = StringField("Type", validators=[DataRequired()])
+    eventDatetime = DateTimeField("Event Date and Time")
+    eventLocation = StringField("Location", validators=[DataRequired()])
+    eventNote = TextAreaField("Note", validators=[DataRequired()])
+    exerciseDuration = IntegerField("Duration (min)")
+    exerciseType = StringField("Type of Exercise")
+    exerciseDistance = FloatField("Exericse Distance")
+    submit = SubmitField("Add Event")
 
-# class ideaForm(FlaskForm):
-#     category = StringField("Category", validators=[DataRequired()])
-#     link = StringField("Link", validators=[DataRequired()])
-#     note = StringField("Note", validators=[DataRequired()])
-#     status = StringField("Status")
-#     submit = SubmitField("Submit")
-
-# class contentForm(FlaskForm):
-#     dateMade = DateField("Date of Content Creation", validators=[DataRequired()])
-#     contentType = StringField("Type of Content", validators=[DataRequired()])
-#     contentCreator = StringField("Content Creator", validators=[DataRequired()])
-#     contentLink = StringField("Link")
-#     contentNote = StringField("Note about content")
-#     contentRating = IntegerField("Rating of content")
-#     submit = SubmitField("Submit")
-
-# class companyForm(FlaskForm):
-#     ticker = StringField("Company Ticker", validators=[DataRequired()])
-#     startYear = IntegerField("Start Year", validators=[DataRequired(), NumberRange(2018, 2023)])
-#     holderCount = IntegerField("Number of Holders", validators=[DataRequired(), NumberRange(1, 100)])
-#     submit = SubmitField("Submit")
+class ideasForm(FlaskForm):
+    ideaNote = TextAreaField("Note", validators=[DataRequired()])
+    submit = SubmitField("Add Note")

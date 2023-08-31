@@ -5,8 +5,8 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, newTaskForm, newContentForm, newNewsForm # pressReleaseForm, companyForm, contentForm, ideaForm
-from ProjectFiles.models import userTable, taskTable, newsTable, eventTable, contentTable, peopleTable, exerciseTable, weightTable
+from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm # pressReleaseForm, companyForm, contentForm, ideaForm
+from ProjectFiles.models import userTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, weightTable, peopleEvents, personsTable, ideaTable
 from ProjectFiles.stockPrice import sp500
 
 @app.route("/")
@@ -17,13 +17,14 @@ def home():
         tasks = taskTable.query.filter_by(user_id=current_user.id).limit(n).all()
         contents = contentTable.query.filter_by(user_id=current_user.id).limit(n).all()
         newsItems = newsTable.query.filter_by(user_id=current_user.id).limit(n).all()
-        time = datetime.now()  
-        displayTime = time.strftime("%I:%M %p")
+        events = eventTable.query.filter_by(user_id=current_user.id).limit(n).all()
+        current = datetime.now()
         sp = sp500()
         sp = f"{sp:.2f}"
-        if displayTime.startswith("0"):
-            displayTime = displayTime[1:]
-        return render_template("home.html", tasks=tasks, contents=contents, newsItems=newsItems, time=displayTime, sp=sp)
+        user = current_user
+        # if displayTime.startswith("0"):
+        #     displayTime = displayTime[1:]
+        return render_template("home.html", user=user, tasks=tasks, contents=contents, newsItems=newsItems, events=events, current=current, sp=sp)
     return redirect(url_for("login"))
 
 @app.route("/login", methods=["GET", "POST"])
@@ -62,10 +63,53 @@ def logout():
     logout_user()
     return redirect(url_for("login"))
 
+@app.route("/ideas", methods=["GET", "POST"])
+def ideas():
+    form = ideasForm()
+    ideas = ideaTable.query.all()
+    if form.validate_on_submit():
+        ideaNote = form.ideaNote.data
+        idea = ideaTable(note=ideaNote)
+        db.session.add(idea)
+        db.session.commit()
+        ideas = ideaTable.query.all()
+        return render_template("ideas.html", form=form, ideas=ideas, user=current_user)    
+    return render_template("ideas.html", form=form, ideas=ideas, user=current_user)
+
+@app.route("/delete_idea/<int:id>")
+def delete_idea(id):
+    idea = ideaTable.query.get_or_404(id)
+    db.session.delete(idea)
+    db.session.commit()
+    flash("Task successfully deleted")
+    return redirect(url_for("ideas"))
+    
+@app.route("/edit_profile/<int:id>", methods=["GET", "POST"])
+@login_required
+def edit_profile(id):
+    form = editProfileForm()
+    if current_user.id != id:
+        flash("You are not authorized to make changes to that account")
+        return redirect(url_for("home"))
+    if request.method == "GET":
+        return render_template("register.html", form=form, user=current_user)
+    elif form.validate_on_submit():
+        if current_user.check_password(form.password_check.data):
+            current_user.set_password(form.password.data)
+            db.session.commit()
+            flash("Your password has been updated")
+            return redirect(url_for("home"))
+        else:
+            flash("Incorrect password validation")
+            return render_template("register.html", form=form, user=current_user)
+    else:
+        flash("Incorrect password validation")
+        return render_template("register.html", form=form, user=current_user)
+
 @app.route("/about")
 @login_required
 def about():
-    return render_template("about.html")
+    return render_template("about.html", user=current_user)
 
 @app.route("/new_task", methods=["POST", "GET"])
 @login_required
@@ -80,7 +124,7 @@ def new_task():
         db.session.add(task)
         db.session.commit()
         return redirect(url_for("home"))
-    return render_template("new_task.html", form=form)
+    return render_template("new_task.html", form=form, user=current_user)
 
 @app.route("/update_task/<int:id>", methods=["POST", "GET"])
 @login_required
@@ -103,7 +147,7 @@ def update_task(id):
         form.taskName.data = task.taskName
         form.taskLink.data = task.taskLink
         form.taskNote.data = task.taskNote
-        return render_template("new_task.html", form=form)
+        return render_template("new_task.html", form=form, user=current_user)
 
 @app.route("/delete_task/<int:id>")
 @login_required
@@ -134,7 +178,7 @@ def new_content():
         db.session.add(newContent)
         db.session.commit()
         return redirect(url_for("home"))
-    return render_template("new_content.html", form=form)
+    return render_template("new_content.html", form=form, user=current_user)
 
 @app.route("/update_content/<int:id>", methods=["POST", "GET"])
 @login_required
@@ -163,7 +207,7 @@ def update_content(id):
         form.contentRating.data = contentItem.contentRating
         form.contentSubject.data = contentItem.contentSubject
         form.contentNote.data = contentItem.contentNote
-        return render_template("new_content.html", form=form)
+        return render_template("new_content.html", form=form, user=current_user)
 
 @app.route("/delete_content/<int:id>")
 @login_required
@@ -194,7 +238,7 @@ def new_news():
         db.session.add(newNews)
         db.session.commit()
         return redirect(url_for("home"))
-    return render_template("new_news.html", form=form)
+    return render_template("new_news.html", form=form, user=current_user)
 
 @app.route("/update_news/<int:id>", methods=["POST", "GET"])
 @login_required
@@ -221,7 +265,7 @@ def update_news(id):
         form.newsLink.data = newsItem.newsLink
         form.newsTicker.data = newsItem.newsTicker
         form.newsDatePosted.data = newsItem.newsDatePosted
-        return render_template("new_news.html", form=form)
+        return render_template("new_news.html", form=form, user=current_user)
 
 @app.route("/delete_news/<int:id>")
 @login_required
@@ -231,6 +275,76 @@ def delete_news(id):
         db.session.delete(newsItem)
         db.session.commit()
         flash("News item successfully deleted")
+        return redirect(url_for("home"))
+    else:
+        flash("User not authorized to delete")
+        return redirect(url_for("home"))
+
+#### Events ####
+@app.route("/new_event", methods=["POST", "GET"])
+@login_required
+def new_event():
+    form = newEventForm()
+    if form.validate_on_submit():
+        newEvent = eventTable(eventType=form.eventType.data, 
+                              eventDatetime=form.eventDatetime.data, 
+                              eventLocation=form.eventLocation.data, 
+                              eventNote=form.eventNote.data, 
+                              author=current_user)
+        exerciseEvent = exerciseTable(exerciseDuration=form.exerciseDuration.data,
+                                      exerciseType=form.exerciseType.data,
+                                      exerciseDistance=form.exerciseDistance.data,
+                                      event=newEvent,
+                                      author=current_user)
+        db.session.add(newEvent)
+        db.session.add(exerciseEvent)
+        db.session.commit()
+        return redirect(url_for("home"))
+    return render_template("new_event.html", form=form, user=current_user)
+
+@app.route("/update_event/<int:id>", methods=["POST", "GET"])
+@login_required
+def update_event(id):
+    event = eventTable.query.get_or_404(id)
+    if event.author != current_user:
+        flash("You are not authorized to update this item")
+        return redirect(url_for("home"))
+    form = newEventForm()
+    if form.validate_on_submit():
+        event.eventType=form.eventType.data
+        event.eventDatetime=form.eventDatetime.data
+        event.eventLocation=form.eventLocation.data
+        event.eventNote=form.eventNote.data
+
+        exercise = event.exercises.first()
+        exercise.exerciseDuration=form.exerciseDuration.data
+        exercise.exerciseType=form.exerciseType.data
+        exercise.exerciseDistance=form.exerciseDistance.data
+
+        db.session.commit()
+        flash("Your news item has been updated")
+        return redirect(url_for("home"))
+    elif request.method == "GET":
+        form.eventType.data = event.eventType
+        form.eventDatetime.data = event.eventDatetime
+        form.eventLocation.data = event.eventLocation
+        form.eventNote.data = event.eventNote
+
+        exercise = event.exercises.first()
+        if event.exercises:
+            form.exerciseDuration.data = exercise.exerciseDuration
+            form.exerciseType.data = exercise.exerciseType
+            form.exerciseDistance.data = exercise.exerciseDistance
+        return render_template("new_event.html", form=form, user=current_user)
+
+@app.route("/delete_event/<int:id>")
+@login_required
+def delete_event(id):
+    event = eventTable.query.get_or_404(id)
+    if event.author == current_user:
+        db.session.delete(event)
+        db.session.commit()
+        flash("Event successfully deleted")
         return redirect(url_for("home"))
     else:
         flash("User not authorized to delete")
@@ -327,48 +441,3 @@ def delete_news(id):
 #         form.contentRating.data = contentItem.contentRating
 #         contents = Content.query.all()
 #     return render_template("content.html", form=form, contents=contents)
-
-# @app.route("/ideas", methods=["GET", "POST"])
-# def ideas():
-#     form = ideaForm()
-#     ideas = Ideas.query.all()
-#     if form.validate_on_submit():
-#         flash("Your item has been addded", "success")
-#         category = form.category.data
-#         link = form.link.data
-#         note = form.note.data
-#         idea = Ideas(category=category, link=link, note=note, status="New")
-#         db.session.add(idea)
-#         db.session.commit()
-#         ideas = Ideas.query.all()
-#         return render_template("ideas.html", form=form, ideas=ideas)
-#     return render_template("ideas.html", form=form, ideas=ideas)
-
-# @app.route("/delete_idea/<int:id>", methods=["GET", "POST"])
-# def delete_idea(id):
-#     idea=Ideas.query.get_or_404(id)
-#     db.session.delete(idea)
-#     db.session.commit()
-#     ideas = Ideas.query.all()
-#     return render_template("ideas.html", ideas=ideas, form=ideaForm())
-
-# @app.route("/ideas/<int:id>/update", methods=["GET", "POST"])
-# def update_idea(id):
-#     idea = Ideas.query.get_or_404(id)
-#     form = ideaForm()
-#     if form.validate_on_submit():
-#         idea.category = form.category.data
-#         idea.link = form.link.data
-#         idea.note = form.note.data
-#         idea.status = form.status.data
-#         idea.dateEdited = datetime.utcnow().date()
-#         db.session.commit()
-#         ideas = Ideas.query.all()
-#         flash("Your item has been updated", "success")
-#         return render_template("ideas.html", form=form, ideas=ideas)
-#     elif request.method == "GET":
-#         form.category.data = idea.category
-#         form.link.data = idea.link
-#         form.note.data = idea.note
-#         form.status.data = idea.status
-#     return render_template("updateIdea.html", form=form)

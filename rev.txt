@@ -92,3 +92,9 @@ company_facts["facts"][accounting]["RevenueFromContractWithCustomerExcludingAsse
 {'start': '2022-07-01', 'end': '2023-03-31', 'val': 155726000000, 'accn': '0000950170-23-014423', 'fy': 2023, 'fp': 'Q3', 'form': '10-Q', 'filed': '2023-04-25'}
 {'start': '2023-01-01', 'end': '2023-03-31', 'val': 52857000000, 'accn': '0000950170-23-014423', 'fy': 2023, 'fp': 'Q3', 'form': '10-Q', 'filed': '2023-04-25', 'frame': 'CY2023Q1'}
 {'start': '2022-07-01', 'end': '2023-06-30', 'val': 211915000000, 'accn': '0000950170-23-035122', 'fy': 2023, 'fp': 'FY', 'form': '10-K', 'filed': '2023-07-27', 'frame': 'CY2023'}
+
+PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\ProjectFiles> python stockPrice.py
+[Agg(open=175.07, high=176.13, low=173.735, close=175.84, volume=46161959.0, vwap=175.2221, timestamp=1692590400000, transactions=559658, otc=None), 
+Agg(open=177.06, high=177.68, low=176.25, close=177.23, volume=42057245.0, vwap=177.0098, timestamp=1692676800000, transactions=501508, otc=None), 
+Agg(open=178.52, high=181.55, low=178.325, close=181.12, volume=52722752.0, vwap=180.6482, timestamp=1692763200000, transactions=587165, otc=None), 
+Agg(open=180.674, high=181.104, low=176.01, close=176.38, volume=54912798.0, vwap=177.7035, timestamp=1692849600000, transactions=610377, otc=None)]

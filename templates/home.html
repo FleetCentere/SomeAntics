@@ -6,7 +6,8 @@
     <div class="leftSection">
         <h2>Daily Overview</h2>
         <ul>
-            <li>Time: {{ time }}</li><br>
+            <li>Date: {{ current.strftime("%a, %b %d") }}</li><br>
+            <li>Time: {{ current.strftime("%I:%M %p") }}</li><br>
             <li>S&P 500: {{ sp }}</li>
         </ul>
     </div>
@@ -83,7 +84,7 @@
                     <tbody>
                         {% for content in contents %}
                         <tr>
-                            <td>{{ content.dateConsumed }}</td>
+                            <td>{{ content.dateConsumed.strftime("%Y-%m-%d") }}</td>
                             <td>{{ content.contentType }}</td>
                             <td>{{ content.contentCreator }}</td>
                             <td>{{ content.contentSubject }}</td>
@@ -97,7 +98,28 @@
             </div>
             
             <div class="box box4">
-                <h2>Events</h2>
+                <div class="boxTitle"><h2>Events</h2><a href="{{ url_for('new_event') }}" class="addButton">Add Event</a></div>
+                <table class="contentDisplayTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.eventDatetime }}</td>
+                            <td>{{ event.eventType }}</td>
+                            <td>{{ event.eventLocation }}</td>
+                            <td><button class="updateButton" data-update-url="{{ url_for('update_event', id=event.id) }}">Edit</button> / 
+                                <button class="deleteButton" data-delete-url="{{ url_for('delete_event', id=event.id) }}">Delete</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
 
         </div>

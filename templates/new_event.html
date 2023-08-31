@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<form action="" method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <fieldset>
+    <legend>Enter New Event</legend>
+        <p>
+            {{ form.eventType.label }}
+            {{ form.eventType }}<br>
+            {% for error in form.eventType.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.eventDatetime.label }}
+            {{ form.eventDatetime }}<br>
+            {% for error in form.eventDatetime.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.eventLocation.label }}
+            {{ form.eventLocation }}<br>
+            {% for error in form.eventLocation.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.eventNote.label }}
+            {{ form.eventNote }}<br>
+            {% for error in form.eventNote.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        
+        <h3>If an exercise event: </h3>
+        <p>
+            {{ form.exerciseDuration.label }}
+            {{ form.exerciseDuration }}<br>
+            {% for error in form.exerciseDuration.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.exerciseType.label }}
+            {{ form.exerciseType }}<br>
+            {% for error in form.exerciseType.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.exerciseDistance.label }}
+            {{ form.exerciseDistance }}<br>
+            {% for error in form.exerciseDistance.errors %}
+                <span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </fieldset>
+</form>
+
+{% endblock %}

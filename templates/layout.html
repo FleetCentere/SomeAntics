@@ -21,6 +21,7 @@
            <div class="navbar-left">
                 <img src="{{ url_for('static', filename='logo.jpg') }}" class="navbar-logo" alt="Website Logo">
                 <a href="{{ url_for('home') }}" class="navbar-link">Home</a>
+                <a href="{{ url_for('ideas') }}" class="navbar-link">Ideas</a>
                 {# <a href="{{ url_for('pressRelease') }}" class="navbar-link">Press Release</a> #}
                 {# <a href="{{ url_for('events') }}" class="navbar-link">Events</a> #}
                 {# <a href="{{ url_for('people') }}" class="navbar-link">People</a> #}
@@ -36,6 +37,7 @@
                 {% if current_user.is_anonymous %}
                     <a href="{{ url_for('login') }}" class="navbar-link login">Log In</a>
                 {% else %}
+                    <a href="{{ url_for('edit_profile', id=user.id) }}"class="navbar-link">Edit Password</a>
                     <a href="{{ url_for('logout') }}" class="navbar-link logout">Log Out</a>    
                 {% endif %}
                 <a href="{{ url_for('about') }}" class="navbar-link">About</a>

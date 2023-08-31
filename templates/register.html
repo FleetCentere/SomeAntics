@@ -6,6 +6,7 @@
 <form action="" method="post" novalidate>
     {{ form.hidden_tag() }}
 
+    {% if not user %}
     <p>
         {{ form.username.label }}<br>
         {{ form.username }}
@@ -22,6 +23,16 @@
         {% endfor %}
     </p>
 
+    {% endif %}
+    {% if user %}
+        <p>
+            {{ form.password_check.label }}<br>
+            {{ form.password_check }}
+            {% for error in form.password_check.errors %}
+                <br><span class="errorMessage">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+    {% endif %}
     <p>
         {{ form.password.label }}<br>
         {{ form.password }}

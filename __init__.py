@@ -15,7 +15,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL') or \
      'sqlite:///' + os.path.join(basedir, 'app.db')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+
+migrate = Migrate(app, db, render_as_batch=True)
+
 login = LoginManager(app)
 login.login_view = "login"
 
