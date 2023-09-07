@@ -6,6 +6,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='logo.jpg') }}">
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='daily_form.css') }}">
 
     <!-- title of webpage based on if "title" variable is imported from route -->
     {% if title %}
@@ -22,6 +23,8 @@
                 <img src="{{ url_for('static', filename='logo.jpg') }}" class="navbar-logo" alt="Website Logo">
                 <a href="{{ url_for('home') }}" class="navbar-link">Home</a>
                 <a href="{{ url_for('ideas') }}" class="navbar-link">Ideas</a>
+                <a href="{{ url_for('daily') }}" class="navbar-link">Daily</a>
+                <a href="{{ url_for('daily_form') }}" class="navbar-link">Daily Form</a>
                 {# <a href="{{ url_for('pressRelease') }}" class="navbar-link">Press Release</a> #}
                 {# <a href="{{ url_for('events') }}" class="navbar-link">Events</a> #}
                 {# <a href="{{ url_for('people') }}" class="navbar-link">People</a> #}

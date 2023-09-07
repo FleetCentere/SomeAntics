@@ -5,7 +5,7 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm # pressReleaseForm, companyForm, contentForm, ideaForm
+from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm
 from ProjectFiles.models import userTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, weightTable, peopleEvents, personsTable, ideaTable
 from ProjectFiles.stockPrice import sp500
 
@@ -20,12 +20,22 @@ def home():
         events = eventTable.query.filter_by(user_id=current_user.id).limit(n).all()
         current = datetime.now()
         sp = sp500()
-        sp = f"{sp:.2f}"
         user = current_user
         # if displayTime.startswith("0"):
         #     displayTime = displayTime[1:]
         return render_template("home.html", user=user, tasks=tasks, contents=contents, newsItems=newsItems, events=events, current=current, sp=sp)
     return redirect(url_for("login"))
+
+@app.route("/daily", methods=["GET", "POST"])
+@login_required
+def daily():
+    return render_template("daily.html", user=current_user)
+
+@app.route("/daily_form", methods=["GET", "POST"])
+@login_required
+def daily_form():
+    form = dailyForm()
+    return render_template("daily_form.html", user=current_user, form=form)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -75,6 +85,18 @@ def ideas():
         ideas = ideaTable.query.all()
         return render_template("ideas.html", form=form, ideas=ideas, user=current_user)    
     return render_template("ideas.html", form=form, ideas=ideas, user=current_user)
+
+@app.route("/edit_idea<int:id>", methods=["GET", "POST"])
+def edit_idea(id):
+    idea = ideaTable.query.get_or_404(id)
+    form = ideasForm()
+    form.ideaNote.data = idea.note
+    ideas = None
+    if form.validate_on_submit():
+        idea.note = form.ideaNote.data
+        db.session.commit()
+        return redirect(url_for("ideas"))
+    return render_template("ideas.html", form=form, ideas=ideas, user=current_user)    
 
 @app.route("/delete_idea/<int:id>")
 def delete_idea(id):

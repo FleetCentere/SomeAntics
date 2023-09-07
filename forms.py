@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, DateField, SubmitField, IntegerField, BooleanField, TextAreaField, FloatField, DateTimeField
-from wtforms.validators import DataRequired, NumberRange, Email, EqualTo, ValidationError
+from wtforms.validators import DataRequired, NumberRange, Email, EqualTo, ValidationError, Optional
 from ProjectFiles.models import userTable
 
 class loginForm(FlaskForm):
@@ -64,11 +64,27 @@ class newEventForm(FlaskForm):
     eventDatetime = DateTimeField("Event Date and Time")
     eventLocation = StringField("Location", validators=[DataRequired()])
     eventNote = TextAreaField("Note", validators=[DataRequired()])
-    exerciseDuration = IntegerField("Duration (min)")
-    exerciseType = StringField("Type of Exercise")
-    exerciseDistance = FloatField("Exericse Distance")
+    exerciseDuration = IntegerField("Duration (min)", validators=[Optional()])
+    exerciseType = StringField("Type of Exercise", validators=[Optional()])
+    exerciseDistance = FloatField("Exericse Distance", validators=[Optional()])
     submit = SubmitField("Add Event")
 
 class ideasForm(FlaskForm):
     ideaNote = TextAreaField("Note", validators=[DataRequired()])
-    submit = SubmitField("Add Note")
+    submit = SubmitField("Idea Note")
+
+class dailyForm(FlaskForm):
+    date = DateField("Date", validators=[DataRequired()])
+    location = StringField("Sleep Location", validators=[DataRequired()])
+    morning = TextAreaField("Morning", validators=[DataRequired()])
+    afternoon = TextAreaField("Afternoon", validators=[DataRequired()])
+    evening = TextAreaField("Evening", validators=[DataRequired()])
+    weight = FloatField("Weight (lbs)", validators=[DataRequired()])
+    journal = TextAreaField("Evening", validators=[DataRequired()])
+    submitPersonal = SubmitField("Submit Personal")
+
+    contentType = StringField("Content Type", validators=[DataRequired()])
+    contentName = StringField("Content Name", validators=[DataRequired()])
+    contentNote = TextAreaField("Content Note", validators=[DataRequired()])
+
+    submitContent = SubmitField("Submit Content")

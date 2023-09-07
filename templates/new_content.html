@@ -6,50 +6,50 @@
     <fieldset>
     <legend>Enter New Content</legend>
         <p>
-            {{ form.dateMade.label }}
-            {{ form.dateMade }}<br>
+            {{ form.dateMade.label(class="form-label") }}
+            {{ form.dateMade(class="form-field") }}<br>
             {% for error in form.dateMade.errors %}
                 <span class="errorMessage">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.contentType.label }}
-            {{ form.contentType }}<br>
+            {{ form.contentType.label(class="form-label")}}
+            {{ form.contentType(class="form-field") }}<br>
             {% for error in form.contentType.errors %}
                 <span class="errorMessage">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.contentCreator.label }}
-            {{ form.contentCreator }}<br>
+            {{ form.contentCreator.label(class="form-label")}}
+            {{ form.contentCreator(class="form-field") }}<br>
             {% for error in form.contentCreator.errors %}
                 <span class="errorMessage">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.contentLink.label }}
-            {{ form.contentLink }}<br>
+            {{ form.contentLink.label(class="form-label")}}
+            {{ form.contentLink(class="form-field") }}<br>
             {% for error in form.contentLink.errors %}
                 <span class="errorMessage">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.contentRating.label }}
-            {{ form.contentRating }}<br>
+            {{ form.contentRating.label(class="form-label")}}
+            {{ form.contentRating(class="form-field") }}<br>
             {% for error in form.contentRating.errors %}
                 <span class="errorMessage">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.contentSubject.label }}
-            {{ form.contentSubject }}<br>
+            {{ form.contentSubject.label(class="form-label")}}
+            {{ form.contentSubject(class="form-field") }}<br>
             {% for error in form.contentSubject.errors %}
                 <span class="errorMessage">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.contentNote.label }}
-            {{ form.contentNote }}<br>
+            {{ form.contentNote.label(class="form-label")}}
+            {{ form.contentNote(class="form-field form-note") }}<br>
             {% for error in form.contentNote.errors %}
                 <span class="errorMessage">[{{ error }}]</span>
             {% endfor %}

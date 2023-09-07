@@ -121,10 +121,6 @@ a:hover {
     margin: 5px;
 }
 
-form {
-    margin: 10px;
-}
-
 .errorMessage {
     color: red;
 }
@@ -170,7 +166,7 @@ form {
 
 .leftSection,
 .rightSection {
-    width: 10%;
+    min-width: 15%;
     padding: 5px;
     border: 2px solid lightgrey;
     margin: 5px;
@@ -178,7 +174,7 @@ form {
 }
 
 .centerSection {
-    width: 80%;
+    width: 85%;
 }
 
 .topSection {
@@ -243,9 +239,37 @@ th {
 
 .taskDisplayTable,
 .contentDisplayTable,
-.newsDisplayTable {
+.newsDisplayTable,
+.eventDisplayTable,
+.ideaTable {
     font-size: 12px;
     padding: 0;
     width: 95%;
     margin: 3px 10px 10px 3px;
+}
+
+/* fieldset {
+    height: 100%;
+} */
+
+legend {
+    font-weight: 800;
+}
+
+.form-label {
+    max-width: 10%;
+}
+
+.form-field {
+    position: absolute;
+    left: 20%;
+    border-radius: 5px;
+    border: 1px solid black;
+    min-width: 10%;
+    margin: 0;
+    padding: 5px;
+}
+
+.form-note {
+    min-height: 100px;
 }
