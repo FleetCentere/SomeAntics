@@ -3,19 +3,19 @@
 
 <form action="" method="post" novalidate>
     {{ form.hidden_tag() }}
-    <fieldset>
+    <fieldset class="login-fieldset">
         <legend>Login</legend>
-        <p>
+        <p class="login-username">
             {{ form.username.label }}<br>
-            {{ form.username }}
+            {{ form.username(class="login-username-field") }}
             {% for error in form.username.errors %}
                 <br><span class="errorMessage">[{{ error }}]</span>
             {% endfor %}
         </p>
     
-        <p>
+        <p class="login-password">
             {{ form.password.label }}<br>
-            {{ form.password }}
+            {{ form.password(class="login-password-field") }}
             {% for error in form.password.errors %}
                 <br><span class="errorMessage">[{{ error }}]</span>
             {% endfor %}

@@ -6,8 +6,9 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='logo.jpg') }}">
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='daily_form.css') }}">
-
+    {% block css %}
+    
+    {% endblock %}
     <!-- title of webpage based on if "title" variable is imported from route -->
     {% if title %}
         <title>{{ title }}</title>

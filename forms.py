@@ -41,12 +41,13 @@ class newTaskForm(FlaskForm):
     submit = SubmitField("Add Task")
 
 class newContentForm(FlaskForm):
+    dateConsumed = DateField("Date of Consumption", validators=[DataRequired()])
     dateMade = DateField("Date of Content Creation", validators=[DataRequired()])
     contentType = StringField("Type", validators=[DataRequired()])
-    contentCreator = StringField("Creator", validators=[DataRequired()])
-    contentLink = StringField("Link", validators=[DataRequired()])
-    contentRating = IntegerField("Rating", validators=[DataRequired()])
-    contentSubject = StringField("Subject", validators=[DataRequired()])
+    contentCreator = StringField("Creator")
+    contentLink = StringField("Link")
+    contentRating = IntegerField("Rating")
+    contentSubject = StringField("Subject")
     contentNote = TextAreaField("Note")
     submit = SubmitField("Add Content")
 
@@ -75,16 +76,16 @@ class ideasForm(FlaskForm):
 
 class dailyForm(FlaskForm):
     date = DateField("Date", validators=[DataRequired()])
-    location = StringField("Sleep Location", validators=[DataRequired()])
-    morning = TextAreaField("Morning", validators=[DataRequired()])
-    afternoon = TextAreaField("Afternoon", validators=[DataRequired()])
-    evening = TextAreaField("Evening", validators=[DataRequired()])
-    weight = FloatField("Weight (lbs)", validators=[DataRequired()])
-    journal = TextAreaField("Evening", validators=[DataRequired()])
+    sleep = StringField("Sleep Location")
+    morning = TextAreaField("Morning")
+    afternoon = TextAreaField("Afternoon")
+    evening = TextAreaField("Evening")
+    weight = FloatField("Weight (lbs)")
+    journal = TextAreaField("Evening")
     submitPersonal = SubmitField("Submit Personal")
 
-    contentType = StringField("Content Type", validators=[DataRequired()])
-    contentName = StringField("Content Name", validators=[DataRequired()])
-    contentNote = TextAreaField("Content Note", validators=[DataRequired()])
+    # contentType = StringField("Content Type", validators=[DataRequired()])
+    # contentName = StringField("Content Name", validators=[DataRequired()])
+    # contentNote = TextAreaField("Content Note", validators=[DataRequired()])
 
     submitContent = SubmitField("Submit Content")

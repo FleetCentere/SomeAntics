@@ -68,6 +68,20 @@ h1, h2 {
     color: white;
 }
 
+.login-fieldset {
+    max-width: 500px;
+}
+
+.login-username,
+.login-password {
+    width: 80%;
+}
+
+.login-username-field,
+.login-password-field {
+    width: 200px;
+}
+
 .logout {
     background-color: lightpink; 
 }
@@ -247,10 +261,6 @@ th {
     width: 95%;
     margin: 3px 10px 10px 3px;
 }
-
-/* fieldset {
-    height: 100%;
-} */
 
 legend {
     font-weight: 800;

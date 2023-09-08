@@ -210,6 +210,16 @@ dict_keys(['users', 'ideas', 'press_releases', 'events', 'content', 'people'])
 [<User Andrew>, <User Ben>, <User zkxq4jw>]
 
 -----
+delete migrations folder
+(venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> flask shell
+Python 3.11.5 (tags/v3.11.5:cce6ba9, Aug 24 2023, 14:38:34) [MSC v.1936 64 bit (AMD64)] on win32
+App: ProjectFiles
+Instance: C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\instance
+>>> from sqlalchemy import text
+>>> db.session.execute(text("DROP TABLE alembic_version")) 
+<sqlalchemy.engine.cursor.CursorResult object at 0x0000026A85034210>
+
+-----
 
 @login.user_loader
 def load_user(id):

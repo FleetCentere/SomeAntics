@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='content_form.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="content-form">
+        <form action="" method="POST" autocomplete="off" novalidate>
+            {{ form.hidden_tag() }}
+            <fieldset>
+                <legend>Content Item</legend>
+
+                <div class="form-group">
+                    <label for="dateConsumed">Date Consumed</label>
+                    {{ form.dateConsumed(class="form-control", id="dateConsumed") }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="dateMade">Date Made</label>
+                    {{ form.dateMade(class="form-control", id="dateMade") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="contentType"> Type</label>
+                    {{ form.contentType(class="form-control", id="contentType") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="contentCreator">Creator</label>
+                    {{ form.contentCreator(class="form-control", id="contentCreator") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="contentLink">Link</label>
+                    {{ form.contentLink(class="form-control", id="contentLink") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="contentRating">Rating</label>
+                    {{ form.contentRating(class="form-control", id="contentRating") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="contentSubject">Subject</label>
+                    {{ form.contentSubject(class="form-control", id="contentSubject") }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="contentNote">Note</label>
+                    {{ form.contentNote(class="form-control", id="contentNote") }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit Content</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div>
+        <h4>Recent contents added</h4>
+        <ul>
+        {% for content in contents %}
+            <li>{{ content.contentType }}, {{ content.contentCreator }}</li>
+        {% endfor %}
+        </ul>
+        <br>
+        
+        <h4>Categories of content items</h4>
+        <ul>
+        {% for category in categories %}
+            <li>{{ category }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

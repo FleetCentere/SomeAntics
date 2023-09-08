@@ -1,8 +1,24 @@
 {% extends "layout.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='daily_form.css') }}">
+{% endblock %}
+
 {% block content %}
 
 <div class="daily-page">
     <div class="daily-left">
+        <fieldset class="daily-fieldset-bullets">
+            <legend>Daily Overview</legend>
+            <ul class="daily-bullets">
+                <li><strong>Date:</strong> {{ displayDay }}</li><br>
+                <li><strong>Time:</strong> {{ displayTime }}</li><br>
+                <li><strong>S&P 500:</strong> {{ sp }}</li>
+            </ul>
+            <div> </div>
+        </fieldset>
+    </div>
+    
+    <div class="daily-left-center">
         <form action="" method="POST" autocomplete="off" novalidate>
             {{ form.hidden_tag() }}
             <fieldset>
@@ -19,8 +35,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="location">Sleep Location:</label>
-                    {{ form.location(class="form-control", id="location") }}
+                    <label for="sleep">Sleep Location:</label>
+                    {{ form.sleep(class="form-control", id="sleep") }}
                 </div>
 
                 <div class="form-group">
@@ -48,18 +64,18 @@
         </form>
     </div>
 
-    <div class="daily-center">
+    <div class="daily-right-center">
         <fieldset>
-            <legend>Daily Tasks</legend>
+            <legend>Tracker</legend>
         </fieldset>
     </div>
 
     <div class="daily-right">
-        <fieldset class="right-fieldset">
+        <fieldset class="daily-fieldset">
             <legend>Daily Categories</legend>
                 <div class="category-button">
                     <!-- <div class="form-category">Content</div> -->
-                    <button class="form-button"><a href="#">Add Content</a></button>
+                    <button class="form-button"><a href="{{url_for('daily_content') }}" >Add Content</a></button>
                 </div>
 
                 <div class="category-button">
@@ -75,6 +91,11 @@
                 <div class="category-button">
                     <!-- <div class="form-category">Ideas</div> -->
                     <button class="form-button"><a href="{{ url_for('ideas') }}">Add Idea</a></button>
+                </div>
+
+                <div class="category-button">
+                    <!-- <div class="form-category">Ideas</div> -->
+                    <button class="form-button"><a href="#">Add Webpage Idea</a></button>
                 </div>
         </fieldset>
     </div>

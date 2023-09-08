@@ -24,9 +24,8 @@ class userTable(UserMixin, db.Model):
     contents = db.relationship("contentTable", backref="author", lazy="dynamic")
     peopleEvents = db.relationship("peopleEvents", backref="author", lazy="dynamic")
     persons = db.relationship("personsTable", backref="author", lazy="dynamic")
-    exercise = db.relationship("exerciseTable", backref="author", lazy="dynamic")
-    weight = db.relationship("weightTable", backref="author", lazy="dynamic")
-    company = db.relationship("companyTable", backref="author", lazy="dynamic")
+    exercises = db.relationship("exerciseTable", backref="author", lazy="dynamic")
+    days = db.relationship("dayTable", backref="author", lazy="dynamic")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -34,6 +33,21 @@ class userTable(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
     def __repr__(self):
         return f"<User {self.username}>"
+
+class dayTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False)
+    weight = db.Column(db.Float)
+    sleep = db.Column(db.String(50))
+    morning = db.Column(db.Text)
+    afternoon = db.Column(db.Text)
+    evening = db.Column(db.Text)
+    journal = db.Column(db.Text)
+    events = db.relationship("eventTable", backref="day", lazy="dynamic")
+    contents = db.relationship("contentTable", backref="day", lazy="dynamic")
+    news = db.relationship("newsTable", backref="day", lazy="dynamic")
+    exercises = db.relationship("exerciseTable", backref="day", lazy="dynamic")
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_day"))
 
 class taskTable(db.Model):
     # tasks and items to do including personal, content to read
@@ -43,9 +57,9 @@ class taskTable(db.Model):
     taskLink = db.Column(db.String(200))
     taskNote = db.Column(db.Text)
     taskStatus = db.Column(db.String(50), default="New")
-    dateEntered = db.Column(db.Date, default=datetime.utcnow)
+    dateEntered = db.Column(db.Date, default=datetime.now())
     dateEdited = db.Column(db.Date, default=None, nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_task"))
 
     def __repr__(self):
         return f"{self.taskName} on {self.dateEntered}"
@@ -59,9 +73,9 @@ class newsTable(db.Model):
     newsLink = db.Column(db.String(200))
     newsTicker = db.Column(db.String(10))
     newsDatePosted = db.Column(db.Date)
-    newsDateEntered = db.Column(db.Date, default=datetime.utcnow)
-    company = db.relationship("companyTable", backref="news", lazy="dynamic")
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
+    newsDateEntered = db.Column(db.Date, default=datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_news"))
+    day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_news"))
     
     def __repr__(self):
         return f"{self.newsType}: {self.newsTitle} on {self.newsDatePosted}"
@@ -70,18 +84,18 @@ class eventTable(db.Model):
     # for events like exercise, meetings, golf
     id = db.Column(db.Integer, primary_key=True)
     eventType = db.Column(db.String(50))
-    eventDatetime = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    eventDatetime = db.Column(db.DateTime, default=datetime.now(), index=True)
     eventLocation = db.Column(db.String(50))
     eventNote = db.Column(db.Text)
-    exercises = db.relationship("exerciseTable", backref="event", lazy="dynamic")
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_event"))
+    day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_event"))
 
     def __repr__(self):
         return f"{self.eventType} on {self.eventDatetime}"
 
 class contentTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    dateConsumed = db.Column(db.Date, default=datetime.utcnow, index=True)
+    dateConsumed = db.Column(db.Date)
     dateMade = db.Column(db.Date)
     contentType = db.Column(db.String(50)) # podcast, movies, shows, youtube, articles
     contentCreator = db.Column(db.String(100))
@@ -89,7 +103,8 @@ class contentTable(db.Model):
     contentRating = db.Column(db.Integer)
     contentSubject = db.Column(db.String(200))
     contentNote = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_content"))
+    day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_content"))
 
     def __repr__(self):
         return f"{self.contentType} by {self.contentCreator} about {self.contentSubject}"
@@ -99,15 +114,15 @@ class peopleEvents(db.Model):
     place = db.Column(db.String(100))
     date = db.Column(db.Date)
     note = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
-    person_id = db.Column(db.Integer, db.ForeignKey("persons_table.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_people"))
+    person_id = db.Column(db.Integer, db.ForeignKey("persons_table.id", name="fk_persons_event"))
 
     def __repr__(self):
         return f"{self.person} on {self.date}"
 
 class personsTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_persons"))
     person = db.Column(db.String(50))
     personBackground = db.Column(db.Text)
     personBirthday = db.Column(db.Date)
@@ -118,24 +133,11 @@ class personsTable(db.Model):
 
 class exerciseTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_exercise"))
+    day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_exercise"))
     exerciseDuration = db.Column(db.Integer)
     exerciseType = db.Column(db.String(50))
     exerciseDistance = db.Column(db.Float)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
-    event_id = db.Column(db.Integer, db.ForeignKey("event_table.id"))
-    
-class weightTable(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    weightDate = db.Column(db.Date, default=datetime.utcnow, index=True)
-    weight = db.Column(db.Float)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
-
-class companyTable(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    ticker = db.Column(db.String(10))
-    companyPost = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id"))
-    news_id = db.Column(db.Integer, db.ForeignKey("news_table.id"))
 
 class ideaTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)

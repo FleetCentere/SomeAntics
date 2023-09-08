@@ -1,12 +1,12 @@
 from flask import Flask, render_template, url_for, redirect, request, flash
 from flask_login import current_user, login_user, logout_user, login_required
-from datetime import datetime
+from datetime import datetime, date
 from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
 from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm
-from ProjectFiles.models import userTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, weightTable, peopleEvents, personsTable, ideaTable
+from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, peopleEvents, personsTable, ideaTable
 from ProjectFiles.stockPrice import sp500
 
 @app.route("/")
@@ -19,23 +19,91 @@ def home():
         newsItems = newsTable.query.filter_by(user_id=current_user.id).limit(n).all()
         events = eventTable.query.filter_by(user_id=current_user.id).limit(n).all()
         current = datetime.now()
+        displayTime = current.strftime("%I:%M %p")
+        displayDay = f"{current.strftime('%A')} {current.month}/{current.day}/{current.year}"
         sp = sp500()
         user = current_user
-        # if displayTime.startswith("0"):
-        #     displayTime = displayTime[1:]
-        return render_template("home.html", user=user, tasks=tasks, contents=contents, newsItems=newsItems, events=events, current=current, sp=sp)
+        if displayTime.startswith("0"):
+            displayTime = displayTime[1:]
+        return render_template("home.html", user=user, tasks=tasks, contents=contents, newsItems=newsItems, events=events, displayTime=displayTime, displayDay=displayDay, sp=sp)
     return redirect(url_for("login"))
-
-@app.route("/daily", methods=["GET", "POST"])
-@login_required
-def daily():
-    return render_template("daily.html", user=current_user)
 
 @app.route("/daily_form", methods=["GET", "POST"])
 @login_required
 def daily_form():
     form = dailyForm()
-    return render_template("daily_form.html", user=current_user, form=form)
+    current = datetime.now()
+    displayTime = current.strftime("%I:%M %p")
+    if displayTime.startswith("0"):
+        displayTime = displayTime[1:]
+    displayDay = f"{current.strftime('%A')[:3]} {current.month}/{current.day}/{current.year}"
+    sp = sp500()
+    if request.method == "GET":
+        time = datetime.now()
+        today = time.date()
+        todayEntry = dayTable.query.filter_by(date=today, user_id=current_user.id).first()
+        if todayEntry == None:
+            return render_template("daily_form.html", user=current_user, form=form, displayTime=displayTime, displayDay=displayDay, sp=sp)
+        else:
+            form.date.data = todayEntry.date
+            form.weight.data = todayEntry.weight
+            form.sleep.data = todayEntry.sleep
+            form.morning.data = todayEntry.morning
+            form.afternoon.data = todayEntry.afternoon
+            form.evening.data = todayEntry.evening
+            form.journal.data = todayEntry.journal
+            return render_template("daily_form.html", user=current_user, form=form, displayTime=displayTime, displayDay=displayDay, sp=sp)
+    if form.validate_on_submit():
+        # collect input
+        date = form.date.data
+        weight = form.weight.data
+        sleep = form.sleep.data
+        morning = form.morning.data
+        afternoon = form.afternoon.data
+        evening = form.evening.data
+        journal = form.journal.data
+
+        # add to day table
+        time = datetime.now()
+        today = time.date()
+        todayEntry = dayTable.query.filter_by(date=today, user_id=current_user.id).first()
+        if todayEntry == None:
+            newEntry = dayTable(date=date, weight=weight, sleep=sleep, morning=morning, afternoon=afternoon, evening=evening, journal=journal, author=current_user)
+            db.session.add(newEntry)
+            flash("Your daily items have been submitted")
+        else:
+            todayEntry.weight = form.weight.data
+            todayEntry.sleep = form.sleep.data
+            todayEntry.morning = form.morning.data
+            todayEntry.afternoon = form.afternoon.data
+            todayEntry.evening = form.evening.data
+            todayEntry.journal = form.journal.data
+            flash("Your daily items have been updated")
+        db.session.commit()
+        return redirect(url_for("daily_form"))
+
+@app.route("/daily_content", methods=["GET", "POST"])
+@login_required
+def daily_content():
+    # generate list of content categories
+    # generate most recent content items submitted
+    n = 10
+    form = newContentForm()
+    contents = contentTable.query.filter_by(user_id=current_user.id).limit(n).all()
+    categories = db.session.query(contentTable.contentType).distinct().all()
+    if form.validate_on_submit():
+        day = dayTable.query.filter_by(date=form.dateConsumed.data).first()
+        newContent = contentTable(dateConsumed=form.dateConsumed.data, dateMade=form.dateMade.data, contentType=form.contentType.data, contentCreator=form.contentCreator.data, contentLink=form.contentLink.data, contentRating=form.contentRating.data, contentSubject=form.contentSubject.data, contentNote=form.contentNote.data, author=current_user, day=day)
+        db.session.add(newContent)
+        db.session.commit()
+        flash("Your content has been added")
+        return redirect(url_for("daily_content"))
+    return render_template("daily_content.html", user=current_user, form=form, contents=contents, categories=categories)
+
+@app.route("/daily")
+@login_required
+def daily():
+    return render_template("daily.html", user=current_user)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -51,6 +119,7 @@ def login():
         next_page = request.args.get("next")
         if not next_page or url_parse(next_page).netloc != "":
             next_page = url_for("home")
+        flash(f"You are logged in as {current_user.username}")
         return redirect(next_page)
     return render_template("login.html", form=form)
 
@@ -127,11 +196,6 @@ def edit_profile(id):
     else:
         flash("Incorrect password validation")
         return render_template("register.html", form=form, user=current_user)
-
-@app.route("/about")
-@login_required
-def about():
-    return render_template("about.html", user=current_user)
 
 @app.route("/new_task", methods=["POST", "GET"])
 @login_required
@@ -372,94 +436,8 @@ def delete_event(id):
         flash("User not authorized to delete")
         return redirect(url_for("home"))
 
-# @app.route("/pressRelease", methods=["POST", "GET"])
-# def pressRelease():
-#     pressReleaseList = None
-#     form = pressReleaseForm()
-#     if form.validate_on_submit():
-#         contentDate = form.contentDate.data
-#         company = form.company.data
-#         ticker = form.ticker.data
-#         link = form.link.data
-#         product = form.product.data
-#         pressReleaseList = {"contentDate": contentDate, "company": company, "ticker": ticker, "link": link}
-#         # entry for date/time of the post itself
-#         pressRelease = pressReleases(company=company, ticker=ticker, link=link, product=product, datePosted=contentDate)
-#         db.session.add(pressRelease)
-#         db.session.commit()
-#         return render_template("pressRelease.html", pressReleaseList=pressReleaseList)
-#     return render_template("pressRelease.html", form=form)
-
-# @app.route("/events")
-# def events():
-#     return render_template("events.html")
-
-# @app.route("/people")
-# def people():
-#     return render_template("people.html")
-
-# @app.route("/companies", methods=["GET", "POST"])
-# def companies():
-#     companyInfo = None
-#     form = companyForm()
-#     if form.validate_on_submit():
-#         ticker = form.ticker.data
-#         startYear = form.startYear.data
-#         holderCount = form.holderCount.data
-#         companyName, financials, years = finSearch(ticker, startYear)
-#         holderTable, last_row, CUSIP = holderSearch(ticker, holderCount)
-#         companyInfo = {"companyName": companyName, "ticker": ticker}
-#         return render_template("companies.html", companyInfo=companyInfo, financials=financials, years=years, holderTable=holderTable, last_row=last_row)
-#     return render_template("companies.html", form=form, companyInfo=companyInfo)
-
-# @app.route("/content", methods=["GET", "POST"])
-# def content():
-#     form = contentForm()
-#     contents = Content.query.all()
-#     if form.validate_on_submit():
-#         dateMade = form.dateMade.data
-#         contentType = form.contentType.data
-#         contentCreator = form.contentCreator.data
-#         contentLink = form.contentLink.data
-#         contentNote = form.contentNote.data
-#         contentRating = form.contentRating.data
-#         # contentList = {"contentDate": contentDate, "ContentType": contentType, "creator": creator, "link": link}
-#         contentItem = Content(dateMade=dateMade, contentType=contentType, contentLink=contentLink, contentCreator=contentCreator, contentNote=contentNote, contentRating=contentRating)
-#         db.session.add(contentItem)
-#         db.session.commit()
-#         contents = Content.query.all()
-#         return render_template("content.html", form=form, contents=contents)
-#     return render_template("content.html", form=form, contents=contents)
-
-# @app.route("/delete_content/<int:id>", methods=["GET", "POST"])
-# def delete_content(id):
-#     contentItem=Content.query.get_or_404(id)
-#     db.session.delete(contentItem)
-#     db.session.commit()
-#     contents = Content.query.all()
-#     return render_template("content.html", form=contentForm, contents=contents)
-
-# @app.route("/content/<int:id>/update", methods=["GET", "POST"])
-# def update_content(id):
-#     contentItem = Content.query.get_or_404(id)
-#     form = contentForm()
-#     if form.validate_on_submit():
-#         contentItem.dateMade = form.dateMade.data
-#         contentItem.contentType = form.contentType.data
-#         contentItem.contentCreator = form.contentCreator.data
-#         contentItem.contentLink = form.contentLink.data
-#         contentItem.contentNote = form.contentNote.data
-#         contentItem.contentRating = form.contentRating.data
-#         db.session.commit()
-#         contents = Content.query.all()
-#         flash("Your content has been updated", "success")
-#         return render_template("content.html", form=form, contents=contents)
-#     elif request.method == "GET":
-#         form.dateMade.data = contentItem.dateMade
-#         form.contentType.data = contentItem.contentType
-#         form.contentCreator.data = contentItem.contentCreator
-#         form.contentLink.data = contentItem.contentLink
-#         form.contentNote.data = contentItem.contentNote
-#         form.contentRating.data = contentItem.contentRating
-#         contents = Content.query.all()
-#     return render_template("content.html", form=form, contents=contents)
+# About Page
+@app.route("/about")
+@login_required
+def about():
+    return render_template("about.html", user=current_user)
