@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, request, flash
 from flask_login import current_user, login_user, logout_user, login_required
-from datetime import datetime, date
+from sqlalchemy import desc
+from datetime import datetime, date, timedelta
 from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
@@ -31,6 +32,16 @@ def home():
 @app.route("/daily_form", methods=["GET", "POST"])
 @login_required
 def daily_form():
+    n = 20
+    latest_date = datetime.now() - timedelta(days=n)
+    days = db.session.query(dayTable).filter(dayTable.date >= latest_date)
+    days = days.order_by(desc(dayTable.date)).all()
+    counts_dict = {}
+    for day in days:
+        counts_dict[day] = {"exercise": db.session.query(exerciseTable).filter(exerciseTable.day_id == day.id).filter(exerciseTable.user_id == current_user.id).count(),
+                            "contents": db.session.query(contentTable).filter(contentTable.day_id == day.id).filter(contentTable.user_id == current_user.id).count(),
+                            "events": db.session.query(eventTable).filter(eventTable.day_id == day.id).filter(eventTable.user_id == current_user.id).count(),
+                            "news": db.session.query(newsTable).filter(newsTable.day_id == day.id).filter(newsTable.user_id == current_user.id).count()}
     form = dailyForm()
     current = datetime.now()
     displayTime = current.strftime("%I:%M %p")
@@ -43,7 +54,7 @@ def daily_form():
         today = time.date()
         todayEntry = dayTable.query.filter_by(date=today, user_id=current_user.id).first()
         if todayEntry == None:
-            return render_template("daily_form.html", user=current_user, form=form, displayTime=displayTime, displayDay=displayDay, sp=sp)
+            return render_template("daily_form.html", counts_dict=counts_dict, days=days, user=current_user, form=form, displayTime=displayTime, displayDay=displayDay, sp=sp)
         else:
             form.date.data = todayEntry.date
             form.weight.data = todayEntry.weight
@@ -52,7 +63,7 @@ def daily_form():
             form.afternoon.data = todayEntry.afternoon
             form.evening.data = todayEntry.evening
             form.journal.data = todayEntry.journal
-            return render_template("daily_form.html", user=current_user, form=form, displayTime=displayTime, displayDay=displayDay, sp=sp)
+            return render_template("daily_form.html", counts_dict=counts_dict, days=days, user=current_user, form=form, displayTime=displayTime, displayDay=displayDay, sp=sp)
     if form.validate_on_submit():
         # collect input
         date = form.date.data
@@ -64,9 +75,7 @@ def daily_form():
         journal = form.journal.data
 
         # add to day table
-        time = datetime.now()
-        today = time.date()
-        todayEntry = dayTable.query.filter_by(date=today, user_id=current_user.id).first()
+        todayEntry = dayTable.query.filter_by(date=date, user_id=current_user.id).first()
         if todayEntry == None:
             newEntry = dayTable(date=date, weight=weight, sleep=sleep, morning=morning, afternoon=afternoon, evening=evening, journal=journal, author=current_user)
             db.session.add(newEntry)

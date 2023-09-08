@@ -296,3 +296,61 @@ class people(db.Model):
 
     def __repr__(self):
         return f"{self.person} on {self.date}"
+
+-----
+
+adding day and author to exercises
+(venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> flask shell
+Python 3.11.5 (tags/v3.11.5:cce6ba9, Aug 24 2023, 14:38:34) [MSC v.1936 64 bit (AMD64)] on win32
+App: ProjectFiles
+Instance: C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project\instance
+>>> from datetime import datetime
+>>> adate = dayTable(date=datetime(2023, 8, 27))        
+>>> andrew = userTable.query.filter_by(username="andrew").first()
+>>> adate.author=andrew
+>>> db.session.add(adate)
+>>> db.session.commit()
+>>> dayTable.query.all()
+[<dayTable 1>, <dayTable 2>, <dayTable 3>, <dayTable 4>]
+>>> a = exersiseTable.query.first()  
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+NameError: name 'exersiseTable' is not defined
+>>> all = exerciseTable.query.all() 
+>>> all[0]
+<exerciseTable 1>
+>>> all[0].author=andrew
+>>> all[0].day = adate
+>>> db.session.commit()
+>>> all[1].exerciseType                     
+'Walk'
+>>> bdate = dayTable(date=datetime(2023, 8, 28), author=andrew)
+>>> a[1].day = bdate
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+NameError: name 'a' is not defined
+>>> db.session.add(bdate)
+>>> all[1].day = bdate
+>>> all[1].author=andrew
+>>> db.session.commit()
+>>> all[2].exerciseType
+'Peloton'
+>>> cdate = dayTable(date=datetime(2023, 8, 29), author=andrew)
+>>> db.session.add(cdate)
+>>> all[2].day=cdate
+>>> all[2].author=andrew
+>>> db.session.commit()
+>>> all[3].exerciseType
+'Peloton'
+>>> ddate = dayTable(date=datetime(2023, 8, 30), author=andrew)
+>>> db.session.add(ddate)
+>>> all[3].day=ddate
+>>> all[3].author=andrew
+>>> db.session.commit()
+>>> all[4].exerciseType
+'Abs'
+>>> edate = dayTable(date=datetime(2023, 9, 3), author=andrew)
+>>> db.session.add(edate)
+>>> all[4].day=edate
+>>> all[4].author=andrew
+>>> db.session.commit()
