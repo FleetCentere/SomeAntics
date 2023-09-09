@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='content_form.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="content-form">
+        <form action="" method="POST" autocomplete="off" novalidate>
+            {{ form.hidden_tag() }}
+            <fieldset>
+                <legend>Exercise Item</legend>
+                
+                <div class="form-group">
+                    <label for="exerciseDate">Date</label>
+                    {{ form.exerciseDate(class="form-control", id="exerciseDate") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseType">Type</label>
+                    {{ form.exerciseType(class="form-control", id="exerciseType") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseDuration">Duration</label>
+                    {{ form.exerciseDuration(class="form-control", id="exerciseDuration") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseDistance">Distance</label>
+                    {{ form.exerciseDistance(class="form-control", id="exerciseDistance") }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit Content</button>
+            </fieldset>
+        </form>
+    </div>
+    
+    <div class="content-table">
+
+    </div>
+        
+</div>
+{% endblock %}

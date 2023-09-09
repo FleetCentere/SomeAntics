@@ -6,7 +6,7 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm
+from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm
 from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, peopleEvents, personsTable, ideaTable
 from ProjectFiles.stockPrice import sp500
 
@@ -94,20 +94,51 @@ def daily_form():
 @app.route("/daily_content", methods=["GET", "POST"])
 @login_required
 def daily_content():
-    # generate list of content categories
-    # generate most recent content items submitted
-    n = 10
+    total_days = 10
+    latest_date = datetime.now() - timedelta(days=total_days)
+    days = db.session.query(dayTable).filter(dayTable.date >= latest_date)
+    days = days.order_by(desc(dayTable.date)).all()
     form = newContentForm()
-    contents = contentTable.query.filter_by(user_id=current_user.id).limit(n).all()
-    categories = db.session.query(contentTable.contentType).distinct().all()
+    contents = contentTable.query.filter_by(user_id=current_user.id).all()
+    category_tuple = db.session.query(contentTable.contentType).distinct().all()
+    categories = [category[0] for category in category_tuple]
+    content_dict = {}
+    for day in days:
+        content_dict[day.date] = {}
+        for category in categories:
+            content_dict[day.date][category] = contentTable.query.filter(contentTable.day == day, contentTable.contentType == category).count()
     if form.validate_on_submit():
         day = dayTable.query.filter_by(date=form.dateConsumed.data).first()
+        if day == None:
+            day = dayTable(date=form.dateConsumed.data, author=current_user)
+            db.session.add(day)
         newContent = contentTable(dateConsumed=form.dateConsumed.data, dateMade=form.dateMade.data, contentType=form.contentType.data, contentCreator=form.contentCreator.data, contentLink=form.contentLink.data, contentRating=form.contentRating.data, contentSubject=form.contentSubject.data, contentNote=form.contentNote.data, author=current_user, day=day)
         db.session.add(newContent)
         db.session.commit()
         flash("Your content has been added")
-        return redirect(url_for("daily_content"))
-    return render_template("daily_content.html", user=current_user, form=form, contents=contents, categories=categories)
+        return redirect(url_for("daily_form"))
+    return render_template("daily_content.html", user=current_user, form=form, content_dict=content_dict, categories=categories)
+
+@app.route("/daily_exercise", methods=["GET", "POST"])
+@login_required
+def daily_exercise():
+    form = newExerciseForm()
+    if form.validate_on_submit():
+        day = dayTable.query.filter_by(date=form.exerciseDate.data).first()
+        if day == None:
+            day = dayTable(date=form.dateConsumed.data, author=current_user)
+            db.session.add(day)
+        newExercise = exerciseTable(author=current_user, day=day, exerciseDuration=form.exerciseDuration.data, exerciseType=form.exerciseType.data, exerciseDistance=form.exerciseDistance.data)
+        db.session.add(newExercise)        
+        db.session.commit()
+        return redirect(url_for("daily_form"))
+    return render_template("daily_exercise.html", user=current_user, form=form)
+
+@app.route("/daily_task", methods=["GET", "POST"])
+@login_required
+def daily_task():
+    form = newTaskForm()
+    return render_template("daily_task.html", user=current_user, form=form)
 
 @app.route("/daily")
 @login_required

@@ -10,68 +10,109 @@
             {{ form.hidden_tag() }}
             <fieldset>
                 <legend>Content Item</legend>
+                
+                <div class="form-group">
+                    <label for="contentComplete">Content Completed</label>
+                    {{ form.contentComplete(class="form-control", id="contentComplete") }}
+                    {% for error in form.contentComplete.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
 
                 <div class="form-group">
-                    <label for="dateConsumed">Date Consumed</label>
+                    <label for="dateConsumed">Date of Addition</label>
                     {{ form.dateConsumed(class="form-control", id="dateConsumed") }}
+                    {% for error in form.dateConsumed.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
                 
                 <div class="form-group">
                     <label for="dateMade">Date Made</label>
                     {{ form.dateMade(class="form-control", id="dateMade") }}
+                    {% for error in form.dateMade.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="contentType"> Type</label>
                     {{ form.contentType(class="form-control", id="contentType") }}
+                    {% for error in form.contentType.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="contentCreator">Creator</label>
                     {{ form.contentCreator(class="form-control", id="contentCreator") }}
+                    {% for error in form.contentCreator.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="contentLink">Link</label>
                     {{ form.contentLink(class="form-control", id="contentLink") }}
+                    {% for error in form.contentLink.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="contentRating">Rating</label>
                     {{ form.contentRating(class="form-control", id="contentRating") }}
+                    {% for error in form.contentRating.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="contentSubject">Subject</label>
                     {{ form.contentSubject(class="form-control", id="contentSubject") }}
+                    {% for error in form.contentSubject.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
                 
                 <div class="form-group">
                     <label for="contentNote">Note</label>
                     {{ form.contentNote(class="form-control", id="contentNote") }}
+                    {% for error in form.contentNote.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <button type="submit" class="btn btn-primary">Submit Content</button>
             </fieldset>
         </form>
     </div>
-
-    <div>
-        <h4>Recent contents added</h4>
-        <ul>
-        {% for content in contents %}
-            <li>{{ content.contentType }}, {{ content.contentCreator }}</li>
-        {% endfor %}
-        </ul>
-        <br>
-        
-        <h4>Categories of content items</h4>
-        <ul>
-        {% for category in categories %}
-            <li>{{ category }}</li>
-        {% endfor %}
-        </ul>
+    
+    <div class="content-table">
+        <fieldset class="daily-fieldset-tracker">
+            <legend>Recent Content Items</legend>
+            <table class="tracker-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        {% for category in categories %}
+                            <th>{{ category }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in content_dict %}
+                        <tr>
+                            <td>{{ day }}</td>
+                            {% for category in categories %}
+                                <td>{{ content_dict[day][category] }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </fieldset>
     </div>
+        
 </div>
-
 {% endblock %}

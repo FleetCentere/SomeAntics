@@ -230,6 +230,7 @@ a:hover {
 
 table {
     border-collapse: collapse;
+    font-size: 12px;
 }
 
 th, td {

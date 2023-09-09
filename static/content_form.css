@@ -8,15 +8,8 @@
 }
 
 .content-form {
-    flex: 0 1 50%;
+    flex: 0 1 60%;
     margin: 2px;
-}
-
-fieldset {
-    justify-content: space-evenly;
-    flex: 1 1 50%;
-    display: flex;
-    flex-direction: column;
 }
 
 label {
@@ -66,4 +59,22 @@ input[type="checkbox"] {
 
 .btn:hover {
     color: black;
+}
+
+.content-table {
+    flex: 1 1 60%;
+    margin: 2px;
+    display: flex;
+    align-items: stretch;
+}
+
+.daily-fieldset-tracker {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tracker-table {
+    align-self: flex-start;
+    width: 95%;
 }

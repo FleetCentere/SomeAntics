@@ -100,12 +100,17 @@
                 
                 <div class="category-button">
                     <!-- <div class="form-category">Events</div> -->
-                    <button class="form-button"><a href="#">Add Exercise</a></button>
+                    <button class="form-button"><a href="{{ url_for('daily_exercise')}}">Add Exercise</a></button>
                 </div>
             
                 <div class="category-button">
                     <!-- <div class="form-category">Content</div> -->
                     <button class="form-button"><a href="{{url_for('daily_content') }}" >Add Content</a></button>
+                </div>
+
+                <div class="category-button">
+                    <!-- <div class="form-category">Content</div> -->
+                    <button class="form-button"><a href="{{url_for('daily_task') }}" >Add Task</a></button>
                 </div>
 
                 <div class="category-button">
