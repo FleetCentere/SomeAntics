@@ -26,7 +26,15 @@ def home():
         user = current_user
         if displayTime.startswith("0"):
             displayTime = displayTime[1:]
-        return render_template("home.html", user=user, tasks=tasks, contents=contents, newsItems=newsItems, events=events, displayTime=displayTime, displayDay=displayDay, sp=sp)
+        return render_template("home.html", 
+                                user=user, 
+                                tasks=tasks, 
+                                contents=contents, 
+                                newsItems=newsItems, 
+                                events=events, 
+                                displayTime=displayTime, 
+                                displayDay=displayDay, 
+                                sp=sp)
     return redirect(url_for("login"))
 
 @app.route("/daily_form", methods=["GET", "POST"])
@@ -48,13 +56,23 @@ def daily_form():
     if displayTime.startswith("0"):
         displayTime = displayTime[1:]
     displayDay = f"{current.strftime('%A')[:3]} {current.month}/{current.day}/{current.year}"
+    parts = displayDay.split("/")
+    parts[2] = parts[2][2:]
+    displayDay = "/".join(parts)
     sp = sp500()
     if request.method == "GET":
         time = datetime.now()
         today = time.date()
         todayEntry = dayTable.query.filter_by(date=today, user_id=current_user.id).first()
         if todayEntry == None:
-            return render_template("daily_form.html", counts_dict=counts_dict, days=days, user=current_user, form=form, displayTime=displayTime, displayDay=displayDay, sp=sp)
+            return render_template("daily_form.html", 
+                                    counts_dict=counts_dict, 
+                                    days=days, 
+                                    user=current_user, 
+                                    form=form, 
+                                    displayTime=displayTime, 
+                                    displayDay=displayDay, 
+                                    sp=sp)
         else:
             form.date.data = todayEntry.date
             form.weight.data = todayEntry.weight
@@ -63,8 +81,15 @@ def daily_form():
             form.afternoon.data = todayEntry.afternoon
             form.evening.data = todayEntry.evening
             form.journal.data = todayEntry.journal
-            return render_template("daily_form.html", counts_dict=counts_dict, days=days, user=current_user, form=form, displayTime=displayTime, displayDay=displayDay, sp=sp)
-    if form.validate_on_submit():
+            return render_template("daily_form.html", 
+                                    counts_dict=counts_dict, 
+                                    days=days, 
+                                    user=current_user, 
+                                    form=form, 
+                                    displayTime=displayTime, 
+                                    displayDay=displayDay, 
+                                    sp=sp)
+    elif form.validate_on_submit():
         # collect input
         date = form.date.data
         weight = form.weight.data
@@ -77,9 +102,18 @@ def daily_form():
         # add to day table
         todayEntry = dayTable.query.filter_by(date=date, user_id=current_user.id).first()
         if todayEntry == None:
-            newEntry = dayTable(date=date, weight=weight, sleep=sleep, morning=morning, afternoon=afternoon, evening=evening, journal=journal, author=current_user)
+            newEntry = dayTable(date=date, 
+                                weight=weight, 
+                                sleep=sleep, 
+                                morning=morning, 
+                                afternoon=afternoon, 
+                                evening=evening, 
+                                journal=journal, 
+                                author=current_user)
             db.session.add(newEntry)
+            db.session.commit()
             flash("Your daily items have been submitted")
+            return redirect(url_for("daily_form"))
         else:
             todayEntry.weight = form.weight.data
             todayEntry.sleep = form.sleep.data
@@ -88,8 +122,42 @@ def daily_form():
             todayEntry.evening = form.evening.data
             todayEntry.journal = form.journal.data
             flash("Your daily items have been updated")
+            db.session.commit()
+            return redirect(url_for("daily_form"))
+        return redirect(url_for("daily_form"))
+
+@app.route("/daily_edit/<int:id>", methods=["GET", "POST"])
+@login_required
+def daily_edit(id):
+    form = dailyForm()
+    dayEntry = dayTable.query.filter_by(id = id).first()
+    form.date.data = dayEntry.date
+    form.weight.data = dayEntry.weight
+    form.sleep.data = dayEntry.sleep
+    form.morning.data = dayEntry.morning
+    form.afternoon.data = dayEntry.afternoon
+    form.evening.data = dayEntry.evening
+    form.journal.data = dayEntry.journal
+    exercises = db.session.query(exerciseTable).filter(exerciseTable.day_id == dayEntry.id).filter(exerciseTable.user_id == current_user.id).all()
+    contents = db.session.query(contentTable).filter(contentTable.day_id == dayEntry.id).filter(contentTable.user_id == current_user.id).all()
+    events = db.session.query(eventTable).filter(eventTable.day_id == dayEntry.id).filter(eventTable.user_id == current_user.id).all()
+    news = db.session.query(newsTable).filter(newsTable.day_id == dayEntry.id).filter(newsTable.user_id == current_user.id).all()
+    if form.validate_on_submit():
+        dayEntry.weight = form.weight.data
+        dayEntry.sleep = form.sleep.data
+        dayEntry.morning = form.morning.data
+        dayEntry.afternoon = form.afternoon.data
+        dayEntry.evening = form.evening.data
+        dayEntry.journal = form.journal.data
         db.session.commit()
         return redirect(url_for("daily_form"))
+    return render_template("daily_edit.html", 
+                            user=current_user, 
+                            form=form, 
+                            contents=contents, 
+                            exercises=exercises, 
+                            events=events, 
+                            news=news)
 
 @app.route("/daily_content", methods=["GET", "POST"])
 @login_required
@@ -99,25 +167,82 @@ def daily_content():
     days = db.session.query(dayTable).filter(dayTable.date >= latest_date)
     days = days.order_by(desc(dayTable.date)).all()
     form = newContentForm()
-    contents = contentTable.query.filter_by(user_id=current_user.id).all()
     category_tuple = db.session.query(contentTable.contentType).distinct().all()
     categories = [category[0] for category in category_tuple]
     content_dict = {}
     for day in days:
         content_dict[day.date] = {}
         for category in categories:
-            content_dict[day.date][category] = contentTable.query.filter(contentTable.day == day, contentTable.contentType == category).count()
+            content_dict[day.date][category] = contentTable.query.filter(contentTable.day == day, 
+                                                                         contentTable.contentType == category, 
+                                                                         contentTable.user_id == current_user.id).count()
+    contents = contentTable.query.filter(contentTable.user_id == current_user.id).all()
     if form.validate_on_submit():
-        day = dayTable.query.filter_by(date=form.dateConsumed.data).first()
+        day = dayTable.query.filter_by(date=form.dateConsumed.data, author=current_user).first()
         if day == None:
             day = dayTable(date=form.dateConsumed.data, author=current_user)
             db.session.add(day)
-        newContent = contentTable(dateConsumed=form.dateConsumed.data, dateMade=form.dateMade.data, contentType=form.contentType.data, contentCreator=form.contentCreator.data, contentLink=form.contentLink.data, contentRating=form.contentRating.data, contentSubject=form.contentSubject.data, contentNote=form.contentNote.data, author=current_user, day=day)
+        newContent = contentTable(dateConsumed=form.dateConsumed.data, 
+                                  dateMade=form.dateMade.data, 
+                                  contentType=form.contentType.data, 
+                                  contentCreator=form.contentCreator.data, 
+                                  contentLink=form.contentLink.data, 
+                                  contentRating=form.contentRating.data, 
+                                  contentSubject=form.contentSubject.data, 
+                                  contentNote=form.contentNote.data, 
+                                  contentComplete = form.contentComplete.data, 
+                                  author=current_user, 
+                                  day=day)
         db.session.add(newContent)
         db.session.commit()
         flash("Your content has been added")
-        return redirect(url_for("daily_form"))
-    return render_template("daily_content.html", user=current_user, form=form, content_dict=content_dict, categories=categories)
+        return redirect(url_for("daily_content"))
+    return render_template("daily_content.html", 
+                            user=current_user, 
+                            form=form, 
+                            content_dict=content_dict, 
+                            categories=categories, 
+                            contents=contents)
+
+@app.route("/content_edit/<int:id>", methods=["GET", "POST"])
+@login_required
+def content_edit(id):
+    form = newContentForm()
+    contentEntry = contentTable.query.filter_by(id = id).first()
+    if contentEntry.contentComplete:
+        form.contentComplete.data = contentEntry.contentComplete
+    else:
+        contentEntry.contentComplete = False
+        db.session.commit()
+        form.contentComplete.data = False
+    form.dateConsumed.data = contentEntry.dateConsumed
+    form.dateMade.data = contentEntry.dateMade
+    form.contentType.data = contentEntry.contentType
+    form.contentCreator.data = contentEntry.contentCreator
+    form.contentLink.data = contentEntry.contentLink
+    form.contentRating.data = contentEntry.contentRating
+    form.contentSubject.data = contentEntry.contentSubject
+    form.contentNote.data = contentEntry.contentNote
+    if form.validate_on_submit():
+        completion = request.form.get("contentComplete")
+        if completion == 'y':
+            contentEntry.contentComplete = True
+        else:
+            contentEntry.contentComplete = False
+        contentEntry.dateConsumed = form.dateConsumed.data
+        contentEntry.dateMade = form.dateMade.data
+        contentEntry.contentType = form.contentType.data
+        contentEntry.contentCreator = form.contentCreator.data
+        contentEntry.contentLink = form.contentLink.data
+        contentEntry.contentRating = form.contentRating.data
+        contentEntry.contentSubject = form.contentSubject.data
+        contentEntry.contentNote = form.contentNote.data
+        # day = dayTable.query.filter_by(date=contentEntry.dateConsumed).first()
+        # contentEntry.day_id = day.id
+        db.session.commit()
+        flash("Your content has been updated")
+        return redirect(url_for("daily_content"))
+    return render_template("content_edit.html", user=current_user, form=form)
 
 @app.route("/daily_exercise", methods=["GET", "POST"])
 @login_required
@@ -128,17 +253,44 @@ def daily_exercise():
         if day == None:
             day = dayTable(date=form.dateConsumed.data, author=current_user)
             db.session.add(day)
-        newExercise = exerciseTable(author=current_user, day=day, exerciseDuration=form.exerciseDuration.data, exerciseType=form.exerciseType.data, exerciseDistance=form.exerciseDistance.data)
+        newExercise = exerciseTable(author=current_user, 
+                                    day=day, 
+                                    exerciseDuration=form.exerciseDuration.data, 
+                                    exerciseType=form.exerciseType.data, 
+                                    exerciseDistance=form.exerciseDistance.data)
         db.session.add(newExercise)        
         db.session.commit()
         return redirect(url_for("daily_form"))
     return render_template("daily_exercise.html", user=current_user, form=form)
 
-@app.route("/daily_task", methods=["GET", "POST"])
+@app.route("/daily_task/", defaults={"id": None}, methods=["GET", "POST"])
+@app.route("/daily_task/<int:id>", methods=["GET", "POST"])
 @login_required
-def daily_task():
+def daily_task(id=None):
     form = newTaskForm()
-    return render_template("daily_task.html", user=current_user, form=form)
+    tasks = taskTable.query.order_by(desc(taskTable.dateEntered)).all()
+    if id is not None:
+        task = taskTable.query.filter_by(id=id).first()
+        form.taskCategory.data = task.taskCategory
+        form.taskName.data = task.taskName
+        form.taskNote.data = task.taskNote
+        form.taskLink.data = task.taskLink
+    if form.validate_on_submit():
+        if id == None:
+            newTask = taskTable(author=current_user, 
+                                taskCategory=form.taskCategory.data, 
+                                taskName=form.taskName.data, 
+                                taskLink=form.taskLink.data, 
+                                taskNote=form.taskNote.data)
+            db.session.add(newTask)
+        else:
+            task.taskCategory = form.taskCategory.data
+            task.taskName = form.taskName.data
+            task.taskNote = form.taskNote
+            task.taskLink = form.taskLink
+        db.session.commit()
+        return redirect("daily_task")
+    return render_template("daily_task.html", user=current_user, form=form, tasks=tasks)
 
 @app.route("/daily")
 @login_required
@@ -195,7 +347,7 @@ def ideas():
         return render_template("ideas.html", form=form, ideas=ideas, user=current_user)    
     return render_template("ideas.html", form=form, ideas=ideas, user=current_user)
 
-@app.route("/edit_idea<int:id>", methods=["GET", "POST"])
+@app.route("/edit_idea/<int:id>", methods=["GET", "POST"])
 def edit_idea(id):
     idea = ideaTable.query.get_or_404(id)
     form = ideasForm()
@@ -246,7 +398,11 @@ def new_task():
         taskName = form.taskName.data
         taskLink = form.taskLink.data
         taskNote = form.taskNote.data
-        task = taskTable(taskCategory=taskCategory, taskName=taskName, taskLink=taskLink, taskNote=taskNote, author=current_user)
+        task = taskTable(taskCategory=taskCategory, 
+                         taskName=taskName, 
+                         taskLink=taskLink, 
+                         taskNote=taskNote, 
+                         author=current_user)
         db.session.add(task)
         db.session.commit()
         return redirect(url_for("home"))

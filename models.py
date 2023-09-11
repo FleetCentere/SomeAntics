@@ -49,6 +49,9 @@ class dayTable(db.Model):
     exercises = db.relationship("exerciseTable", backref="day", lazy="dynamic")
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_day"))
 
+    def __repr__(self):
+        return f"{self.date}"
+
 class taskTable(db.Model):
     # tasks and items to do including personal, content to read
     id = db.Column(db.Integer, primary_key=True)
@@ -103,6 +106,7 @@ class contentTable(db.Model):
     contentRating = db.Column(db.Integer)
     contentSubject = db.Column(db.String(200))
     contentNote = db.Column(db.Text)
+    contentComplete = db.Column(db.Boolean)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_content"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_content"))
 

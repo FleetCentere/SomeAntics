@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="main-container">
-    <div class="content-form">
+    <div class="content-form-container">
         <form action="" method="POST" autocomplete="off" novalidate>
             {{ form.hidden_tag() }}
             <fieldset>
@@ -14,21 +14,33 @@
                 <div class="form-group">
                     <label for="exerciseDate">Date</label>
                     {{ form.exerciseDate(class="form-control", id="exerciseDate") }}
+                    {% for error in form.exerciseDate.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="exerciseType">Type</label>
                     {{ form.exerciseType(class="form-control", id="exerciseType") }}
+                    {% for error in form.exerciseType.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="exerciseDuration">Duration</label>
                     {{ form.exerciseDuration(class="form-control", id="exerciseDuration") }}
+                    {% for error in form.exerciseDuration.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="exerciseDistance">Distance</label>
                     {{ form.exerciseDistance(class="form-control", id="exerciseDistance") }}
+                    {% for error in form.exerciseDistance.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <button type="submit" class="btn btn-primary">Submit Content</button>

@@ -81,7 +81,7 @@
                 <tbody>
                     {% for day in days %}
                     <tr>
-                        <td>{{ day.date }}</td>
+                        <td><a href="{{ url_for('daily_edit', id=day.id) }}">{{ day.date }}</a></td>
                         <td>{{ day.weight }}</td>
                         <td>{{ counts_dict[day]["exercise"] }}</td>
                         <td>{{ counts_dict[day]["contents"] }}</td>
@@ -96,42 +96,15 @@
 
     <div class="daily-right">
         <fieldset class="daily-fieldset">
-            <legend>Daily Categories</legend>
-                
-                <div class="category-button">
-                    <!-- <div class="form-category">Events</div> -->
-                    <button class="form-button"><a href="{{ url_for('daily_exercise')}}">Add Exercise</a></button>
-                </div>
-            
-                <div class="category-button">
-                    <!-- <div class="form-category">Content</div> -->
-                    <button class="form-button"><a href="{{url_for('daily_content') }}" >Add Content</a></button>
-                </div>
-
-                <div class="category-button">
-                    <!-- <div class="form-category">Content</div> -->
-                    <button class="form-button"><a href="{{url_for('daily_task') }}" >Add Task</a></button>
-                </div>
-
-                <div class="category-button">
-                    <!-- <div class="form-category">Events</div> -->
-                    <button class="form-button"><a href="#">Add Event</a></button>
-                </div>
-
-                <div class="category-button">
-                    <!-- <div class="form-category">News</div> -->
-                    <button class="form-button"><a href="#">Add News</a></button>
-                </div>
-
-                <div class="category-button">
-                    <!-- <div class="form-category">Ideas</div> -->
-                    <button class="form-button"><a href="{{ url_for('ideas') }}">Add Idea</a></button>
-                </div>
-
-                <div class="category-button">
-                    <!-- <div class="form-category">Ideas</div> -->
-                    <button class="form-button"><a href="#">Add Webpage Idea</a></button>
-                </div>
+            <legend>Categories</legend>
+                <ul class="ul-daily-links">
+                    <li><a href="{{ url_for('daily_exercise') }}">Add Exercise</a></li>
+                    <li><a href="{{ url_for('daily_content') }}" >Add Content</a></li>
+                    <li><a href="{{ url_for('daily_task') }}" >Add Task</a></li>
+                    <li><a href="#">Add Event</a></li>
+                    <li><a href="#">Add News</a></li>
+                    <li><a href="#">Add Webpage Idea</a></li>
+                </ul>
         </fieldset>
     </div>
 </div>

@@ -41,6 +41,7 @@ class newTaskForm(FlaskForm):
     submit = SubmitField("Add Task")
 
 class newContentForm(FlaskForm):
+    contentComplete = BooleanField("Complete")
     dateConsumed = DateField("Date of Addition", validators=[DataRequired()])
     dateMade = DateField("Date of Content Creation", validators=[DataRequired()])
     contentType = StringField("Type", validators=[DataRequired()])
@@ -49,7 +50,6 @@ class newContentForm(FlaskForm):
     contentRating = IntegerField("Rating")
     contentSubject = StringField("Subject")
     contentNote = TextAreaField("Note")
-    contentComplete = BooleanField("Complete")
     submit = SubmitField("Add Content")
 
 class newNewsForm(FlaskForm):

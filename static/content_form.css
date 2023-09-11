@@ -2,14 +2,18 @@
     display: flex;
     flex-direction: row;
     max-width: 100vw;
-    padding: 0;
+    padding: 0 0 10px 0;
     justify-content: space-between;
     align-items: stretch;
 }
 
-.content-form {
-    flex: 0 1 60%;
+.content-form-container {
+    flex: 0 1 50%;
     margin: 2px;
+}
+
+.content-form {
+    height: 100%;
 }
 
 label {
@@ -68,13 +72,16 @@ input[type="checkbox"] {
     align-items: stretch;
 }
 
-.daily-fieldset-tracker {
+.daily-fieldset-tracker,
+.content-form-fieldset {
     flex: 1;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
-.tracker-table {
+.tracker-table,
+.recent-content-table {
     align-self: flex-start;
     width: 95%;
 }
