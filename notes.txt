@@ -24,6 +24,10 @@ python3 -m venv venv
 .\venv\Scripts\activate
 
 -----
+set up for flask shell:
+(venv) PS C:\Users\mcgra\OneDrive\Desktop\AHM Docs\Coding\Project> $env:FLASK_APP = "ProjectFiles"
+
+-----
 
 example sqlalchemy in python interpreter:
 PS C:\Users\mcgra\Documents\coding\coding_practice> python

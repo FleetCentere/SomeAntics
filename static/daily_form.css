@@ -1,4 +1,3 @@
-
 .daily-page {
     display: flex;
     flex-direction: row;
@@ -8,11 +7,31 @@
     align-items: stretch;
 }
 
-.daily-left {
-    flex: 1 1 10%;
+.daily-left,
+.daily-left-center,
+.daily-right-center,
+.daily-right {
     margin: 2px;
-    display: flex;
     align-items: stretch;
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: flex;
+}
+
+.daily-left {
+    flex-basis: 10%;
+}
+
+.daily-left-center {
+    flex-basis: 40%;
+}
+
+.daily-right-center {
+    flex-basis: 35%;
+}
+
+.daily-right {
+    flex-basis: 5%;
 }
 
 .daily-bullets {
@@ -22,42 +41,30 @@
     list-style-type: none;
 }
 
-.daily-left-center {
-    flex: 1 1 40%;
-    margin: 2px;
-}
-
-.daily-right-center {
-    flex: 1 1 35%;
-    margin: 2px;
-    display: flex;
-    align-items: stretch;
-}
-
-.daily-right {
-    display: flex;
-    flex: 1 1 5%;
-    margin: 2px;
-    align-items: stretch;
-}
-
 .daily-fieldset-bullets {
-    justify-content: space-between;
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
 
 .daily-fieldset {
-    justify-content: space-evenly;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 95%;
+}
+
+.daily-fieldset-tracker {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.category-button {
-    flex: 1;
-    align-self: stretch;
+.tracker-table {
+    align-self: flex-start;
+    width: 95%;
 }
 
 label {
@@ -120,18 +127,7 @@ input[type="checkbox"] {
 }
 
 .btn:hover {
-    color: black;
-}
-
-.daily-fieldset-tracker {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.tracker-table {
-    align-self: flex-start;
-    width: 95%;
+    background-color: #06488e;
 }
 
 .ul-daily-links {
@@ -142,12 +138,11 @@ input[type="checkbox"] {
     flex-direction: column;
     justify-content: space-evenly;
     height: 100%;
-
 }
 
-.ul-daily-links > li {
+.ul-daily-links > li > a {
     margin: 10px 0;
-    padding: 2px;
+    padding: 15px 5px;
     font-size: 12px;
     flex: 1;
     background-color: lightblue;

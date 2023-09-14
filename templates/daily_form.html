@@ -19,47 +19,68 @@
     </div>
     
     <div class="daily-left-center">
-        <form action="" method="POST" autocomplete="off" novalidate>
+        <form action="" method="POST" autocomplete="off" novalidate class="daily-fieldset">
             {{ form.hidden_tag() }}
-            <fieldset>
+            <fieldset class="daily-fieldset">
                 <legend>Personal Categories</legend>
 
                 <div class="form-group">
                     <label for="date">Date</label>
                     {{ form.date(class="form-control", id="date") }}
+                    {% for error in form.date.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
                 
                 <div class="form-group">
                     <label for="weight">Weight</label>
                     {{ form.weight(class="form-control", id="weight") }}
+                    {% for error in form.weight.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="sleep">Sleep Location:</label>
                     {{ form.sleep(class="form-control", id="sleep") }}
+                    {% for error in form.sleep.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="morning">Morning</label>
                     {{ form.morning(class="form-control", id="morning") }}
+                    {% for error in form.morning.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="afternoon">Afternoon</label>
                     {{ form.afternoon(class="form-control", id="afternoon") }}
+                    {% for error in form.afternoon.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="evening">Evening</label>
                     {{ form.evening(class="form-control", id="evening") }}
+                    {% for error in form.evening.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="journal">Journal Entry:</label>
                     {{ form.journal(class="form-control", id="journal") }}
+                    {% for error in form.journal.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit Personal</button>
+                {{ form.submitPersonal(class="btn btn-primary") }}
             </fieldset>
         </form>
     </div>
@@ -98,12 +119,12 @@
         <fieldset class="daily-fieldset">
             <legend>Categories</legend>
                 <ul class="ul-daily-links">
-                    <li><a href="{{ url_for('daily_exercise') }}">Add Exercise</a></li>
-                    <li><a href="{{ url_for('daily_content') }}" >Add Content</a></li>
-                    <li><a href="{{ url_for('daily_task') }}" >Add Task</a></li>
-                    <li><a href="#">Add Event</a></li>
-                    <li><a href="#">Add News</a></li>
-                    <li><a href="#">Add Webpage Idea</a></li>
+                    <li><a href="{{ url_for('daily_exercise') }}">Exercise</a></li>
+                    <li><a href="{{ url_for('daily_content') }}" >Content</a></li>
+                    <li><a href="{{ url_for('daily_task') }}" >Tasks</a></li>
+                    <li><a href="{{ url_for('daily_events') }}">Events</a></li>
+                    <li><a href="#">News</a></li>
+                    <li><a href="{{ url_for('webpage_ideas') }}">Webpage Ideas</a></li>
                 </ul>
         </fieldset>
     </div>

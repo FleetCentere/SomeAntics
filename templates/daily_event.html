@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='daily_event.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="event-form-container">
+        <form action="" method="POST" autocomplete="off" novalidate class="event-form">
+            {{ form.hidden_tag() }}
+            <fieldset class="event-form-fieldset">
+                <legend>Event Form</legend>
+                <div class="event-form-group">
+                    <label for="eventDate" class="form-label-events">Date</label>
+                    {{ form.eventDate(class="form-field-events") }}
+                    {% for error in form.eventDate.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div class="event-form-group">
+                    <label for="eventTime" class="form-label-events">Time</label>
+                    {{ form.eventTime(class="form-field-events") }}
+                    {% for error in form.eventTime.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div class="event-form-group">
+                    <label for="eventType" class="form-label-events">Type</label>
+                    {{ form.eventType(class="form-field-events") }}
+                    {% for error in form.eventType.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div class="event-form-group">
+                    <label for="eventLocation" class="form-label-events">Location</label>
+                    {{ form.eventLocation(class="form-field-events") }}
+                    {% for error in form.eventLocation.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div class="event-form-group">
+                    <label for="eventNote" class="form-label-events">Note</label>
+                    {{ form.eventNote(class="form-field-events") }}
+                    {% for error in form.eventNote.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                {{ form.submit(class="btn btn-primary") }}
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="event-table">
+        <fieldset class="event-table-fieldset">
+            <legend>Recent Events</legend>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Location</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td>{{ event.day }}</td>
+                            <td>{{ event.eventType }}</td>
+                            <td>{{ event.eventLocation }}</td>
+                            <td><a href="{{ url_for('daily_events', id=event.id) }}">Edit</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+</div>
+{% endblock %}

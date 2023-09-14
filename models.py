@@ -52,7 +52,7 @@ class dayTable(db.Model):
     def __repr__(self):
         return f"{self.date}"
 
-class taskTable(db.Model):
+class taskTable(db.Model):  
     # tasks and items to do including personal, content to read
     id = db.Column(db.Integer, primary_key=True)
     taskCategory = db.Column(db.String(250))
@@ -87,17 +87,19 @@ class eventTable(db.Model):
     # for events like exercise, meetings, golf
     id = db.Column(db.Integer, primary_key=True)
     eventType = db.Column(db.String(50))
-    eventDatetime = db.Column(db.DateTime, default=datetime.now(), index=True)
+    eventTime = db.Column(db.Time)
     eventLocation = db.Column(db.String(50))
     eventNote = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_event"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_event"))
+    # eventDatetime = db.Column(db.DateTime, default=datetime.now(), index=True)
 
     def __repr__(self):
-        return f"{self.eventType} on {self.eventDatetime}"
+        return f"{self.eventType} on {self.eventDate}"
 
 class contentTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    contentComplete = db.Column(db.Boolean)
     dateConsumed = db.Column(db.Date)
     dateMade = db.Column(db.Date)
     contentType = db.Column(db.String(50)) # podcast, movies, shows, youtube, articles
@@ -106,7 +108,6 @@ class contentTable(db.Model):
     contentRating = db.Column(db.Integer)
     contentSubject = db.Column(db.String(200))
     contentNote = db.Column(db.Text)
-    contentComplete = db.Column(db.Boolean)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_content"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_content"))
 

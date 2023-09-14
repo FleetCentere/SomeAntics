@@ -118,13 +118,13 @@ a:hover {
 }
 
 .message {
-    padding: 10px;
+    padding: 5px;
     margin: 5px;
     background-color: lightseagreen;
 }
 
 .alert {
-    padding: 20px;
+    padding: 5px 20px;
     margin: 5px;
     color: black;
     background-color: lightgrey;

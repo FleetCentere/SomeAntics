@@ -49,8 +49,79 @@
     </div>
     
     <div class="content-table">
-
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Duration</th>
+                    <th>Distance</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tobdy>
+                {% for exercise in exercises %}
+                    <tr>
+                        <td>{{ exercise.day }}</td>
+                        <td>{{ exercise.exerciseType }}</td>
+                        <td>{{ exercise.exerciseDuration }}</td>
+                        <td>{{ exercise.exerciseDistance }}</td>
+                        <td><a href="{{ url_for('daily_exercise', id=exercise.id) }}">Edit</a> / 
+                            <button class="deleteButton" data-delete-url="{{ url_for('delete_daily_exercise', id=exercise.id) }}">Delete</button></td>
+                    </tr>
+                {% endfor %}
+            </tobdy>
+        </table>
     </div>
-        
 </div>
+
+<!-- Delete Modal -->
+<div class="deleteModal" id="deleteModal">
+    <div class="delete-modal-content">
+        <p>Are you sure you want to delete?</p>
+        <div class="delete-modal-actions">
+            <button class="deleteCancelButton">Cancel</button>
+            <button class="deleteConfirmButton">Confirm Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script for Delete Modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.deleteButton');
+        const modal = document.getElementById('deleteModal');
+        const deleteCancelButtons = document.querySelectorAll('.deleteCancelButton');
+        const deleteConfirmButtons = document.querySelectorAll('.deleteConfirmButton');
+
+        let deleteUrl; // Variable to store the delete URL
+
+        // Show modal when any delete button is clicked
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Get the URL for the delete action from the data attribute
+                deleteUrl = button.getAttribute('data-delete-url');
+                modal.style.display = 'block';
+            });
+        });
+
+        // Hide modal when any cancel button is clicked
+        deleteCancelButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        });
+
+        // Perform the delete action when any confirm button is clicked
+        deleteConfirmButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Redirect to the delete URL after confirmation
+                window.location.href = deleteUrl;
+
+                // Hide the modal after confirmation (optional)
+                modal.style.display = 'none';
+            });
+        });
+    });
+</script>
 {% endblock %}

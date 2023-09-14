@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, DateField, SubmitField, IntegerField, BooleanField, TextAreaField, FloatField, DateTimeField
+from wtforms import StringField, PasswordField, DateField, SubmitField, IntegerField, BooleanField, TextAreaField, FloatField, DateTimeField, DecimalField, TimeField
 from wtforms.validators import DataRequired, NumberRange, Email, EqualTo, ValidationError, Optional
 from ProjectFiles.models import userTable
 
@@ -63,9 +63,10 @@ class newNewsForm(FlaskForm):
 
 class newEventForm(FlaskForm):
     eventType = StringField("Type", validators=[DataRequired()])
-    eventDatetime = DateTimeField("Event Date and Time")
-    eventLocation = StringField("Location", validators=[DataRequired()])
-    eventNote = TextAreaField("Note", validators=[DataRequired()])
+    eventDate = DateField("Event Date")
+    eventTime = TimeField("Event Time")
+    eventLocation = StringField("Location")
+    eventNote = TextAreaField("Note")
     submit = SubmitField("Add Event")
 
 class newExerciseForm(FlaskForm):
@@ -85,7 +86,7 @@ class dailyForm(FlaskForm):
     morning = TextAreaField("Morning")
     afternoon = TextAreaField("Afternoon")
     evening = TextAreaField("Evening")
-    weight = FloatField("Weight (lbs)")
+    weight = DecimalField("Weight (lbs)", validators=[Optional()])
     journal = TextAreaField("Evening")
     submitPersonal = SubmitField("Submit Personal")
     submitContent = SubmitField("Submit Content")

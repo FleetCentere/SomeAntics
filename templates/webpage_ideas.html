@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='webpage_ideas.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="ideas-container">
+    <div class="left-side">
+        <form action="" method="POST" novalidate class="ideas-form">
+            {{ form.hidden_tag() }}
+            <fieldset class="ideas-form-fieldset">
+                <legend>Enter New Idea</legend>
+                <div class="form-group">
+                    {{ form.ideaNote.label(class="form-label-ideas") }}
+                    {{ form.ideaNote(class="form-field-ideas") }}<br>
+                    {% for error in form.ideaNote.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div>{{ form.submit(class="btn btn-primary") }}</div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="right-side">
+        <fieldset class="website-ideas-fieldset">
+            <legend>List of Website Ideas</legend>
+            <table class="ideas-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Idea</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for idea in ideas %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="idea-text">
+                            {% for text in idea.note.split("\n") %}
+                                <span>{{ text }}</span><br>
+                            {% endfor %}
+                        </td>
+                        <td><a href="{{ url_for('delete_idea', id=idea.id) }}">Delete</a> / 
+                            <a href="{{ url_for('webpage_ideas', id=idea.id) }}">Edit</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+</div>
+
+{% endblock %}
