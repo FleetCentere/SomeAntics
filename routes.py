@@ -6,37 +6,11 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm
-from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, peopleEvents, personsTable, ideaTable
+from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm
+from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable
 from ProjectFiles.stockPrice import sp500
 
 @app.route("/")
-@app.route("/home")
-def home():
-    n = 8 # number of items to display in any given fieldset
-    if current_user.is_authenticated:
-        tasks = taskTable.query.filter_by(user_id=current_user.id).limit(n).all()
-        contents = contentTable.query.filter_by(user_id=current_user.id).limit(n).all()
-        newsItems = newsTable.query.filter_by(user_id=current_user.id).limit(n).all()
-        events = eventTable.query.filter_by(user_id=current_user.id).limit(n).all()
-        current = datetime.now()
-        displayTime = current.strftime("%I:%M %p")
-        displayDay = f"{current.strftime('%A')} {current.month}/{current.day}/{current.year}"
-        sp = sp500()
-        user = current_user
-        if displayTime.startswith("0"):
-            displayTime = displayTime[1:]
-        return render_template("home.html", 
-                                user=user, 
-                                tasks=tasks, 
-                                contents=contents, 
-                                newsItems=newsItems, 
-                                events=events, 
-                                displayTime=displayTime, 
-                                displayDay=displayDay, 
-                                sp=sp)
-    return redirect(url_for("login"))
-
 @app.route("/daily_form", methods=["GET", "POST"])
 @login_required
 def daily_form():
@@ -232,6 +206,19 @@ def content_edit(id):
         form.contentNote.data = contentEntry.contentNote
     return render_template("content_edit.html", user=current_user, form=form)
 
+@app.route("/delete_daily_content/<int:id>")
+@login_required
+def delete_daily_content(id):
+    content = contentTable.query.get_or_404(id)
+    if content.author == current_user:
+        db.session.delete(content)
+        db.session.commit()
+        flash("Content item successfully deleted")
+        return redirect(url_for("daily_content"))
+    else:
+        flash("User not authorized to delete")
+        return redirect(url_for("daily_content"))  
+
 ### exercise ###
 @app.route("/daily_exercise/", defaults={"id": None}, methods=["GET", "POST"])
 @app.route("/daily_exercise/<int:id>", methods=["GET", "POST"])
@@ -272,8 +259,12 @@ def daily_exercise(id):
                 form.exerciseDate.data = day.date
             except:
                 form.exerciseDate.data = None
-    exercises = exerciseTable.query.filter(exerciseTable.author == current_user).all()
-    return render_template("daily_exercise.html", user=current_user, form=form, exercises=exercises)
+    exercises = exerciseTable.query.filter(exerciseTable.author == current_user)
+    exercises = exercises.join(dayTable).order_by(desc(dayTable.date)).all()
+    return render_template("daily_exercise.html", 
+                            user=current_user, 
+                            form=form, 
+                            exercises=exercises)
 
 @app.route("/delete_daily_exercise/<int:id>")
 @login_required
@@ -327,7 +318,8 @@ def daily_task(id=None):
 def daily_events(id):
     print(f"id is {id}")
     form = newEventForm()
-    events = eventTable.query.filter_by(author=current_user).all()
+    events = eventTable.query.filter_by(author=current_user)
+    events = events.join(dayTable).order_by(desc(dayTable.date)).all()
     if id is not None:
         event = eventTable.query.get_or_404(id)
     if form.validate_on_submit():
@@ -377,13 +369,28 @@ def daily_events(id):
                             form=form,
                             events=events)
 
+@app.route("/delete_daily_event/<int:id>")
+@login_required
+def delete_daily_event(id):
+    event = eventTable.query.get_or_404(id)
+    if event.author == current_user:
+        db.session.delete(event)    
+        db.session.commit()
+        flash("Event item successfully deleted")
+        return redirect(url_for("daily_events"))
+    else:
+        flash("User not authorized to delete")
+        return redirect(url_for("daily_events"))
+
 ### webpage ideas ###
 @app.route("/webpage_ideas", defaults={"id": None}, methods=["GET", "POST"])
 @app.route("/webpage_ideas/<int:id>", methods=["GET", "POST"])
 @login_required
 def webpage_ideas(id):
     form = ideasForm()
+    sForm = sourcesForm()
     ideas = ideaTable.query.all()
+    sources = sourcesTable.query.all()
     if form.validate_on_submit():
         if id is None:
             ideaNote = form.ideaNote.data
@@ -396,14 +403,33 @@ def webpage_ideas(id):
             idea.note = form.ideaNote.data
             db.session.commit()
             return redirect(url_for("webpage_ideas"))
+    if sForm.validate_on_submit():
+        sourceTopic = sForm.sourceTopic.data
+        sourceLink = sForm.sourceLink.data
+        sourceNote = sForm.sourceNote.data
+        source = sourcesTable(sourceTopic=sourceTopic, sourceLink=sourceLink, sourceNote=sourceNote)
+        db.session.add(source)
+        db.session.commit()
+        return redirect(url_for("webpage_ideas"))
     if request.method == "GET":
         if id is not None:
             idea = ideaTable.query.get_or_404(id)
             form.ideaNote.data = idea.note
     return render_template("webpage_ideas.html",
                             form=form,
+                            sForm=sForm,
                             ideas=ideas, 
+                            sources=sources,
                             user=current_user)
+
+@app.route("/delete_webpage_idea/<int:id>")
+@login_required
+def delete_webpage_idea(id):
+    idea = ideaTable.query.get_or_404(id)
+    db.session.delete(idea)
+    db.session.commit()
+    flash("Event item successfully deleted")
+    return redirect(url_for("webpage_ideas"))
 
 @app.route("/daily")
 @login_required
@@ -413,7 +439,7 @@ def daily():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("home"))
+        return redirect(url_for("daily_form"))
     form = loginForm()
     if form.validate_on_submit():
         user = userTable.query.filter_by(username=form.username.data).first()
@@ -423,7 +449,7 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get("next")
         if not next_page or url_parse(next_page).netloc != "":
-            next_page = url_for("home")
+            next_page = url_for("daily_form")
         flash(f"You are logged in as {current_user.username}")
         return redirect(next_page)
     return render_template("login.html", form=form)
@@ -431,7 +457,7 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("home"))
+        return redirect(url_for("daily_form"))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = userTable(username=form.username.data, email=form.email.data)
@@ -445,6 +471,35 @@ def register():
 @app.route("/logout")
 def logout():
     logout_user()
+    return redirect(url_for("login"))
+
+################
+### old code ###
+################
+@app.route("/home_old")
+def home_old():
+    n = 8 # number of items to display in any given fieldset
+    if current_user.is_authenticated:
+        tasks = taskTable.query.filter_by(user_id=current_user.id).limit(n).all()
+        contents = contentTable.query.filter_by(user_id=current_user.id).limit(n).all()
+        newsItems = newsTable.query.filter_by(user_id=current_user.id).limit(n).all()
+        events = eventTable.query.filter_by(user_id=current_user.id).limit(n).all()
+        current = datetime.now()
+        displayTime = current.strftime("%I:%M %p")
+        displayDay = f"{current.strftime('%A')} {current.month}/{current.day}/{current.year}"
+        sp = sp500()
+        user = current_user
+        if displayTime.startswith("0"):
+            displayTime = displayTime[1:]
+        return render_template("home.html", 
+                                user=user, 
+                                tasks=tasks, 
+                                contents=contents, 
+                                newsItems=newsItems, 
+                                events=events, 
+                                displayTime=displayTime, 
+                                displayDay=displayDay, 
+                                sp=sp)
     return redirect(url_for("login"))
 
 @app.route("/ideas", methods=["GET", "POST"])
@@ -486,7 +541,7 @@ def edit_profile(id):
     form = editProfileForm()
     if current_user.id != id:
         flash("You are not authorized to make changes to that account")
-        return redirect(url_for("home"))
+        return redirect(url_for("daily_form"))
     if request.method == "GET":
         return render_template("register.html", form=form, user=current_user)
     elif form.validate_on_submit():
@@ -494,7 +549,7 @@ def edit_profile(id):
             current_user.set_password(form.password.data)
             db.session.commit()
             flash("Your password has been updated")
-            return redirect(url_for("home"))
+            return redirect(url_for("daily_form"))
         else:
             flash("Incorrect password validation")
             return render_template("register.html", form=form, user=current_user)
@@ -518,7 +573,7 @@ def new_task():
                          author=current_user)
         db.session.add(task)
         db.session.commit()
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     return render_template("new_task.html", form=form, user=current_user)
 
 @app.route("/update_task/<int:id>", methods=["POST", "GET"])
@@ -527,7 +582,7 @@ def update_task(id):
     task = taskTable.query.get_or_404(id)
     if taskItem.author != current_user:
         flask("You are not authorized to update this item")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     form = newTaskForm()
     if form.validate_on_submit():
         task.taskCategory = form.taskCategory.data
@@ -536,7 +591,7 @@ def update_task(id):
         task.taskNote = form.taskNote.data
         db.session.commit()
         flash("Your task has been updated")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     elif request.method == "GET":
         form.taskCategory.data = task.taskCategory
         form.taskName.data = task.taskName
@@ -552,10 +607,10 @@ def delete_task(id):
         db.session.delete(task)
         db.session.commit()
         flash("Task successfully deleted")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     else:
         flash("User not authorized to delete")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
 
 @app.route("/new_content", methods=["POST", "GET"])
 @login_required
@@ -572,7 +627,7 @@ def new_content():
                                   author=current_user)
         db.session.add(newContent)
         db.session.commit()
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     return render_template("new_content.html", form=form, user=current_user)
 
 @app.route("/update_content/<int:id>", methods=["POST", "GET"])
@@ -581,7 +636,7 @@ def update_content(id):
     contentItem = contentTable.query.get_or_404(id)
     if contentItem.author != current_user:
         flask("You are not authorized to update this item")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     form = newContentForm()
     if form.validate_on_submit():
         contentItem.dateMade = form.dateMade.data
@@ -593,7 +648,7 @@ def update_content(id):
         contentItem.contentNote = form.contentNote.data
         db.session.commit()
         flash("Your content has been updated")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     elif request.method == "GET":
         form.dateMade.data = contentItem.dateMade
         form.contentType.data = contentItem.contentType
@@ -612,10 +667,10 @@ def delete_content(id):
         db.session.delete(contentItem)
         db.session.commit()
         flash("Content successfully deleted")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     else:
         flash("User not authorized to delete")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
 
 #### News ####
 @app.route("/new_news", methods=["POST", "GET"])
@@ -632,7 +687,7 @@ def new_news():
                             author=current_user)
         db.session.add(newNews)
         db.session.commit()
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     return render_template("new_news.html", form=form, user=current_user)
 
 @app.route("/update_news/<int:id>", methods=["POST", "GET"])
@@ -641,7 +696,7 @@ def update_news(id):
     newsItem = newsTable.query.get_or_404(id)
     if newsItem.author != current_user:
         flash("You are not authorized to update this item")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     form = newNewsForm()
     if form.validate_on_submit():
         newsItem.newsType = form.newsType.data
@@ -652,7 +707,7 @@ def update_news(id):
         newsItem.newsDatePosted = form.newsDatePosted.data
         db.session.commit()
         flash("Your news item has been updated")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     elif request.method == "GET":
         form.newsType.data = newsItem.newsType
         form.newsTitle.data = newsItem.newsTitle
@@ -673,7 +728,7 @@ def delete_news(id):
         return redirect(url_for("home"))
     else:
         flash("User not authorized to delete")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
 
 #### Events ####
 @app.route("/new_event", methods=["POST", "GET"])
@@ -694,7 +749,7 @@ def new_event():
         db.session.add(newEvent)
         db.session.add(exerciseEvent)
         db.session.commit()
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     return render_template("new_event.html", form=form, user=current_user)
 
 @app.route("/update_event/<int:id>", methods=["POST", "GET"])
@@ -703,7 +758,7 @@ def update_event(id):
     event = eventTable.query.get_or_404(id)
     if event.author != current_user:
         flash("You are not authorized to update this item")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     form = newEventForm()
     if form.validate_on_submit():
         event.eventType=form.eventType.data
@@ -718,7 +773,7 @@ def update_event(id):
 
         db.session.commit()
         flash("Your news item has been updated")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     elif request.method == "GET":
         form.eventType.data = event.eventType
         form.eventDatetime.data = event.eventDatetime
@@ -740,10 +795,10 @@ def delete_event(id):
         db.session.delete(event)
         db.session.commit()
         flash("Event successfully deleted")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
     else:
         flash("User not authorized to delete")
-        return redirect(url_for("home"))
+        return redirect(url_for("home_old"))
 
 # About Page
 @app.route("/about")

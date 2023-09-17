@@ -3,7 +3,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
-# userTable, taskTable, newsTable, eventTable, contentTable, peopleTable, exerciseTable, weightTable, companyTable
+# userTable, dayTable, taskTable, newsTable, eventTable, contentTable, personsTable, exerciseTable, ideaTable, sourcesTable
 
 @login.user_loader
 def load_user(id):
@@ -22,10 +22,10 @@ class userTable(UserMixin, db.Model):
     news = db.relationship("newsTable", backref="author", lazy="dynamic")
     events = db.relationship("eventTable", backref="author", lazy="dynamic")
     contents = db.relationship("contentTable", backref="author", lazy="dynamic")
-    peopleEvents = db.relationship("peopleEvents", backref="author", lazy="dynamic")
     persons = db.relationship("personsTable", backref="author", lazy="dynamic")
     exercises = db.relationship("exerciseTable", backref="author", lazy="dynamic")
     days = db.relationship("dayTable", backref="author", lazy="dynamic")
+    # peopleEvents = db.relationship("peopleEvents", backref="author", lazy="dynamic")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -92,6 +92,7 @@ class eventTable(db.Model):
     eventNote = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_event"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_event"))
+
     # eventDatetime = db.Column(db.DateTime, default=datetime.now(), index=True)
 
     def __repr__(self):
@@ -114,27 +115,18 @@ class contentTable(db.Model):
     def __repr__(self):
         return f"{self.contentType} by {self.contentCreator} about {self.contentSubject}"
 
-class peopleEvents(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    place = db.Column(db.String(100))
-    date = db.Column(db.Date)
-    note = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_people"))
-    person_id = db.Column(db.Integer, db.ForeignKey("persons_table.id", name="fk_persons_event"))
-
-    def __repr__(self):
-        return f"{self.person} on {self.date}"
-
 class personsTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_persons"))
     person = db.Column(db.String(50))
     personBackground = db.Column(db.Text)
     personBirthday = db.Column(db.Date)
-    peopleEvents = db.Relationship("peopleEvents", backref="events", lazy="dynamic")
+    personCategory = db.Column(db.String(50))
+    personCompany = db.Column(db.String(50))
 
     def __repr__(self):
         return f"{self.person}"
+    # peopleEvents = db.Relationship("peopleEvents", backref="events", lazy="dynamic")
 
 class exerciseTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -147,3 +139,21 @@ class exerciseTable(db.Model):
 class ideaTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     note = db.Column(db.Text)
+
+class sourcesTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sourceTopic = db.Column(db.String(50))
+    sourceLink = db.Column(db.String(200))
+    sourceNote = db.Column(db.Text)
+
+    
+# class peopleEvents(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     place = db.Column(db.String(100))
+#     date = db.Column(db.Date)
+#     note = db.Column(db.Text)
+#     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_people"))
+#     person_id = db.Column(db.Integer, db.ForeignKey("persons_table.id", name="fk_persons_event"))
+
+#     def __repr__(self):
+#         return f"{self.person} on {self.date}"

@@ -103,7 +103,11 @@
                     {% for day in days %}
                     <tr>
                         <td><a href="{{ url_for('daily_edit', id=day.id) }}">{{ day.date }}</a></td>
-                        <td>{{ day.weight }}</td>
+                        <td>
+                        {% if day.weight %}
+                        {{ day.weight }}
+                        {% else %}
+                        {% endif %}</td>
                         <td>{{ counts_dict[day]["exercise"] }}</td>
                         <td>{{ counts_dict[day]["contents"] }}</td>
                         <td>{{ counts_dict[day]["events"] }}</td>

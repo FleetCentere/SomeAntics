@@ -76,10 +76,6 @@ class newExerciseForm(FlaskForm):
     exerciseDistance = FloatField("Exericse Distance")
     submit = SubmitField("Add Exercise")
 
-class ideasForm(FlaskForm):
-    ideaNote = TextAreaField("Note", validators=[DataRequired()])
-    submit = SubmitField("Idea Note")
-
 class dailyForm(FlaskForm):
     date = DateField("Date", validators=[DataRequired()])
     sleep = StringField("Sleep Location")
@@ -90,3 +86,13 @@ class dailyForm(FlaskForm):
     journal = TextAreaField("Evening")
     submitPersonal = SubmitField("Submit Personal")
     submitContent = SubmitField("Submit Content")
+
+class ideasForm(FlaskForm):
+    ideaNote = TextAreaField("Note", validators=[DataRequired()])
+    submit = SubmitField("Idea Note")
+
+class sourcesForm(FlaskForm):
+    sourceTopic = StringField("Source Topic")
+    sourceLink = StringField("Source Link")
+    sourceNote = TextAreaField("Source Note")
+    submit = SubmitField("Submit Source")

@@ -133,7 +133,13 @@
                                 <td>{{ content.contentType }}</td>
                                 <td>{{ content.contentCreator }}</td>
                                 <td>{{ content.contentSubject }}</td>
-                                <td>{{ content.contentComplete }}</td>
+                                <td>
+                                    {% if content.contentComplete %}
+                                    ✓
+                                    {% else %}
+                                    
+                                    {% endif %}
+                                </td>
                                 <td><a href="{{ url_for('content_edit', id=content.id) }}">Edit</a> / <a>Delete</a></td>
                             </tr>
                         {% endfor %}
