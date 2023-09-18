@@ -1,82 +1,89 @@
 {% extends "layout.html" %}
 {% block css %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='content_form.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='daily_news.css') }}">
 {% endblock %}
-
 {% block content %}
-<div class="main-container">
-    <div class="content-form-container">
-        <form action="" method="POST" autocomplete="off" novalidate class="content-form">
+<div class="page-container">
+    <div class="left-side">
+        <form action="" method="POST" autocomplete=off novalidate class="news-form">
             {{ form.hidden_tag() }}
-            <fieldset class="task-form-fieldset">
-                <legend>Task Item</legend>
-                
+            <fieldset class="form-fieldset">
+                <legend>Daily News</legend>
                 <div class="form-group">
-                    <label for="taskCategory">Category</label>
-                    {{ form.taskCategory(class="form-control", id="taskCategory") }}
-                    {% for error in form.taskCategory.errors %}
+                    {{ form.newsDatePosted.label(class="form-label-news") }}
+                    {{ form.newsDatePosted(class="form-field-news") }}
+                    {% for error in form.newsDatePosted.errors %}
                         <span class="errorMessage">[{{ error }}]</span>
                     {% endfor %}
                 </div>
-
                 <div class="form-group">
-                    <label for="taskName">Task</label>
-                    {{ form.taskName(class="form-control", id="taskName") }}
-                    {% for error in form.taskName.errors %}
+                    {{ form.newsType.label(class="form-label-news") }}
+                    {{ form.newsType(class="form-field-news") }}
+                    {% for error in form.newsType.errors %}
                         <span class="errorMessage">[{{ error }}]</span>
                     {% endfor %}
                 </div>
-
                 <div class="form-group">
-                    <label for="taskLink">Link</label>
-                    {{ form.taskLink(class="form-control", id="taskLink") }}
-                    {% for error in form.taskLink.errors %}
+                    {{ form.newsTitle.label(class="form-label-news") }}
+                    {{ form.newsTitle(class="form-field-news") }}
+                    {% for error in form.newsTitle.errors %}
                         <span class="errorMessage">[{{ error }}]</span>
                     {% endfor %}
                 </div>
-
                 <div class="form-group">
-                    <label for="taskNote">Note</label>
-                    {{ form.taskNote(class="form-control", id="taskNote") }}
-                    {% for error in form.taskNote.errors %}
+                    {{ form.newsLink.label(class="form-label-news") }}
+                    {{ form.newsLink(class="form-field-news") }}
+                    {% for error in form.newsLink.errors %}
                         <span class="errorMessage">[{{ error }}]</span>
                     {% endfor %}
                 </div>
-
-                <button type="submit" class="btn btn-primary">Submit Task</button>
+                <div class="form-group">
+                    {{ form.newsNote.label(class="form-label-news") }}
+                    {{ form.newsNote(class="form-field-news") }}
+                    {% for error in form.newsNote.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.newsTicker.label(class="form-label-news") }}
+                    {{ form.newsTicker(class="form-field-news") }}
+                    {% for error in form.newsTicker.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                {{ form.submit(class="btn btn-primary") }}
             </fieldset>
         </form>
     </div>
-    
-    <div class="content-table">
-        <fieldset class="daily-fieldset-tracker">
-            <legend>Tasks</legend>
-            <table class="tracker-table">
+    <div class="right-side">
+        <fieldset class="table-fieldset">
+            <legend>News Items</legend>
+            <table class="news-table">
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Category</th>
-                        <th>Task</th>
+                        <th>Type</th>
+                        <th>News</th>
+                        <th>Link</th>
                         <th>Options</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for task in tasks %}
-                        <tr>
-                            <td>{{ task.dateEntered }}</td>
-                            <td>{{ task.taskCategory }}</td>
-                            <td>{{ task.taskName }}</td>
-                            <td><a href="{{ url_for('daily_task', task_id=task.id) }}">Edit</a> / 
-                                <button class="deleteButton" data-delete-url="{{ url_for('delete_task', task_id=task.id) }}">Delete</button></td>
-                        </tr>
+                    {% for new in news %}
+                    <tr>
+                        <td>{{ new.day.date }}</td>
+                        <td>{{ new.newsType }}</td>
+                        <td>{{ new.newsTitle }}</td>
+                        <td><a href="{{ new.newsLink }}">Link</a></td>
+                        <td><a href="{{ url_for('daily_news', news_id=new.id) }}">Edit</a> / 
+                            <button class="deleteButton" data-delete-url="{{ url_for('delete_news', news_id=new.id) }}">Delete</button></td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </fieldset>
     </div>
-        
 </div>
-
 
 <!-- Delete Modal -->
 <div class="deleteModal" id="deleteModal">

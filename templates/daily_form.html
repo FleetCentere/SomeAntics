@@ -21,7 +21,7 @@
     <div class="daily-left-center">
         <form action="" method="POST" autocomplete="off" novalidate class="daily-fieldset">
             {{ form.hidden_tag() }}
-            <fieldset class="daily-fieldset">
+            <fieldset class="daily-fieldset {% if form.date.data == today_date %}today-date{% endif %}">
                 <legend>Personal Categories</legend>
 
                 <div class="form-group">
@@ -102,7 +102,7 @@
                 <tbody>
                     {% for day in days %}
                     <tr>
-                        <td><a href="{{ url_for('daily_edit', id=day.id) }}">{{ day.date }}</a></td>
+                        <td><a href="{{ url_for('daily_form', day_id=day.id) }}">{{ day.date }}</a></td>
                         <td>
                         {% if day.weight %}
                         {{ day.weight }}
@@ -127,7 +127,7 @@
                     <li><a href="{{ url_for('daily_content') }}" >Content</a></li>
                     <li><a href="{{ url_for('daily_task') }}" >Tasks</a></li>
                     <li><a href="{{ url_for('daily_events') }}">Events</a></li>
-                    <li><a href="#">News</a></li>
+                    <li><a href="{{ url_for('daily_news') }}">News</a></li>
                     <li><a href="{{ url_for('webpage_ideas') }}">Webpage Ideas</a></li>
                 </ul>
         </fieldset>

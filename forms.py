@@ -57,8 +57,8 @@ class newNewsForm(FlaskForm):
     newsTitle = StringField("Title", validators=[DataRequired()])
     newsNote = TextAreaField("Note")
     newsLink = StringField("Link", validators=[DataRequired()])
-    newsTicker = StringField("Ticker", validators=[DataRequired()])
-    newsDatePosted = DateField("Date of Event", validators=[DataRequired()])
+    newsTicker = StringField("Ticker")
+    newsDatePosted = DateField("News Date", validators=[DataRequired()])
     submit = SubmitField("Add News")
 
 class newEventForm(FlaskForm):

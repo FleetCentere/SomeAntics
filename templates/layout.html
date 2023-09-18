@@ -23,8 +23,12 @@
            <div class="navbar-left">
                 <img src="{{ url_for('static', filename='logo.jpg') }}" class="navbar-logo" alt="Website Logo">
                 <a href="{{ url_for('daily_form') }}" class="navbar-link">Home</a>
-                <a href="{{ url_for('ideas') }}" class="navbar-link">Ideas</a>
-                <a href="{{ url_for('daily') }}" class="navbar-link">Daily</a>
+                <a href="{{ url_for('daily_exercise') }}" class="navbar-link">Exercise</a>
+                <a href="{{ url_for('daily_content') }}" class="navbar-link">Content</a>
+                <a href="{{ url_for('daily_task') }}" class="navbar-link">Tasks</a>
+                <a href="{{ url_for('daily_events') }}" class="navbar-link">Events</a>
+                <a href="{{ url_for('daily_news') }}" class="navbar-link">News</a>
+                <a href="{{ url_for('webpage_ideas') }}" class="navbar-link">Webpage Ideas</a>
            </div>
            <div class="navbar-right">
                 {% if current_user.is_anonymous %}

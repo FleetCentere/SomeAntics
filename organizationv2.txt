@@ -1,0 +1,82 @@
+[] for folder
+* for necessary file
+X for unnecessary file
+-----------------------
+[] Project
+run.py
+[] ProjectFiles
+    __init__.py *
+    companyTest.py
+    cusipLookup.py
+    forms.py *
+    holderSearch.py
+    models.py *
+    old_code.py
+    routes.py *
+        daily_form(day_id) -> daily_form.html, sp500() from stockPrice.py
+        daily_content() -> daily_content.html; NEED TO AMEND TO INCLUDE EDIT
+        content_edit(id) -> content_edit.html NEED TO REMOVE
+        delete_daily_content(id)
+        daily_exercise(id) -> daily_exercise.html
+        delete_daily_exercise(id)
+        daily_task(task_id) -> daily_task.html
+        delete_task(task_id)
+        daily_events(id) -> daily_event.html
+        delete_daily_event(id)
+        daily_news(news_id) -> daily_news.html
+        delete_news(news_id)
+        webpage_ideas(id) -> webpage_ideas.html
+        delete_webpage_idea(id)
+        daily() -> daily.html
+        login() -> login.html
+        register() -> register.html
+        logout()
+        edit_profile(id) -> register.html
+        about() -> about.html
+    secFinancials.py
+    secTest.py
+    stockPrice.py * (gets S&P500 price)
+    [] static
+        main.css
+        content_form.css
+        daily_event.css
+        daily_form.css
+        daily_news.css
+        webpage_ideas.css
+    [] templates - 24 files
+        about.html *
+        companies.html ?
+        content_edit.html * NEED TO DELETE
+        content.html X
+        daily_content.html *
+        daily_edit.html
+        daily_event.html * NEED TO DELETE
+        daily_exercise.html *
+        daily_form.html *
+        daily_news.html *
+        daily_task.html *
+        daily.html - X NOT SURE NEEDED
+        home.html X
+        ideas.html X
+        layout.html *
+            daily_form()
+            daily_exercise()
+            daily_content()
+            daily_task()
+            daily_event()
+            daily_news()
+            webpage_ideas()
+            login()
+            edit_profile()
+            logout()
+            about()
+        login.html *
+        new_content.html X
+        new_event.html X
+        new_news.html X
+        new_task.html x
+        people.html X
+        pressRelease.html X
+        register.html *
+        webpage_ideas.html *
+    [] SECDocs

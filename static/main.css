@@ -265,6 +265,9 @@ th {
 
 legend {
     font-weight: 800;
+    background-color: lightblue;
+    border-radius: 5px;
+    padding: 2px;
 }
 
 .form-label {
