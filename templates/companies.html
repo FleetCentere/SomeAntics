@@ -1,8 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h1>Companies</h1>
-
 {% if companyInfo %}
     <h2>{{ companyInfo["companyName"] }} ({{ companyInfo["ticker"].upper() }})</h2>
 
@@ -61,15 +59,12 @@
                         <td class="holderRow" style="text-align: left">{{ row[1] }}</td>
                         <td class="holderRow" style="text-align: center">{{ row[2] }}</td>
                     </tr>  
-                
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
         <p>No holders to display</p>
     {% endif %}
-
-
 {% else %}
 
 <form action="" method="POST" novalidate>

@@ -83,6 +83,11 @@ class newsTable(db.Model):
     def __repr__(self):
         return f"{self.newsType}: {self.newsTitle} on {self.newsDatePosted}"
 
+event_attendees = db.Table("event_attendees", 
+                            db.Column("event_id", db.Integer, db.ForeignKey("event_table.id", name="fk_assoc_events")),
+                            db.Column("person_id", db.Integer, db.ForeignKey("persons_table.id", name="fk_assoc_persons"))
+                            )
+
 class eventTable(db.Model):
     # for events like exercise, meetings, golf
     id = db.Column(db.Integer, primary_key=True)
@@ -92,11 +97,23 @@ class eventTable(db.Model):
     eventNote = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_event"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_event"))
-
-    # eventDatetime = db.Column(db.DateTime, default=datetime.now(), index=True)
+    attendees = db.relationship("personsTable", secondary=event_attendees, back_populates="events_attended_event")
 
     def __repr__(self):
-        return f"{self.eventType} on {self.eventDate}"
+        return f"{self.eventType} at {self.eventLocation}"
+
+class personsTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_persons"))
+    person = db.Column(db.String(50))
+    personBackground = db.Column(db.Text)
+    personBirthday = db.Column(db.Date)
+    personCategory = db.Column(db.String(50))
+    personCompany = db.Column(db.String(50))
+    events_attended_event = db.relationship("eventTable", secondary=event_attendees, back_populates="attendees")
+
+    def __repr__(self):
+        return f"{self.person}"
 
 class contentTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -114,19 +131,6 @@ class contentTable(db.Model):
 
     def __repr__(self):
         return f"{self.contentType} by {self.contentCreator} about {self.contentSubject}"
-
-class personsTable(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_persons"))
-    person = db.Column(db.String(50))
-    personBackground = db.Column(db.Text)
-    personBirthday = db.Column(db.Date)
-    personCategory = db.Column(db.String(50))
-    personCompany = db.Column(db.String(50))
-
-    def __repr__(self):
-        return f"{self.person}"
-    # peopleEvents = db.Relationship("peopleEvents", backref="events", lazy="dynamic")
 
 class exerciseTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)

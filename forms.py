@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, DateField, SubmitField, IntegerField, BooleanField, TextAreaField, FloatField, DateTimeField, DecimalField, TimeField
+from wtforms import StringField, PasswordField, DateField, SubmitField, IntegerField, BooleanField, TextAreaField, FloatField, DateTimeField, DecimalField, TimeField, SelectField
 from wtforms.validators import DataRequired, NumberRange, Email, EqualTo, ValidationError, Optional
 from ProjectFiles.models import userTable
 
@@ -44,12 +44,12 @@ class newContentForm(FlaskForm):
     contentComplete = BooleanField("Complete")
     dateConsumed = DateField("Date of Addition", validators=[DataRequired()])
     dateMade = DateField("Date of Content Creation", validators=[DataRequired()])
-    contentType = StringField("Type", validators=[DataRequired()])
     contentCreator = StringField("Creator")
     contentLink = StringField("Link")
     contentRating = IntegerField("Rating")
     contentSubject = StringField("Subject")
     contentNote = TextAreaField("Note")
+    contentType = SelectField("Type", choices=[])
     submit = SubmitField("Add Content")
 
 class newNewsForm(FlaskForm):
@@ -96,3 +96,17 @@ class sourcesForm(FlaskForm):
     sourceLink = StringField("Source Link")
     sourceNote = TextAreaField("Source Note")
     submit = SubmitField("Submit Source")
+
+class companyForm(FlaskForm):
+    ticker = StringField("Ticker")
+    startYear = IntegerField("Start Year")
+    holderCount = IntegerField("Number of Holders")
+    submit = SubmitField("Submit")
+
+class personForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    background = TextAreaField("Background")
+    birthday = DateField("Birthday")
+    category = StringField("Category", validators=[DataRequired()])
+    company = StringField("Company")
+    submit = SubmitField("Submit")

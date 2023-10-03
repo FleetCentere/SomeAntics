@@ -66,8 +66,8 @@
                         <td>{{ exercise.exerciseType }}</td>
                         <td>{{ exercise.exerciseDuration }}</td>
                         <td>{{ exercise.exerciseDistance }}</td>
-                        <td><a href="{{ url_for('daily_exercise', id=exercise.id) }}">Edit</a> / 
-                            <button class="deleteButton" data-delete-url="{{ url_for('delete_daily_exercise', id=exercise.id) }}">Delete</button></td>
+                        <td><a href="{{ url_for('daily_exercise', exercise_id=exercise.id) }}">Edit</a> / 
+                            <button class="deleteButton" data-delete-url="{{ url_for('delete_daily_exercise', exercise_id=exercise.id) }}">Delete</button></td>
                     </tr>
                 {% endfor %}
             </tobdy>

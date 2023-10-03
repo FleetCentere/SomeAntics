@@ -72,8 +72,8 @@
                             <td>{{ event.day }}</td>
                             <td>{{ event.eventType }}</td>
                             <td>{{ event.eventLocation }}</td>
-                            <td><a href="{{ url_for('daily_events', id=event.id) }}">Edit</a> / 
-                                <button class="deleteButton" data-delete-url="{{ url_for('delete_daily_event', id=event.id) }}">Delete</button></td>
+                            <td><a href="{{ url_for('daily_events', event_id=event.id) }}">Edit</a> / 
+                                <button class="deleteButton" data-delete-url="{{ url_for('delete_daily_event', event_id=event.id) }}">Delete</button></td>
                         </tr>
                     {% endfor %}
                 </tbody>

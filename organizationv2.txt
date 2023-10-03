@@ -16,6 +16,7 @@ run.py
         daily_form(day_id) -> daily_form.html, sp500() from stockPrice.py
         daily_content() -> daily_content.html; NEED TO AMEND TO INCLUDE EDIT
         content_edit(id) -> content_edit.html NEED TO REMOVE
+        companies()
         delete_daily_content(id)
         daily_exercise(id) -> daily_exercise.html
         delete_daily_exercise(id)

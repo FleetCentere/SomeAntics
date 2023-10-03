@@ -70,8 +70,8 @@
                                 <span>{{ text }}</span><br>
                             {% endfor %}
                         </td>
-                        <td><a href="{{ url_for('webpage_ideas', id=idea.id) }}">Edit</a> / 
-                            <button class="deleteButton" data-delete-url="{{ url_for('delete_webpage_idea', id=idea.id) }}">Delete</button></td>
+                        <td><a href="{{ url_for('webpage_ideas', webpage_id=idea.id) }}">Edit</a> / 
+                            <button class="deleteButton" data-delete-url="{{ url_for('delete_webpage_idea', webpage_id=idea.id) }}">Delete</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>

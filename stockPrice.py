@@ -1,20 +1,34 @@
 import yfinance as yf
+import sys
 
-def sp500():
+def sp500(ticker=None):
     try:    
         # Create a ticker object for the S&P 500
-        sp500_ticker = yf.Ticker("^GSPC")
-
+        if ticker is None:
+            y_ticker = yf.Ticker("^GSPC")
+        else:
+            y_ticker = yf.Ticker(ticker)
         # Get historical data for the S&P 500
-        sp500_data = sp500_ticker.history(period="1d")
+        data = y_ticker.history(period="3d")
 
         # Get the last closing price
-        last_close_price = sp500_data['Close'].iloc[-1]
+        closes = data['Close'].iloc[-3]
         
-        return f"{last_close_price:.2f}"
+        return data['Close'].iloc[-3:]
+        # return f"{last_close_price:.2f}"
 
         # print(f"The last closing price of the S&P 500 is ${last_close_price:.2f}")
     except Exception as e:
         return "na"
 if __name__ == "__main__":
-    sp500()
+    if len(sys.argv) == 2:
+        ticker = sys.argv[1].upper()
+    else:
+        ticker = None
+    prices = sp500(ticker)
+    print(prices)
+    print("\n")
+    for i in prices:
+        print(i)
+    print("\n")
+    print(len(prices))

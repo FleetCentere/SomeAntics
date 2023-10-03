@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block css %}
+
+{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="left-side">
+        <form action="" autocomplete="off" method="POST" novalidate class="content-form">
+            {{ form.hidden_tag() }}
+            <fieldset>
+                <legend>Add Person</legend>
+                <div>
+                    {{ form.name.label }}
+                    {{ form.name }}
+                    {% for error in form.name.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.background.label }}
+                    {{ form.background }}
+                    {% for error in form.background.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.birthday.label }}
+                    {{ form.birthday }}
+                    {% for error in form.birthday.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.category.label }}
+                    {{ form.category }}
+                    {% for error in form.category.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.company.label }}
+                    {{ form.company }}
+                    {% for error in form.company.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.submit }}
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="right-side">
+        <table>
+            <thead>
+                <tr>
+                    <th>Person</th>
+                    <th>Category</th>
+                    <th>Company</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for person in people %}
+                    <tr>
+                        <td>{{ person.person }}</td>
+                        <td>{{ person.personCategory }}</td>
+                        <td>{{ person.personCompany }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

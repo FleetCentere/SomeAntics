@@ -21,7 +21,7 @@
     <header>
         <nav class="navbar">
            <div class="navbar-left">
-                <img src="{{ url_for('static', filename='logo.jpg') }}" class="navbar-logo" alt="Website Logo">
+                <a href="{{ url_for('daily_form') }}"><img src="{{ url_for('static', filename='logo.jpg') }}" class="navbar-logo" alt="Website Logo"></a>
                 <a href="{{ url_for('daily_form') }}" class="navbar-link">Home</a>
                 <a href="{{ url_for('daily_exercise') }}" class="navbar-link">Exercise</a>
                 <a href="{{ url_for('daily_content') }}" class="navbar-link">Content</a>
@@ -29,12 +29,15 @@
                 <a href="{{ url_for('daily_events') }}" class="navbar-link">Events</a>
                 <a href="{{ url_for('daily_news') }}" class="navbar-link">News</a>
                 <a href="{{ url_for('webpage_ideas') }}" class="navbar-link">Webpage Ideas</a>
+                <a href="{{ url_for('companies') }}" class="navbar-link">Companies</a>
+                <a href="{{ url_for('people') }}" class="navbar-link">People</a>
+                <a href="{{ url_for('playground') }}" class="navbar-link">Playground</a>
            </div>
            <div class="navbar-right">
                 {% if current_user.is_anonymous %}
                     <a href="{{ url_for('login') }}" class="navbar-link login">Log In</a>
                 {% else %}
-                    <a href="{{ url_for('edit_profile', id=user.id) }}"class="navbar-link">Edit Password</a>
+                    <a href="{{ url_for('edit_profile', profile_id=user.id) }}"class="navbar-link">Edit Password</a>
                     <a href="{{ url_for('logout') }}" class="navbar-link logout">Log Out</a>    
                 {% endif %}
                 <a href="{{ url_for('about') }}" class="navbar-link">About</a>

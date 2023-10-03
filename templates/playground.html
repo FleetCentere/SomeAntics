@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block css %}
+<style>
+    .grid-item {
+        background-color: lightblue;
+        border: black solid 1px; 
+        padding: 5px;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: 200px 200px; /* 1fr 2fr is similar to flex-grow of 2 and 1 */
+        /* grid-template-columns: repeat(4, 100px); repeat a number of times */
+        /* grid-template-rows: 200px 150px; */
+        grid-auto-rows: minmax(150px, auto);
+        /* grid-row-gap: 20px;
+        grid-column-gap: 20px; */
+        grid-gap: 20px;
+        justify-content: center; /* space-around */
+        align-content: stretch;
+        justify-items: stretch; /* center; */
+        align-items: stretch; /* start; */
+    }
+
+    .grid-item-1 {
+        grid-column-start: 1;
+        grid-column-end: 3; /* or -1 to go to the very end */
+        /* grid-column: 1 / -1; same as previous two lines*/
+    }
+
+</style>
+
+{% endblock %}
+{% block content %}
+
+<div class="grid-container">
+    <div class="grid-item grid-item-1">1</div>
+    <div class="grid-item grid-item-2">2</div>
+    <div class="grid-item grid-item-3">3</div>
+    <div class="grid-item grid-item-4">4</div>
+    <div class="grid-item grid-item-5">5</div>
+</div>
+
+
+{% endblock %}

@@ -12,7 +12,7 @@
             <ul class="daily-bullets">
                 <li><strong>Date:</strong> {{ displayDay }}</li><br>
                 <li><strong>Time:</strong> {{ displayTime }}</li><br>
-                <li><strong>S&P 500:</strong> {{ sp }}</li>
+                <li><strong>S&P 500:</strong> {{ sp[0] }} / {{ sp[1] }}%</li>
             </ul>
             <div> </div>
         </fieldset>
@@ -119,7 +119,7 @@
         </fieldset>
     </div>
 
-    <div class="daily-right">
+    <!-- <div class="daily-right">
         <fieldset class="daily-fieldset">
             <legend>Categories</legend>
                 <ul class="ul-daily-links">
@@ -131,6 +131,6 @@
                     <li><a href="{{ url_for('webpage_ideas') }}">Webpage Ideas</a></li>
                 </ul>
         </fieldset>
-    </div>
+    </div> -->
 </div>
 {% endblock %}
