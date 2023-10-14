@@ -1,0 +1,54 @@
+.container {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    grid-gap: 10px;
+    min-height: 60vh;  
+    justify-items: stretch; /* center; */
+    align-items: stretch; /* start; */
+}
+
+.daily-container,
+.snapshot-container,
+.news-container,
+.card-container,
+.tracker-container {
+    border:black solid 2px;
+    /* padding: 5px; */
+}
+
+.snapshot-container,
+.news-container,
+.card-container,
+.tracker-container {
+    padding: 5px;
+}
+
+.daily-container {
+    display: grid;
+    grid-template-rows: 1fr 2fr;
+    grid-gap: 10px;
+    justify-items: stretch; /* center; */
+    align-items: stretch; /* start; */
+}
+
+.card-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-gap: 2px;
+}
+
+.card-container > * {
+    border: black solid 2px;
+    padding: 5px;
+}
+
+ul, li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+h4 {
+    margin: 0;
+}

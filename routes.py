@@ -6,19 +6,85 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm
-from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable
+from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm
+from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts
 from ProjectFiles.stockPrice import sp500
 from ProjectFiles.cusipLookup import cusipLookup
+from ProjectFiles.newsRun import newsRun
 
-@app.route("/", defaults={"day_id": None}, methods=["GET", "POST"])
+@app.route("/")
+@app.route("/home")
+@login_required
+def home():
+    try:
+        articles = newsRun()
+    except:
+        articles = {}
+    current = datetime.now()
+    displayTime = current.strftime("%I:%M %p")
+    if displayTime.startswith("0"):
+        displayTime = displayTime[1:]
+    displayDay = f"{current.strftime('%A')[:3]} {current.month}/{current.day}/{current.year}"
+    parts = displayDay.split("/")
+    parts[2] = parts[2][2:]
+    displayDay = "/".join(parts)
+    prices = sp500()
+    try:
+        t_minus_1 = (prices[2]/prices[1])-1
+        t_minus_2 = (prices[2]/prices[0])-1
+        sp = [f"{prices[0]:.2f}", f"{t_minus_1*100:.2f}", f"{t_minus_2:2f}"]
+    except:
+        sp = ["na", "na", "na"]
+    return render_template("home.html", 
+                            user=current_user,
+                            displayTime=displayTime, 
+                            displayDay=displayDay,
+                            sp=sp,
+                            articles=articles)
+
+@app.route("/computerScience", methods=["GET", "POST"])
+@login_required
+def computerScience():
+    form = computerScienceForm()
+    cs = csTable.query.filter_by(user_id=current_user.id).all()
+    if form.validate_on_submit():
+        name = form.name.data
+        category = form.category.data
+        cs = csTable(user_id=current_user.id, name=name, category=category, dateAdded=datetime.now().date())
+        db.session.add(cs)
+        db.session.commit()
+        return redirect("computerScience")
+    return render_template("computerScience.html",
+                            form=form, 
+                            cs=cs,
+                            user=current_user)
+
+@app.route("/computerScienceCat/<int:cat_id>", methods=["GET", "POST"])
+@login_required
+def computerScienceCat(cat_id):
+    return render_template("computerScienceCat.html",
+                            user=current_user)
+
+@app.route("/deleteComputerScience/<int:cat_id>", methods=["POST", "GET"])
+@login_required
+def deleteComputerScience(cat_id):
+    cs = csTable.query.get_or_404(cat_id)
+    if cs.user_id != current_user.id:
+        flash("You are not authorized to delete this item")
+        return redirect(url_for("computerScience"))
+    db.session.delete(cs)
+    db.session.commit()
+    flash("The item has been deleted")
+    return redirect(url_for("computerScience"))
+
 @app.route("/daily_form", defaults={"day_id": None}, methods=["GET", "POST"])
 @app.route("/daily_form/<int:day_id>", methods=["GET", "POST"])
 @login_required
 def daily_form(day_id):
     n = 20
-    time = datetime.now()
-    today = time.date()
+    current = datetime.now()
+    # time = datetime.now()
+    today = datetime.now().date()
     latest_date = today - timedelta(days=n)
     days = db.session.query(dayTable).filter(dayTable.date >= latest_date)
     days = days.order_by(desc(dayTable.date)).all()
@@ -29,7 +95,6 @@ def daily_form(day_id):
                             "events": db.session.query(eventTable).filter(eventTable.day_id == day.id).filter(eventTable.user_id == current_user.id).count(),
                             "news": db.session.query(newsTable).filter(newsTable.day_id == day.id).filter(newsTable.user_id == current_user.id).count()}
     form = dailyForm()
-    current = datetime.now()
     displayTime = current.strftime("%I:%M %p")
     if displayTime.startswith("0"):
         displayTime = displayTime[1:]
@@ -38,9 +103,12 @@ def daily_form(day_id):
     parts[2] = parts[2][2:]
     displayDay = "/".join(parts)
     prices = sp500()
-    t_minus_1 = (prices[2]/prices[1])-1
-    t_minus_2 = (prices[2]/prices[0])-1
-    sp = [f"{prices[0]:.2f}", f"{t_minus_1*100:.2f}", f"{t_minus_2:2f}"]
+    try:
+        t_minus_1 = (prices[2]/prices[1])-1
+        t_minus_2 = (prices[2]/prices[0])-1
+        sp = [f"{prices[0]:.2f}", f"{t_minus_1*100:.2f}", f"{t_minus_2:2f}"]
+    except:
+        sp = ["na", "na", "na"]
     if form.validate_on_submit():
         date = form.date.data
         weight = form.weight.data
@@ -112,6 +180,7 @@ def daily_form(day_id):
 @login_required
 def daily_content(content_id):
     total_days = 10
+    n = 10
     latest_date = datetime.now() - timedelta(days=total_days)
     days = db.session.query(dayTable).filter(dayTable.date >= latest_date)
     days = days.order_by(desc(dayTable.date)).all()
@@ -127,7 +196,7 @@ def daily_content(content_id):
                                                                          contentTable.contentType == category, 
                                                                          contentTable.user_id == current_user.id).count()
     contents = contentTable.query.filter(contentTable.user_id == current_user.id)
-    contents = contents.order_by(desc(contentTable.dateConsumed)).all()
+    contents = contents.order_by(desc(contentTable.dateConsumed)).limit(n).all()
     if form.validate_on_submit():
         if content_id is None:
             day = dayTable.query.filter_by(date=form.dateConsumed.data, author=current_user).first()
@@ -207,6 +276,7 @@ def delete_daily_content(content_id):
 @login_required
 def daily_exercise(exercise_id):
     form = newExerciseForm()
+    n = 10
     if form.validate_on_submit():
         if exercise_id is None:
             day = dayTable.query.filter_by(date=form.exerciseDate.data).first()
@@ -242,7 +312,7 @@ def daily_exercise(exercise_id):
             except:
                 form.exerciseDate.data = None
     exercises = exerciseTable.query.filter(exerciseTable.author == current_user)
-    exercises = exercises.join(dayTable).order_by(desc(dayTable.date)).all()
+    exercises = exercises.join(dayTable).order_by(desc(dayTable.date)).limit(n).all()
     return render_template("daily_exercise.html", 
                             user=current_user, 
                             form=form, 
@@ -312,8 +382,11 @@ def delete_task(task_id):
 @app.route("/daily_events/<int:event_id>", methods=["GET", "POST"])
 def daily_events(event_id):
     form = newEventForm()
+    n = 10
+    people_choices = personsTable.query.filter_by(user_id=current_user.id)
+    form.eventPeople.choices = [(person.id, person.person) for person in people_choices]
     events = eventTable.query.filter_by(author=current_user)
-    events = events.join(dayTable).order_by(desc(dayTable.date)).all()
+    events = events.join(dayTable).order_by(desc(dayTable.date)).limit(n).all()
     if event_id is not None:
         event = eventTable.query.get_or_404(event_id)
     if form.validate_on_submit():
@@ -332,6 +405,10 @@ def daily_events(event_id):
                            day=day)
             db.session.add(eventEntry)
             db.session.commit()
+            for person_id in form.eventPeople.data:
+                person = personsTable.query.filter_by(id=person_id).first()
+                eventEntry.attendees.append(person)
+                db.session.commit()
             return redirect(url_for("daily_events"))
         elif event_id is not None:
             event.eventType = form.eventType.data
@@ -341,6 +418,10 @@ def daily_events(event_id):
             day = dayTable.query.filter(dayTable.date == form.eventDate.data).filter(dayTable.author == current_user).first()
             event.day = day
             db.session.commit()
+            for person_id in form.eventPeople.data:
+                person = personsTable.query.filter_by(id=person_id).first()
+                event.attendees.append(person)
+                db.session.commit()
             return redirect(url_for("daily_events"))
     else:
         print(form.errors)
@@ -349,6 +430,7 @@ def daily_events(event_id):
             form.eventType.data = event.eventType
             form.eventLocation.data = event.eventLocation
             form.eventNote.data = event.eventNote
+            form.eventPeople.data = [(person.id, person.person) for person in event.attendees]
             day = dayTable.query.filter_by(id = event.day_id).first()
             try:
                 form.eventDate.data = day.date
@@ -488,6 +570,7 @@ def delete_webpage_idea(webpage_id):
 @login_required
 def companies(ticker):
     form = companyForm()
+    lForm = listForm()
     financials = None
     years = None
     companyInfo = None
@@ -495,6 +578,39 @@ def companies(ticker):
     holderTable = None
     last_row = None
     data = None
+    companyList = companyTable.query.filter_by(user_id = current_user.id).all()
+    companyDict = {}
+    # dictionary to store ticker, date added, market cap, 
+    # share price, 1 day perf, 1 week perf, 1 year perf, date of latest SEC filing, 
+    # link to latest SEC filing, link to SEC page, last earnings, next earnings
+    for company in companyList:
+        companyDict[company.ticker] = {}
+        companyDict[company.ticker]["ticker"] = company.ticker.upper()
+        companyDict[company.ticker]["Date"] = company.dateAdded
+        companyDict[company.ticker]["marketCap"] = 10000
+        companyData = sp500(company.ticker.upper())
+        if companyData[0] == "na":
+            companyDict[company.ticker]["sharePrice"] = "na"
+            companyDict[company.ticker]["oneDayPerf"] = "na"
+            companyDict[company.ticker]["oneWeekPerf"] = "na"
+            companyDict[company.ticker]["oneYearPerf"] = "na"    
+        else:
+            companyDict[company.ticker]["sharePrice"] = f"{companyData[2]:.2f}"
+            companyDict[company.ticker]["oneDayPerf"] = f"{(companyData[2]/companyData[1]-1)*100:.2f}"
+            companyDict[company.ticker]["oneWeekPerf"] = -0.05
+            companyDict[company.ticker]["oneYearPerf"] = 0.2
+        companyDict[company.ticker]["lastSECFilingDate"] = datetime(2023, 8, 20)
+        companyDict[company.ticker]["lastSECFilingLink"] = "https://www.espn.com"
+        companyDict[company.ticker]["SECPage"] = "https://www.google.com"
+        companyDict[company.ticker]["lastEarningsDate"] = datetime(2023,7,10)
+        companyDict[company.ticker]["nextEarningsDate"] = datetime(2023,10,10)
+    if lForm.validate_on_submit():
+        ticker = lForm.ticker.data
+        date = datetime.now().date()
+        company = companyTable(ticker=ticker, user_id=current_user.id, dateAdded=date)
+        db.session.add(company)
+        db.session.commit()
+        return redirect(url_for("companies"))
     if form.validate_on_submit():
         startYear = form.startYear.data
         ticker = form.ticker.data
@@ -507,25 +623,42 @@ def companies(ticker):
         data = sp500(ticker)
         return render_template("companies.html", 
                             user=current_user, 
-                            form=form, 
+                            form=form,
+                            lForm=lForm, 
                             financials=financials, 
                             years=years,
                             companyInfo=companyInfo,
+                            companyDict = companyDict,
                             cusip=cusip,
                             holderTable=holderTable, 
                             last_row=last_row,
+                            companyList=companyList,
                             data=data)
     return render_template("companies.html", 
                             user=current_user, 
                             form=form, 
+                            lForm=lForm,
                             financials=financials, 
                             years=years,
                             companyInfo=companyInfo,
+                            companyDict = companyDict,
                             cusip=cusip,
                             holderTable=holderTable, 
                             last_row=last_row,
+                            companyList=companyList,
                             data=data)
 
+@app.route("/delete_company/<int:company_id>", methods=["POST", "GET"])
+def delete_company(company_id):
+    company = companyTable.query.get_or_404(company_id)
+    if company.user_id == current_user.id:
+        db.session.delete(company)
+        db.session.commit()
+        flash("Company has been deleted")
+        return redirect(url_for("companies"))
+    else:
+        flash("You are not permitted to delete that company")
+        return redirect(url_for("companies"))
 
 @app.route("/people", defaults={"person_id": None}, methods=["GET", "POST"])
 @app.route("/people/<int:person_id>", methods=["GET", "POST"])

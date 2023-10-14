@@ -24,6 +24,9 @@ class userTable(UserMixin, db.Model):
     contents = db.relationship("contentTable", backref="author", lazy="dynamic")
     persons = db.relationship("personsTable", backref="author", lazy="dynamic")
     exercises = db.relationship("exerciseTable", backref="author", lazy="dynamic")
+    companies = db.relationship("companyTable", backref="author", lazy="dynamic")
+    cs  = db.relationship("csTable", backref="author", lazy="dynamic")
+    csPosts  = db.relationship("csPosts", backref="author", lazy="dynamic")
     days = db.relationship("dayTable", backref="author", lazy="dynamic")
     # peopleEvents = db.relationship("peopleEvents", backref="author", lazy="dynamic")
 
@@ -150,14 +153,23 @@ class sourcesTable(db.Model):
     sourceLink = db.Column(db.String(200))
     sourceNote = db.Column(db.Text)
 
-    
-# class peopleEvents(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     place = db.Column(db.String(100))
-#     date = db.Column(db.Date)
-#     note = db.Column(db.Text)
-#     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_people"))
-#     person_id = db.Column(db.Integer, db.ForeignKey("persons_table.id", name="fk_persons_event"))
+class companyTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ticker = db.Column(db.String(10))
+    dateAdded = db.Column(db.Date)
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_company"))
 
-#     def __repr__(self):
-#         return f"{self.person} on {self.date}"
+class csTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_cs"))
+    name = db.Column(db.String(50))
+    category = db.Column(db.String(50))
+    dateAdded = db.Column(db.Date)
+    posts = db.relationship("csPosts", backref="csName", lazy="dynamic")
+
+class csPosts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_cs_posts"))
+    cs_id = db.Column(db.Integer, db.ForeignKey("cs_table.id", name="fk_cs_post"))
+    note = db.Column(db.Text)
+    dateAdded = db.Column(db.Date)

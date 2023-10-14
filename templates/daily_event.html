@@ -49,6 +49,13 @@
                         <span class="errorMessage">[{{ error }}]</span>
                     {% endfor %}
                 </div>
+                <div class="event-form-group">
+                    <label for="eventPeople" class="form-label-events">Participants</label>
+                    {{ form.eventPeople(class="form-field-events") }}
+                    {% for error in form.eventPeople.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
                 {{ form.submit(class="btn btn-primary") }}
             </fieldset>
         </form>
@@ -63,6 +70,7 @@
                         <th>Date</th>
                         <th>Type</th>
                         <th>Location</th>
+                        <th>Attendees</th>
                         <th>Options</th>
                     </tr>
                 </thead>
@@ -72,6 +80,11 @@
                             <td>{{ event.day }}</td>
                             <td>{{ event.eventType }}</td>
                             <td>{{ event.eventLocation }}</td>
+                            <td>
+                                {% for person in event.attendees %}
+                                <p class="attendee-text">{{ person }}</p>
+                                {% endfor %}
+                            </td>
                             <td><a href="{{ url_for('daily_events', event_id=event.id) }}">Edit</a> / 
                                 <button class="deleteButton" data-delete-url="{{ url_for('delete_daily_event', event_id=event.id) }}">Delete</button></td>
                         </tr>

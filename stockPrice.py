@@ -14,12 +14,9 @@ def sp500(ticker=None):
         # Get the last closing price
         closes = data['Close'].iloc[-3]
         
-        return data['Close'].iloc[-3:]
-        # return f"{last_close_price:.2f}"
-
-        # print(f"The last closing price of the S&P 500 is ${last_close_price:.2f}")
+        return data['Close'].iloc[-3:] # returns 3 prices in a row in order of t-2, t-1, t
     except Exception as e:
-        return "na"
+        return ["na"]
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         ticker = sys.argv[1].upper()

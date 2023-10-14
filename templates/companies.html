@@ -1,91 +1,197 @@
 {% extends "layout.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='companies.css') }}">
+{% endblock %}
 {% block content %}
 
-{% if companyInfo %}
-    <h2>{{ companyInfo["companyName"] }} ({{ companyInfo["ticker"].upper() }})</h2>
+<div class="container">
+    <div class="left-side">
+        <form action="" method="POST" novalidate>
+            {{ lForm.hidden_tag() }}
 
-    <table>
-        <thead>
-            <tr>
-                <th>Year</th>
-                <th>Cash</th>
-                <th>Assets</th>
-                <th>Liabilities</th>
-                <th>Debt</th>
-                <th>Revenue</th>
-                <th>COGS</th>
-                <th>Gross Profit</th>
-                <th>CFO</th>
-                <th>CFI</th>
-                <th>CFF</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for year in years %}
-                <tr>
-                    <td>{{ year }}</td>
-                    {% for i in financials %}
-                        {% if year %}
-                            <td>${{ financials[i][year] }}</td>
-                        {% endif %}
-                {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <h2 class="holder-output-header">
-        {% if last_row > 1 %}
-            Top {{ last_row }} Holders for {{ companyInfo["ticker"].upper() }}
-        {% elif last_row == 1 %}
-            Top {{ last_row }} Holder for {{ companyInfo["ticker"].upper() }}
-        {% else %}
-            No Holders for {{ companyInfo["ticker"].upper() }}; CUSIP is {{ cusip }}
-        {% endif %}
-    </h2>
-    {% if last_row >=1 %}
-        <table class="holderTable">
+            {{ lForm.ticker.label }}
+            {{ lForm.ticker }}
+            {{ lForm.submit() }}
+        </form>
+        <hr>
+        <table>
             <thead>
                 <tr>
-                    <th class="holderTableHeader" style="text-align: left">Number</th>
-                    <th class="holderTableHeader" style="text-align: left">Fund Name</th>
-                    <th class="holderTableHeader" style="text-align: center">Number of Securities</th>
+                    <th>Ticker</th>
+                    <th>Date Added</th>
+                    <th>Market Cap</th>
+                    <th>Share Price</th>
+                    <th>1 Day Perf</th>
+                    <th>1 Week Perf</th>
+                    <th>1 Year Perf</th>
+                    <th>Date of Last SEC Filing</th>
+                    <th>Link to Last Filing</th>
+                    <th>Link to SEC Page</th>
+                    <th>Last Earnings Date</th>
+                    <th>Next Earnings Date</th>
+                    <th>Options</th>
                 </tr>
             </thead>
             <tbody>
-                {% for row in holderTable %}
+                {% for company in companyList %}
                     <tr>
-                        <td class="holderRow">{{ row[0] }}</td>
-                        <td class="holderRow" style="text-align: left">{{ row[1] }}</td>
-                        <td class="holderRow" style="text-align: center">{{ row[2] }}</td>
-                    </tr>  
+                        <td>{{ company.ticker.upper() }}</td>
+                        <td>{{ companyDict[company.ticker]["Date"] }}</td>
+                        <td>{{ companyDict[company.ticker]["marketCap"] }}</td>
+                        <td>{{ companyDict[company.ticker]["sharePrice"] }}</td>
+                        <td>{{ companyDict[company.ticker]["oneDayPerf"] }}</td>
+                        <td>{{ companyDict[company.ticker]["oneWeekPerf"] }}</td>
+                        <td>{{ companyDict[company.ticker]["oneYearPerf"] }}</td>
+                        <td>{{ companyDict[company.ticker]["lastSECFilingDate"] }}</td>
+                        <td><a href="{{ companyDict[company.ticker]['lastSECFilingLink'] }}" target="_blank" rel="noreferrer noopener">Link</a></td>
+                        <td><a href="{{ companyDict[company.ticker]['SECPage'] }}" target="_blank" rel="noreferrer noopener">Link</a></td>
+                        <td>{{ companyDict[company.ticker]["lastEarningsDate"] }}</td>
+                        <td>{{ companyDict[company.ticker]["nextEarningsDate"] }}</td>
+                        <td><button class="deleteButton" data-delete-url="{{ url_for('delete_company', company_id=company.id) }}">Delete</button></td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+
+    <div class="right-side">
+        <form action="" method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <p>
+                {{ form.ticker.label }}
+                {{ form.ticker }}
+            </p>
+            <p>
+                {{ form.startYear.label }}
+                {{ form.startYear }}
+            </p>
+            <p>
+                {{ form.holderCount.label }}
+                {{ form.holderCount }}
+            </p>
+            
+            <p>{{ form.submit() }}</p>
+        </form>
+    {% if companyInfo %}
+        <hr>
+        <h2>{{ companyInfo["companyName"] }} ({{ companyInfo["ticker"].upper() }})</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Cash</th>
+                        <th>Assets</th>
+                        <th>Liabilities</th>
+                        <th>Debt</th>
+                        <th>Revenue</th>
+                        <th>COGS</th>
+                        <th>Gross Profit</th>
+                        <th>CFO</th>
+                        <th>CFI</th>
+                        <th>CFF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for year in years %}
+                        <tr>
+                            <td>{{ year }}</td>
+                            {% for i in financials %}
+                                {% if year %}
+                                    <td>${{ financials[i][year] }}</td>
+                                {% endif %}
+                        {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h2 class="holder-output-header">
+                {% if last_row > 1 %}
+                    Top {{ last_row }} Holders for {{ companyInfo["ticker"].upper() }}
+                {% elif last_row == 1 %}
+                    Top {{ last_row }} Holder for {{ companyInfo["ticker"].upper() }}
+                {% else %}
+                    No Holders for {{ companyInfo["ticker"].upper() }}; CUSIP is {{ cusip }}
+                {% endif %}
+            </h2>
+            {% if last_row >=1 %}
+                <table class="holderTable">
+                    <thead>
+                        <tr>
+                            <th class="holderTableHeader" style="text-align: left">Number</th>
+                            <th class="holderTableHeader" style="text-align: left">Fund Name</th>
+                            <th class="holderTableHeader" style="text-align: center">Number of Securities</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in holderTable %}
+                            <tr>
+                                <td class="holderRow">{{ row[0] }}</td>
+                                <td class="holderRow" style="text-align: left">{{ row[1] }}</td>
+                                <td class="holderRow" style="text-align: center">{{ row[2] }}</td>
+                            </tr>  
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No holders to display</p>
+            {% endif %}
     {% else %}
-        <p>No holders to display</p>
+        <hr>
+        <p>No company entered</p>
     {% endif %}
-{% else %}
+    </div>
+</div>  
 
-<form action="" method="POST" novalidate>
-    {{ form.hidden_tag() }}
+<!-- Delete Modal -->
+<div class="deleteModal" id="deleteModal">
+    <div class="delete-modal-content">
+        <p>Are you sure you want to delete?</p>
+        <div class="delete-modal-actions">
+            <button class="deleteCancelButton">Cancel</button>
+            <button class="deleteConfirmButton">Confirm Delete</button>
+        </div>
+    </div>
+</div>
 
-    <p>
-        {{ form.ticker.label }}
-        {{ form.ticker }}
-    </p>
-    <p>
-        {{ form.startYear.label }}
-        {{ form.startYear }}
-    </p>
-    <p>
-        {{ form.holderCount.label }}
-        {{ form.holderCount }}
-    </p>
-    
-    <p>{{ form.submit() }}</p>
-</form>
-{% endif %}
+<script>
+    // Script for Delete Modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.deleteButton');
+        const modal = document.getElementById('deleteModal');
+        const deleteCancelButtons = document.querySelectorAll('.deleteCancelButton');
+        const deleteConfirmButtons = document.querySelectorAll('.deleteConfirmButton');
 
+        let deleteUrl; // Variable to store the delete URL
+
+        // Show modal when any delete button is clicked
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Get the URL for the delete action from the data attribute
+                deleteUrl = button.getAttribute('data-delete-url');
+                modal.style.display = 'block';
+            });
+        });
+
+        // Hide modal when any cancel button is clicked
+        deleteCancelButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        });
+
+        // Perform the delete action when any confirm button is clicked
+        deleteConfirmButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Redirect to the delete URL after confirmation
+                window.location.href = deleteUrl;
+
+                // Hide the modal after confirmation (optional)
+                modal.style.display = 'none';
+            });
+        });
+    });
+</script>
 
 {% endblock %}

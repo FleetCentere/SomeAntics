@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, DateField, SubmitField, IntegerField, BooleanField, TextAreaField, FloatField, DateTimeField, DecimalField, TimeField, SelectField
+from wtforms import StringField, PasswordField, DateField, SubmitField, IntegerField, BooleanField, TextAreaField, FloatField, DateTimeField, DecimalField, TimeField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, NumberRange, Email, EqualTo, ValidationError, Optional
 from ProjectFiles.models import userTable
 
@@ -67,6 +67,7 @@ class newEventForm(FlaskForm):
     eventTime = TimeField("Event Time")
     eventLocation = StringField("Location")
     eventNote = TextAreaField("Note")
+    eventPeople = SelectMultipleField("People at event", choices=[], coerce=int)
     submit = SubmitField("Add Event")
 
 class newExerciseForm(FlaskForm):
@@ -106,7 +107,16 @@ class companyForm(FlaskForm):
 class personForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     background = TextAreaField("Background")
-    birthday = DateField("Birthday")
+    birthday = DateField("Birthday", validators=[Optional()])
     category = StringField("Category", validators=[DataRequired()])
     company = StringField("Company")
+    submit = SubmitField("Submit")
+
+class listForm(FlaskForm):
+    ticker = StringField("Ticker", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+class computerScienceForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    category = StringField("Category", validators=[DataRequired()])
     submit = SubmitField("Submit")

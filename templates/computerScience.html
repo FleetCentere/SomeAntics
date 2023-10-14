@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='computerScience.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <form action="" method="POST" autocomplete="off" novalidate>
+            {{ form.hidden_tag() }}
+            <div>
+                <label for="name">Name</label>
+                {{ form.name }}
+                {% for error in form.name.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label for="category">Category</label>
+                {{ form.category }}
+                {% for error in form.category.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div>
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+    <div class="tracker-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Posts</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in cs %}
+                <tr>
+                    <td>{{ cat.name }}</td>
+                    <td>{{ cat.category }}</td>
+                    <td><a href="{{ url_for('computerScienceCat', cat_id=cat.id) }}">Posts</a></td>
+                    <td><button class="deleteButton" data-delete-url="{{ url_for('deleteComputerScience', cat_id=cat.id) }}">Delete</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Delete Modal -->
+<div class="deleteModal" id="deleteModal">
+    <div class="delete-modal-content">
+        <p>Are you sure you want to delete?</p>
+        <div class="delete-modal-actions">
+            <button class="deleteCancelButton">Cancel</button>
+            <button class="deleteConfirmButton">Confirm Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script for Delete Modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.deleteButton');
+        const modal = document.getElementById('deleteModal');
+        const deleteCancelButtons = document.querySelectorAll('.deleteCancelButton');
+        const deleteConfirmButtons = document.querySelectorAll('.deleteConfirmButton');
+
+        let deleteUrl; // Variable to store the delete URL
+
+        // Show modal when any delete button is clicked
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Get the URL for the delete action from the data attribute
+                deleteUrl = button.getAttribute('data-delete-url');
+                modal.style.display = 'block';
+            });
+        });
+
+        // Hide modal when any cancel button is clicked
+        deleteCancelButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        });
+
+        // Perform the delete action when any confirm button is clicked
+        deleteConfirmButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Redirect to the delete URL after confirmation
+                window.location.href = deleteUrl;
+
+                // Hide the modal after confirmation (optional)
+                modal.style.display = 'none';
+            });
+        });
+    });
+</script>
+
+{% endblock %}

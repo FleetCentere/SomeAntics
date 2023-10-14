@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="daily-container">
+        <div class="snapshot-container">
+            <ul class="daily-bullets">
+                <li><strong>Date:</strong> {{ displayDay }}</li>
+                <li><strong>Time:</strong> {{ displayTime }}</li>
+                <li><strong>S&P 500:</strong> {{ sp[0] }} / {{ sp[1] }}%</li>
+                <li><strong>Weather:</strong> [TBD Weather]</li>
+            </ul>
+        </div>
+        <div class="news-container">
+            <h4>Top News</h4>
+            {% for article in articles %}
+                <ul>
+                    <li><a href="{{ article['url'] }}">-{{ article['source']['name'] }}: {{ article["title"] }}</a></li>
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="card-container">
+        <div class="card-1"><a href="{{ url_for('daily_events') }}">Events</a></div>
+        <div class="card-2"><a href="{{ url_for('computerScience') }}">Computer Science</a></div>
+        <div class="card-3"><a href="{{ url_for('companies') }}">Company Analysis</a></div>
+        <div class="card-4"><a href="{{ url_for('daily_task') }}">Tasks</a></div>
+        <div class="card-5"><a href="{{ url_for('daily_exercise') }}">Exercises</a></div>
+        <div class="card-6"><a href="{{ url_for('daily_content') }}">Content</a></div>
+    </div>
+    <div class="tracker-container">
+        Tracker Container
+    </div>
+</div>
+<!-- Modal Code -->
+{% endblock %}

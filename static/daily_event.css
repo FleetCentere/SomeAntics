@@ -63,3 +63,8 @@
 .btn:hover {
     background-color: #06488e;
 }
+
+.attendee-text {
+    margin: 0;
+    padding: 0;
+}
