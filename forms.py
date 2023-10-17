@@ -120,3 +120,15 @@ class computerScienceForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     category = StringField("Category", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+class computerSciencePosts(FlaskForm):
+    title = StringField("Title") 
+    note = TextAreaField("Note")
+    link = StringField("Link")
+    submit = SubmitField("Submit")
+
+class jobForm(FlaskForm):
+    job = StringField("Job") 
+    contact = StringField("Contact")
+    status = TextAreaField("Status")
+    submit = SubmitField("Submit")

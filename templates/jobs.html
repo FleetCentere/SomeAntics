@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block css %}
+<style>
+    .container {
+        padding: 5px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        grid-gap: 2px;
+        border: black solid 1px;
+    }
+
+    .form-container,
+    .table-container {
+        border: black solid 1px;
+        border-radius: 3px;
+        padding: 3px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="form-container">
+        <form action="" method="POST" autocomplete="off" novalidate>
+            {{ form.hidden_tag() }}
+            <div>
+                <label>Job</label>
+                {{ form.job }}
+                {% for error in form.job.errors %}
+                    <span>[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div>
+                <label>Contact</label>
+                {{ form.contact }}
+                {% for error in form.contact.errors %}
+                    <span>[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div>
+                <label>Status</label>
+                {{ form.status }}
+                {% for error in form.status.errors %}
+                    <span>[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            {{ form.submit }}
+        </form>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Job</th>
+                    <th>Date Added</th>
+                    <th>Contact</th>
+                    <th>Last Update</th>
+                    <th>Status</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{job.job}}</td>
+                    <td>{{job.dateAdded}}</td>
+                    <td>{{job.contact}}</td>
+                    <td>
+                        {% if job.dateUpdated %}
+                            {{ job.dateUpdated }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{job.status}}</td>
+                    <td><a href="{{ url_for('jobs', job_id=job.id) }}">Edit</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,16 +1,80 @@
 {% extends "layout.html" %}
 {% block css %}
+    <style>
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            grid-gap: 5px;
+        }
 
+        .container,
+        .form-container,
+        .cards-container {
+            border: black solid 2px;
+            padding: 5px;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .card {
+            border: purple solid 1px;
+            border-radius: 3px;
+            padding: 3px;
+        }
+
+        .card-edit {
+            float: right;
+        }
+
+    </style>
 {% endblock %}
 
 
 {% block content %}
-
+<h2>{{ cs.name }}</h2>
 <div class="container">
-    {% for item in items %}
-
-
-
-    {% endfor %}
+    <div class="form-container">
+        <form action="" method="POST" autocomplete="off" novalidate>
+            {{ form.hidden_tag() }}
+            <div>
+                <label for="title">Title</label>
+                {{ form.title }}
+                {% for error in form.title.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <label for="link">Link</label>
+                {{ form.link }}
+                {% for error in form.link.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <label for="note">Note</label>
+                {{ form.note }}
+                {% for error in form.note.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {{ form.submit }}
+        </form>
+    </div>
+    <div class="cards-container">
+        {% for item in items %}
+            <div class="card">
+                <span>{{ item.title }}</span>
+                <span class="card-edit"><a href="{{ url_for('computerScienceCat', cat_id=cs.id, post_id=item.id) }}">Edit</a></span>
+                <br>
+                <span>{{ item.dateAdded }}</span>
+                <span class="card-edit"><a href="{{ item.link }}">Link</a></span>
+                <hr>
+                <span>{{ item.note }}</span>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

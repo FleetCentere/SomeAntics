@@ -6,8 +6,8 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm
-from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts
+from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm, computerSciencePosts, jobForm
+from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts, jobTable
 from ProjectFiles.stockPrice import sp500
 from ProjectFiles.cusipLookup import cusipLookup
 from ProjectFiles.newsRun import newsRun
@@ -59,11 +59,40 @@ def computerScience():
                             cs=cs,
                             user=current_user)
 
-@app.route("/computerScienceCat/<int:cat_id>", methods=["GET", "POST"])
+@app.route("/computerScienceCat/<int:cat_id>", defaults={"post_id": None}, methods=["GET", "POST"])
+@app.route("/computerScienceCat/<int:cat_id>/<int:post_id>", methods=["GET", "POST"])
 @login_required
-def computerScienceCat(cat_id):
-    return render_template("computerScienceCat.html",
+def computerScienceCat(cat_id, post_id):
+    cs = csTable.query.get_or_404(cat_id)
+    if post_id is not None:
+        post = csPosts.query.get_or_404(post_id)
+    items = cs.posts
+    form = computerSciencePosts()
+    if request.method == "GET":   
+        if post_id is not None:
+            post = csPosts.query.get_or_404(post_id)
+            form.note.data = post.note
+            form.link.data = post.link
+            form.title.data = post.title
+        return render_template("computerScienceCat.html",
+                            cs=cs,
+                            form=form,
+                            items=items,
                             user=current_user)
+    if form.validate_on_submit():
+        if post_id is None:
+            csPost = csPosts(cs_id=cs.id, user_id=current_user.id, note=form.note.data, link=form.link.data, dateAdded=datetime.now().date())
+            db.session.add(csPost)
+            db.session.commit()
+            items = cs.posts
+            return redirect(url_for("computerScienceCat", cat_id=cs.id))
+        elif post_id is not None:
+            post = csPosts.query.get_or_404(post_id)
+            post.note = form.note.data
+            post.link = form.link.data
+            post.title = form.title.data
+            db.session.commit()
+            return redirect(url_for("computerScienceCat", cat_id=cs.id))
 
 @app.route("/deleteComputerScience/<int:cat_id>", methods=["POST", "GET"])
 @login_required
@@ -76,6 +105,47 @@ def deleteComputerScience(cat_id):
     db.session.commit()
     flash("The item has been deleted")
     return redirect(url_for("computerScience"))
+
+@app.route("/jobs", defaults={"job_id": None}, methods=["GET", "POST"])
+@app.route("/jobs/<int:job_id>", methods=["GET", "POST"])
+@login_required
+def jobs(job_id):
+    form = jobForm()
+    jobs = jobTable.query.filter_by(user_id=current_user.id).all()
+    if form.validate_on_submit():
+        if job_id is None:
+            newJob = jobTable(user_id=current_user.id, job=form.job.data, status=form.status.data, contact=form.contact.data, dateAdded=datetime.now().date())
+            db.session.add(newJob)
+            db.session.commit()
+            flash("Your job has been added")
+            return redirect(url_for('jobs'))
+        else:
+            job = jobTable.query.get_or_404(job_id)    
+            job.job = form.job.data
+            job.status = form.status.data
+            job.contact = form.contact.data
+            job.dateUpdated = dateAdded=datetime.now().date()
+            db.session.commit()
+            flash("Your job has been updated")
+            return redirect(url_for('jobs'))
+    if job_id is not None:
+        job = jobTable.query.get_or_404(job_id)
+        if job.user_id != current_user.id:
+            flash("You are not authorized to edit that entry")
+            return redirect("jobs")
+        form.job.data = job.job
+        form.status.data = job.status
+        form.contact.data = job.contact
+    return render_template("jobs.html", 
+                            form=form,
+                            jobs=jobs,
+                            user=current_user)
+
+@app.route("/NHLConnections", methods=["GET", "POST"])
+@login_required
+def NHLConnections():
+    return render_template("NHLConnections.html",
+                            user=current_user)
 
 @app.route("/daily_form", defaults={"day_id": None}, methods=["GET", "POST"])
 @app.route("/daily_form/<int:day_id>", methods=["GET", "POST"])
