@@ -24,7 +24,15 @@
         </div>
     </div>
     <div class="card-container">
-        <div class="card-1"><a href="{{ url_for('daily_events') }}">Events</a></div>
+        <div class="card-1"><a href="{{ url_for('daily_events') }}">Events</a>
+            <ul>
+                {% for event in events %}
+                    <li>
+                        {{ event.day.date }} / {{ event.eventType }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
         <div class="card-2"><a href="{{ url_for('computerScience') }}">Computer Science</a></div>
         <div class="card-3"><a href="{{ url_for('companies') }}">Company Analysis</a></div>
         <div class="card-4"><a href="{{ url_for('daily_task') }}">Tasks</a></div>
@@ -33,6 +41,24 @@
     </div>
     <div class="tracker-container">
         <a href="{{ url_for('daily_form') }}">Tracker Container</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Category 1</th>
+                    <th>Category 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in days %}
+                <tr>
+                    <td>{{ day.date }}</td>
+                    <td>Category 1</td>
+                    <td>Category 2</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 <!-- Modal Code -->

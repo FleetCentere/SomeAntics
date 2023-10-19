@@ -165,6 +165,7 @@ class csTable(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_cs"))
     name = db.Column(db.String(50))
     category = db.Column(db.String(50))
+    link = db.Column(db.String(200))
     dateAdded = db.Column(db.Date)
     posts = db.relationship("csPosts", backref="csName", lazy="dynamic")
 
@@ -174,7 +175,6 @@ class csPosts(db.Model):
     cs_id = db.Column(db.Integer, db.ForeignKey("cs_table.id", name="fk_cs_post"))
     title = db.Column(db.String(200))
     note = db.Column(db.Text)
-    link = db.Column(db.String(100))
     dateAdded = db.Column(db.Date)
 
 class jobTable(db.Model):

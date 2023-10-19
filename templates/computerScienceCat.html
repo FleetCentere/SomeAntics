@@ -20,13 +20,33 @@
         }
 
         .card {
-            border: purple solid 1px;
+            border: purple solid 3px;
             border-radius: 3px;
             padding: 3px;
+            line-height: 100%;
         }
 
         .card-edit {
             float: right;
+        }
+
+        .card-text {
+            font-size: 0.75rem;
+            line-height: 100%;
+        }
+
+        .backButton {
+            border: solid 3px purple;
+            border-radius: 3px;
+            margin: 1rem 0 0 0;
+            padding: 3px;
+            max-width: 20%;
+            text-align: center;
+            background-color: lightgrey;
+        }
+
+        h3 {
+            margin: 0;
         }
 
     </style>
@@ -35,6 +55,7 @@
 
 {% block content %}
 <h2>{{ cs.name }}</h2>
+<h3><a href="{{ cs.link }}" target="_blank" rel="noreferrer noopener">Link</a></h3>
 <div class="container">
     <div class="form-container">
         <form action="" method="POST" autocomplete="off" novalidate>
@@ -43,13 +64,6 @@
                 <label for="title">Title</label>
                 {{ form.title }}
                 {% for error in form.title.errors %}
-                    <span>{{ error }}</span>
-                {% endfor %}
-            </div>
-            <div>
-                <label for="link">Link</label>
-                {{ form.link }}
-                {% for error in form.link.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
             </div>
@@ -70,11 +84,67 @@
                 <span class="card-edit"><a href="{{ url_for('computerScienceCat', cat_id=cs.id, post_id=item.id) }}">Edit</a></span>
                 <br>
                 <span>{{ item.dateAdded }}</span>
-                <span class="card-edit"><a href="{{ item.link }}">Link</a></span>
+                <button class="deleteButton card-edit" data-delete-url="{{ url_for('deleteComputerScienceCat', post_id=item.id) }}">Delete</button>
                 <hr>
-                <span>{{ item.note }}</span>
+                <div class="card-text">
+                {% for text in item.note.split("\n") %}
+                    <span>{{ text }}</span><br>
+                {% endfor %}
+                </div>
             </div>
         {% endfor %}
     </div>
 </div>
+<div class="backButton"><a href="{{ url_for('computerScience') }}">Back to Computer Science home</a></div>
+
+
+<!-- Delete Modal -->
+<div class="deleteModal" id="deleteModal">
+    <div class="delete-modal-content">
+        <p>Are you sure you want to delete?</p>
+        <div class="delete-modal-actions">
+            <button class="deleteCancelButton">Cancel</button>
+            <button class="deleteConfirmButton">Confirm Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script for Delete Modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.deleteButton');
+        const modal = document.getElementById('deleteModal');
+        const deleteCancelButtons = document.querySelectorAll('.deleteCancelButton');
+        const deleteConfirmButtons = document.querySelectorAll('.deleteConfirmButton');
+
+        let deleteUrl; // Variable to store the delete URL
+
+        // Show modal when any delete button is clicked
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Get the URL for the delete action from the data attribute
+                deleteUrl = button.getAttribute('data-delete-url');
+                modal.style.display = 'block';
+            });
+        });
+
+        // Hide modal when any cancel button is clicked
+        deleteCancelButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        });
+
+        // Perform the delete action when any confirm button is clicked
+        deleteConfirmButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Redirect to the delete URL after confirmation
+                window.location.href = deleteUrl;
+
+                // Hide the modal after confirmation (optional)
+                modal.style.display = 'none';
+            });
+        });
+    });
+</script>
 {% endblock %}

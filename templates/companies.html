@@ -55,6 +55,32 @@
     </div>
 
     <div class="right-side">
+        <div>
+            <h3>Random Company</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ticker</td>
+                        <td>{{ randomInfo['ticker'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Company</td>
+                        <td>{{ randomInfo['companyFacts']['entityName'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>CUSIP</td>
+                        <td>{{ randomInfo['randomCUSIP'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
         <form action="" method="POST" novalidate>
             {{ form.hidden_tag() }}
 

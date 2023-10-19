@@ -11,6 +11,7 @@ from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, event
 from ProjectFiles.stockPrice import sp500
 from ProjectFiles.cusipLookup import cusipLookup
 from ProjectFiles.newsRun import newsRun
+from ProjectFiles.companyInfo import getInfo, getRandomTicker
 
 @app.route("/")
 @app.route("/home")
@@ -29,6 +30,14 @@ def home():
     parts[2] = parts[2][2:]
     displayDay = "/".join(parts)
     prices = sp500()
+    dayDelta = 14
+    current = datetime.now().date()
+    latest_date = current - timedelta(days=dayDelta)
+    days = db.session.query(dayTable).filter(dayTable.date >= latest_date, dayTable.user_id == current_user.id)
+    days = days.order_by(desc(dayTable.date)).all()
+    n = 5
+    events = eventTable.query.filter(current_user.id == eventTable.user_id)
+    events = events.join(dayTable).order_by(desc(dayTable.date)).limit(n).all()
     try:
         t_minus_1 = (prices[2]/prices[1])-1
         t_minus_2 = (prices[2]/prices[0])-1
@@ -40,20 +49,39 @@ def home():
                             displayTime=displayTime, 
                             displayDay=displayDay,
                             sp=sp,
-                            articles=articles)
+                            articles=articles,
+                            days=days,
+                            events=events)
 
-@app.route("/computerScience", methods=["GET", "POST"])
+@app.route("/computerScience/", defaults={"cat_id": None}, methods=["GET", "POST"])
+@app.route("/computerScience/<int:cat_id>", methods=["GET", "POST"])
 @login_required
-def computerScience():
+def computerScience(cat_id):
     form = computerScienceForm()
     cs = csTable.query.filter_by(user_id=current_user.id).all()
     if form.validate_on_submit():
         name = form.name.data
         category = form.category.data
-        cs = csTable(user_id=current_user.id, name=name, category=category, dateAdded=datetime.now().date())
-        db.session.add(cs)
-        db.session.commit()
-        return redirect("computerScience")
+        link = form.link.data
+        if cat_id is None:
+            cs = csTable(user_id=current_user.id, name=name, category=category, link=form.link.data, dateAdded=datetime.now().date())
+            db.session.add(cs)
+            db.session.commit()
+            flash("Your category has been added")
+            return redirect(url_for("computerScience"))
+        else:
+            cat = csTable.query.get_or_404(cat_id)
+            cat.name = name
+            cat.category = category
+            cat.link = link
+            db.session.commit()
+            flash("Your category has been updated")
+            return redirect(url_for("computerScience"))
+    if cat_id is not None:
+        cat = csTable.query.get_or_404(cat_id)
+        form.name.data = cat.name
+        form.category.data = cat.category
+        form.link.data = cat.link
     return render_template("computerScience.html",
                             form=form, 
                             cs=cs,
@@ -72,7 +100,6 @@ def computerScienceCat(cat_id, post_id):
         if post_id is not None:
             post = csPosts.query.get_or_404(post_id)
             form.note.data = post.note
-            form.link.data = post.link
             form.title.data = post.title
         return render_template("computerScienceCat.html",
                             cs=cs,
@@ -81,7 +108,7 @@ def computerScienceCat(cat_id, post_id):
                             user=current_user)
     if form.validate_on_submit():
         if post_id is None:
-            csPost = csPosts(cs_id=cs.id, user_id=current_user.id, note=form.note.data, link=form.link.data, dateAdded=datetime.now().date())
+            csPost = csPosts(cs_id=cs.id, user_id=current_user.id, note=form.note.data, title=form.title.data, dateAdded=datetime.now().date())
             db.session.add(csPost)
             db.session.commit()
             items = cs.posts
@@ -89,7 +116,6 @@ def computerScienceCat(cat_id, post_id):
         elif post_id is not None:
             post = csPosts.query.get_or_404(post_id)
             post.note = form.note.data
-            post.link = form.link.data
             post.title = form.title.data
             db.session.commit()
             return redirect(url_for("computerScienceCat", cat_id=cs.id))
@@ -105,6 +131,19 @@ def deleteComputerScience(cat_id):
     db.session.commit()
     flash("The item has been deleted")
     return redirect(url_for("computerScience"))
+
+@app.route("/deleteComputerScienceCat/<int:post_id>", methods=["POST", "GET"])
+@login_required
+def deleteComputerScienceCat(post_id):
+    post = csPosts.query.get_or_404(post_id)
+    cat = csTable.query.get_or_404(post.cs_id)
+    if post.user_id != current_user.id:
+        flash("You are not authorized to delete this item")
+        return redirect(url_for("computerScienceCat", cat_id=cat.id))
+    db.session.delete(post)
+    db.session.commit()
+    flash("The post has been deleted")
+    return redirect(url_for("computerScienceCat", cat_id=cat.id))
 
 @app.route("/jobs", defaults={"job_id": None}, methods=["GET", "POST"])
 @app.route("/jobs/<int:job_id>", methods=["GET", "POST"])
@@ -153,10 +192,9 @@ def NHLConnections():
 def daily_form(day_id):
     n = 20
     current = datetime.now()
-    # time = datetime.now()
     today = datetime.now().date()
     latest_date = today - timedelta(days=n)
-    days = db.session.query(dayTable).filter(dayTable.date >= latest_date)
+    days = db.session.query(dayTable).filter(dayTable.date >= latest_date, dayTable.user_id == current_user.id)
     days = days.order_by(desc(dayTable.date)).all()
     counts_dict = {}
     for day in days:
@@ -250,9 +288,9 @@ def daily_form(day_id):
 @login_required
 def daily_content(content_id):
     total_days = 10
-    n = 10
+    n = 20
     latest_date = datetime.now() - timedelta(days=total_days)
-    days = db.session.query(dayTable).filter(dayTable.date >= latest_date)
+    days = db.session.query(dayTable).filter(dayTable.date >= latest_date, dayTable.user_id == current_user.id)
     days = days.order_by(desc(dayTable.date)).all()
     form = newContentForm()
     category_tuple = db.session.query(contentTable.contentType).distinct().all()
@@ -650,6 +688,10 @@ def companies(ticker):
     data = None
     companyList = companyTable.query.filter_by(user_id = current_user.id).all()
     companyDict = {}
+    ticker = getRandomTicker()
+    companyFacts = getInfo(ticker)    
+    randomCUSIP = cusipLookup(ticker)
+    randomInfo = {"ticker": ticker, "randomCUSIP": randomCUSIP, "companyFacts": companyFacts}
     # dictionary to store ticker, date added, market cap, 
     # share price, 1 day perf, 1 week perf, 1 year perf, date of latest SEC filing, 
     # link to latest SEC filing, link to SEC page, last earnings, next earnings
@@ -716,7 +758,8 @@ def companies(ticker):
                             holderTable=holderTable, 
                             last_row=last_row,
                             companyList=companyList,
-                            data=data)
+                            data=data,
+                            randomInfo=randomInfo)
 
 @app.route("/delete_company/<int:company_id>", methods=["POST", "GET"])
 def delete_company(company_id):

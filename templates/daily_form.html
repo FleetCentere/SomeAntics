@@ -93,6 +93,7 @@
                     <tr>
                         <th>Day</th>
                         <th>Weight</th>
+                        <th>Location</th>
                         <th>Exercise</th>
                         <th>Contents</th>
                         <th>Events</th>
@@ -106,6 +107,11 @@
                         <td>
                         {% if day.weight %}
                         {{ day.weight }}
+                        {% else %}
+                        {% endif %}</td>
+                        <td>
+                        {% if day.sleep %}
+                        {{ day.sleep }}
                         {% else %}
                         {% endif %}</td>
                         <td>{{ counts_dict[day]["exercise"] }}</td>

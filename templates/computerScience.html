@@ -24,6 +24,14 @@
             </div>
 
             <div>
+                <label for="link">Link</label>
+                {{ form.link }}
+                {% for error in form.link.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div>
                 {{ form.submit(class="btn btn-primary") }}
             </div>
         </form>
@@ -34,6 +42,7 @@
                 <tr>
                     <th>Title</th>
                     <th>Category</th>
+                    <th>Link</th>
                     <th>Posts</th>
                     <th>Options</th>
                 </tr>
@@ -43,8 +52,10 @@
                 <tr>
                     <td>{{ cat.name }}</td>
                     <td>{{ cat.category }}</td>
+                    <td><a href="{{ cat.link }}" target="_blank" rel="noreferrer noopener">Link</a></td>
                     <td><a href="{{ url_for('computerScienceCat', cat_id=cat.id) }}">Posts</a></td>
-                    <td><button class="deleteButton" data-delete-url="{{ url_for('deleteComputerScience', cat_id=cat.id) }}">Delete</button></td>
+                    <td><a href="{{ url_for('computerScience', cat_id=cat.id) }}">Edit</a>
+                        <button class="deleteButton" data-delete-url="{{ url_for('deleteComputerScience', cat_id=cat.id) }}">Delete</button></td>
                 </tr>
                 {% endfor %}
             </tbody>
