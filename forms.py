@@ -71,7 +71,7 @@ class newEventForm(FlaskForm):
     submit = SubmitField("Add Event")
 
 class newExerciseForm(FlaskForm):
-    exerciseDate = DateField("Date", validators=[DataRequired()])
+    date = DateField("Date", validators=[DataRequired()])
     exerciseType = StringField("Type of Exercise", validators=[Optional()])
     exerciseDuration = IntegerField("Duration (min)")
     exerciseDistance = FloatField("Exericse Distance")

@@ -38,6 +38,14 @@ def home():
     n = 5
     events = eventTable.query.filter(current_user.id == eventTable.user_id)
     events = events.join(dayTable).order_by(desc(dayTable.date)).limit(n).all()
+    cs = csTable.query.filter(current_user.id == csTable.user_id)
+    cs = cs.order_by(desc(csTable.dateAdded)).all()
+    exercises = exerciseTable.query.filter(current_user.id == exerciseTable.user_id)
+    exercises = exercises.join(dayTable).order_by(desc(dayTable.date)).limit(n).all()
+    tasks = taskTable.query.filter(current_user.id == taskTable.user_id)
+    tasks = tasks.order_by(desc(taskTable.dateEntered)).all()
+    contents = contentTable.query.filter(current_user.id == contentTable.user_id)
+    contents = contents.join(dayTable).order_by(desc(dayTable.date)).limit(n).all()
     try:
         t_minus_1 = (prices[2]/prices[1])-1
         t_minus_2 = (prices[2]/prices[0])-1
@@ -46,12 +54,51 @@ def home():
         sp = ["na", "na", "na"]
     return render_template("home.html", 
                             user=current_user,
+                            cs=cs,
+                            tasks=tasks,
+                            events=events,
+                            exercises=exercises,
                             displayTime=displayTime, 
                             displayDay=displayDay,
                             sp=sp,
                             articles=articles,
                             days=days,
-                            events=events)
+                            contents=contents)
+
+@app.route("/cards/<string:category>", methods=["GET", "POST"])
+@login_required
+def cards(category):
+    n = 20
+    items = [] # items will hold a list of dictionaries with each ith element of items one dictionary per relevant item of set
+    if category == "Content":
+        form = newContentForm()
+        contents = contentTable.query.filter_by(user_id=current_user.id).join(dayTable).order_by(desc(dayTable.date)).limit(n)
+        headers = ["Date", "Type", "Creator", "Subject"]
+        items.append(headers)
+        for i, content in enumerate(contents):
+            dictionary = {"id": content.id, 
+                          "day": content.day, 
+                          "type": content.contentType, 
+                          "name": content.contentCreator, 
+                          "subject": content.contentSubject}
+            items.append(dictionary) 
+    elif category == "Exercise":
+        form = newExerciseForm()
+        exercises = exerciseTable.query.filter_by(user_id=current_user.id).join(dayTable).order_by(desc(dayTable.date)).limit(n)
+        headers = ["Date", "Type", "Distance", "Time"]
+        items.append(headers)
+        for i, exercise in enumerate(exercises):
+            dictionary = {"id": exercise.id, 
+                          "day": exercise.day, 
+                          "type": exercise.exerciseType, 
+                          "distance": exercise.exerciseDistance, 
+                          "duration": exercise.exerciseDuration}
+            items.append(dictionary)
+    return render_template("cards.html", 
+                            user=current_user, 
+                            items=items,
+                            category=category,
+                            form=form)
 
 @app.route("/computerScience/", defaults={"cat_id": None}, methods=["GET", "POST"])
 @app.route("/computerScience/<int:cat_id>", methods=["GET", "POST"])
@@ -387,7 +434,7 @@ def daily_exercise(exercise_id):
     n = 10
     if form.validate_on_submit():
         if exercise_id is None:
-            day = dayTable.query.filter_by(date=form.exerciseDate.data).first()
+            day = dayTable.query.filter_by(date=form.date.data).first()
             if day == None:
                 day = dayTable(date=form.exerciseDate.data, author=current_user)
                 db.session.add(day)
@@ -404,7 +451,7 @@ def daily_exercise(exercise_id):
             exercise.exerciseType = form.exerciseType.data
             exercise.exerciseDuration = form.exerciseDuration.data
             exercise.exerciseDistance = form.exerciseDistance.data
-            day = dayTable.query.filter(dayTable.date == form.exerciseData.data).filter(dayTable.author == current_user).first()
+            day = dayTable.query.filter(dayTable.date == form.date.data).filter(dayTable.author == current_user).first()
             exercise.day = day
             db.session.commit()
             return redirect(url_for("daily_exercise"))
@@ -416,9 +463,9 @@ def daily_exercise(exercise_id):
             form.exerciseDistance.data = exercise.exerciseDistance
             day = dayTable.query.filter_by(id = exercise.day_id).first()
             try:
-                form.exerciseDate.data = day.date
+                form.date.data = day.date
             except:
-                form.exerciseDate.data = None
+                form.date.data = None
     exercises = exerciseTable.query.filter(exerciseTable.author == current_user)
     exercises = exercises.join(dayTable).order_by(desc(dayTable.date)).limit(n).all()
     return render_template("daily_exercise.html", 

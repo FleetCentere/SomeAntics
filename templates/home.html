@@ -24,23 +24,55 @@
         </div>
     </div>
     <div class="card-container">
-        <div class="card-1"><a href="{{ url_for('daily_events') }}">Events</a>
+        <div class="card-1"><a href="{{ url_for('daily_events') }}"><h4>Events</h4></a>
             <ul>
                 {% for event in events %}
                     <li>
-                        {{ event.day.date }} / {{ event.eventType }}
+                        <a href="{{ url_for('daily_events', event_id=event.id) }}">{{ event.day.date }} / {{ event.eventType }}</a>
                     </li>
                 {% endfor %}
             </ul>
         </div>
-        <div class="card-2"><a href="{{ url_for('computerScience') }}">Computer Science</a></div>
-        <div class="card-3"><a href="{{ url_for('companies') }}">Company Analysis</a></div>
-        <div class="card-4"><a href="{{ url_for('daily_task') }}">Tasks</a></div>
-        <div class="card-5"><a href="{{ url_for('daily_exercise') }}">Exercises</a></div>
-        <div class="card-6"><a href="{{ url_for('daily_content') }}">Content</a></div>
+        <div class="card-2"><a href="{{ url_for('computerScience') }}"><h4>Computer Science</h4></a>
+            <ul>
+                {% for c in cs %}
+                    <li>
+                        <a href="{{ url_for('computerScience', cat_id=c.id) }}">{{ c.dateAdded }} / {{ c.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card-3"><a href="{{ url_for('companies') }}"><h4>Company Analysis</h4></a></div>
+        <div class="card-4"><a href="{{ url_for('daily_task') }}"><h4>Tasks</h4></a>
+            <ul>
+                {% for task in tasks %}
+                    <li>
+                        <a href="{{ url_for('daily_task', task_id=task.id) }}">{{ task.dateEntered }} / {{ task.taskName }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card-5"><a href="{{ url_for('daily_exercise') }}"><h4>Exercises</h4></a>
+            <ul>
+                {% for exercise in exercises %}
+                    <li>
+                        <a href="{{ url_for('daily_exercise', exercise_id=exercise.id) }}">{{ exercise.day.date }} / {{ exercise.exerciseType }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card-6"><a href="{{ url_for('daily_content') }}"><h4>Content</h4></a>
+            <ul>
+                {% for content in contents %}
+                    <li>
+                        <a href="{{ url_for('daily_content', content_id=content.id) }}">{{ content.day.date }} / {{ content.contentType }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
     <div class="tracker-container">
-        <a href="{{ url_for('daily_form') }}">Tracker Container</a>
+        <a href="{{ url_for('daily_form') }}"><h4>Tracker Container</h4></a>
         <table>
             <thead>
                 <tr>

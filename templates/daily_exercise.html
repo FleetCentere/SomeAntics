@@ -4,6 +4,7 @@
 {% endblock %}
 
 {% block content %}
+<a href="{{ url_for('cards', category='Exercise') }}">Exercise Cards</a>
 <div class="main-container">
     <div class="content-form-container">
         <form action="" method="POST" autocomplete="off" novalidate>
@@ -13,8 +14,8 @@
                 
                 <div class="form-group">
                     <label for="exerciseDate">Date</label>
-                    {{ form.exerciseDate(class="form-control", id="exerciseDate") }}
-                    {% for error in form.exerciseDate.errors %}
+                    {{ form.date(class="form-control", id="exerciseDate") }}
+                    {% for error in form.date.errors %}
                         <span class="errorMessage">[{{ error }}]</span>
                     {% endfor %}
                 </div>

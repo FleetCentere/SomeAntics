@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block css %}
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: 2fr 3fr;
+        grid-gap: 5px;
+        padding: 3px;
+        border-radius: 3px;
+    }
+
+    h3 {
+        margin: 3px 0;
+        border: solid blue 2px;
+        padding: 2px;
+        width: 20%;
+    }
+
+    .card-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: auto;
+        grid-gap: 5px;
+    }
+
+    .card {
+        border: solid black 2px;
+        border-radius: 5px;
+        padding: 3px;
+    }
+
+    .form-container {
+        border: black solid 2px;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+</style>
+{% endblock %}
+{% block content %}
+    <h3>{{ category }}</h3>
+    <div class="container">        
+        <div class="form-container">
+            <form action="" method="POST" autocomplete="off" novalidate class="form">
+                {{ form.hidden_tag() }}
+                <label for="date" class="form-label">Date</label>
+                {{ form.date }}
+                {% for error in form.date.errors %}
+                    <span class="errorMessage">{{ error }}</span>
+                {% endfor %}
+                <br>
+                {{ form.submit() }}
+            </form>
+        </div>
+        <div class="card-container">
+            {% for item in items[1:] %}
+                <div class="card">
+                    <div>{{ item["day"].date }}</div>
+                    <div>{{ item["type"] }}</div>
+                    {% if category == "Content" %}
+                        <div>{{ item["name"] }}</div>
+                        <div>{{ item["subject"] }}</div>
+                    {% elif category == "Exercise" %}
+                        <div>{{ item["distance"] }} miles / {{ item["duration"] }} minutes</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+<!-- 
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                {% for header in items[0] %}
+                    <th>{{ header }}</th>
+                {% endfor %}
+            </tr>                    
+        </thead>
+        <tbody>
+            {% for item in items[1:] %}
+            <tr>
+                <td>{{ item["day"].date }}</td>
+                <td>{{ item["type"] }}</td>
+                {% if category == 'Exercise' %}
+                    <td>{{ item["distance"] }}</td>
+                    <td>{{ item["duration"] }}</td>
+                {% elif category == 'Content' %}
+                    <td>{{ item["name"] }}</td>
+                    <td>{{ item["subject"] }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div> -->

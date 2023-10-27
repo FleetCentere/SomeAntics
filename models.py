@@ -51,6 +51,7 @@ class dayTable(db.Model):
     contents = db.relationship("contentTable", backref="day", lazy="dynamic")
     news = db.relationship("newsTable", backref="day", lazy="dynamic")
     exercises = db.relationship("exerciseTable", backref="day", lazy="dynamic")
+    tasks = db.relationship("taskTable", backref="day", lazy="dynamic")
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_day"))
 
     def __repr__(self):
@@ -67,6 +68,7 @@ class taskTable(db.Model):
     dateEntered = db.Column(db.Date, default=datetime.now())
     dateEdited = db.Column(db.Date, default=None, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_task"))
+    day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_task"))
 
     def __repr__(self):
         return f"{self.taskName} on {self.dateEntered}"
@@ -144,7 +146,7 @@ class exerciseTable(db.Model):
     exerciseType = db.Column(db.String(50))
     exerciseDistance = db.Column(db.Float)
 
-class ideaTable(db.Model):
+class ideaTable(db.Model):  
     id = db.Column(db.Integer, primary_key=True)
     note = db.Column(db.Text)
 

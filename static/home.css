@@ -1,6 +1,6 @@
 .container {
     display: grid;
-    grid-template-columns: 2fr 2fr 1fr;
+    grid-template-columns: 2fr 3fr 1fr;
     grid-gap: 10px;
     min-height: 60vh;  
     justify-items: stretch; /* center; */

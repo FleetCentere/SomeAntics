@@ -8,7 +8,6 @@ def getInfo(ticker):
     tickers = requests.get("https://www.sec.gov/files/company_tickers.json", headers=headers).json()
     for row in tickers:
         if tickers[row]["ticker"] == ticker.upper():
-            companyName = tickers[row]["title"]
             CIK = str(tickers[row]["cik_str"]).zfill(10)
             break
     # company_submissions = requests.get(f"https://data.sec.gov/submissions/CIK{cik_str}.json", headers=headers).json()
