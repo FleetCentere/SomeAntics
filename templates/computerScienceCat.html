@@ -4,11 +4,12 @@
         .container {
             display: grid;
             grid-template-columns: 1fr 2fr;
-            grid-gap: 5px;
+            grid-gap: 20px;
+            max-height: 100%;
         }
 
         .container,
-        .form-container,
+        .cs-form-container,
         .cards-container {
             border: black solid 2px;
             padding: 5px;
@@ -49,6 +50,59 @@
             margin: 0;
         }
 
+        .cs-form-container {
+            width: 100%;
+            /* margin: 0 auto; */
+        }
+
+        .cs-form-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cs-form-label {
+            font-weight: bold;
+            flex: 0.5;
+            text-align: left;
+            margin-right: 1px;
+        }
+
+        .cs-form-title {
+            flex: 2;
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .cs-form-note {
+            flex: 2;
+            width: 95%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .cs-form-button {
+            flex: 2;
+            margin-right: 10px;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cs-form-button:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 {% endblock %}
 
@@ -57,24 +111,27 @@
 <h2>{{ cs.name }}</h2>
 <h3><a href="{{ cs.link }}" target="_blank" rel="noreferrer noopener">Link</a></h3>
 <div class="container">
-    <div class="form-container">
+    <div class="cs-form-container">
         <form action="" method="POST" autocomplete="off" novalidate>
             {{ form.hidden_tag() }}
-            <div>
-                <label for="title">Title</label>
-                {{ form.title }}
+            <div class="cs-form-field">
+                <label for="title" class="cs-form-label">Title</label>
+                {{ form.title(class="cs-form-title") }}
                 {% for error in form.title.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
             </div>
-            <div>
-                <label for="note">Note</label>
-                {{ form.note }}
+            <div class="cs-form-field">
+                <label for="note" class="cs-form-label">Note</label>
+                {{ form.note(class="cs-form-note") }}
                 {% for error in form.note.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
             </div>
-            {{ form.submit }}
+            <div class="cs-form-field">
+                <label class="cs-form-label"></label>
+                {{ form.submit(class="cs-form-button") }}
+            </div>
         </form>
     </div>
     <div class="cards-container">

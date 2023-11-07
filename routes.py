@@ -9,9 +9,8 @@ from ProjectFiles.holderSearch import holderSearch
 from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm, computerSciencePosts, jobForm
 from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts, jobTable
 from ProjectFiles.stockPrice import sp500
-from ProjectFiles.cusipLookup import cusipLookup
 from ProjectFiles.newsRun import newsRun
-from ProjectFiles.companyInfo import getInfo, getRandomTicker
+from ProjectFiles.companyInfo import getInfo, getRandomTicker, cusipLookup
 
 @app.route("/")
 @app.route("/home")
@@ -103,7 +102,7 @@ def cards(category):
 @app.route("/computerScience/", defaults={"cat_id": None}, methods=["GET", "POST"])
 @app.route("/computerScience/<int:cat_id>", methods=["GET", "POST"])
 @login_required
-def computerScience(cat_id):
+def computerScience(cat_id):    
     form = computerScienceForm()
     cs = csTable.query.filter_by(user_id=current_user.id).all()
     if form.validate_on_submit():
@@ -197,10 +196,11 @@ def deleteComputerScienceCat(post_id):
 @login_required
 def jobs(job_id):
     form = jobForm()
-    jobs = jobTable.query.filter_by(user_id=current_user.id).all()
+    jobs = jobTable.query.filter_by(user_id=current_user.id)
+    jobs = jobs.order_by(desc(jobTable.probability)).all()
     if form.validate_on_submit():
         if job_id is None:
-            newJob = jobTable(user_id=current_user.id, job=form.job.data, status=form.status.data, contact=form.contact.data, dateAdded=datetime.now().date())
+            newJob = jobTable(user_id=current_user.id, job=form.job.data, status=form.status.data, contact=form.contact.data, probability=form.probability.data, dateAdded=datetime.now().date())
             db.session.add(newJob)
             db.session.commit()
             flash("Your job has been added")
@@ -210,6 +210,7 @@ def jobs(job_id):
             job.job = form.job.data
             job.status = form.status.data
             job.contact = form.contact.data
+            job.probability = form.probability.data
             job.dateUpdated = dateAdded=datetime.now().date()
             db.session.commit()
             flash("Your job has been updated")
@@ -222,15 +223,10 @@ def jobs(job_id):
         form.job.data = job.job
         form.status.data = job.status
         form.contact.data = job.contact
+        form.probability.data = job.probability
     return render_template("jobs.html", 
                             form=form,
                             jobs=jobs,
-                            user=current_user)
-
-@app.route("/NHLConnections", methods=["GET", "POST"])
-@login_required
-def NHLConnections():
-    return render_template("NHLConnections.html",
                             user=current_user)
 
 @app.route("/daily_form", defaults={"day_id": None}, methods=["GET", "POST"])
@@ -366,7 +362,8 @@ def daily_content(content_id):
                                     contentRating=form.contentRating.data, 
                                     contentSubject=form.contentSubject.data, 
                                     contentNote=form.contentNote.data, 
-                                    contentComplete = form.contentComplete.data, 
+                                    contentComplete = form.contentComplete.data,
+                                    contentTitle = form.contentTitle.data, 
                                     author=current_user, 
                                     day=day)
             db.session.add(newContent)
@@ -376,6 +373,7 @@ def daily_content(content_id):
         else:
             contentEntry = contentTable.query.get_or_404(content_id)
             contentEntry.contentComplete = form.contentComplete.data
+            contentEntry.contentTitle = form.contentTitle.data
             contentEntry.dateConsumed = form.dateConsumed.data
             contentEntry.dateMade = form.dateMade.data
             contentEntry.contentType = form.contentType.data
@@ -395,6 +393,7 @@ def daily_content(content_id):
             contentEntry = contentTable.query.get_or_404(content_id)
             if contentEntry.author == current_user:
                 form.contentComplete.data = contentEntry.contentComplete
+                form.contentTitle.data = contentEntry.contentTitle
                 form.dateConsumed.data = contentEntry.dateConsumed
                 form.dateMade.data = contentEntry.dateMade
                 form.contentType.data = contentEntry.contentType

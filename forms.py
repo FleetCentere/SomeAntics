@@ -49,6 +49,7 @@ class newContentForm(FlaskForm):
     contentRating = IntegerField("Rating")
     contentSubject = StringField("Subject")
     contentNote = TextAreaField("Note")
+    contentTitle = StringField("Title")
     contentType = SelectField("Type", choices=[])
     submit = SubmitField("Add Content")
 
@@ -131,4 +132,5 @@ class jobForm(FlaskForm):
     job = StringField("Job") 
     contact = StringField("Contact")
     status = TextAreaField("Status")
+    probability = IntegerField("Probability")
     submit = SubmitField("Submit")

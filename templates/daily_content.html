@@ -36,6 +36,14 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="contentTitle">Title</label>
+                    {{ form.contentTitle(class="form-control", id="contentTitle") }}
+                    {% for error in form.contentTitle.errors %}
+                        <span class="errorMessage">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
                     <label for="contentType">Type</label>
                     {{ form.contentType(class="form-control", id="contentType") }}
                     {% for error in form.contentType.errors %}
@@ -121,6 +129,7 @@
                             <th>Date</th>
                             <th>Category</th>
                             <th>Creator</th>
+                            <th>Title</th>
                             <th>Subject</th>
                             <th>Link</th>
                             <th>Complete</th>
@@ -133,6 +142,13 @@
                                 <td>{{ content.day }}</td>
                                 <td>{{ content.contentType }}</td>
                                 <td>{{ content.contentCreator }}</td>
+                                <td>
+                                    {% if content.contentTitle %}
+                                        {{ content.contentTitle }}
+                                    {% else %}
+                                        
+                                    {% endif %}
+                                    </td>
                                 <td>{{ content.contentSubject }}</td>
                                 <td><a href="{{ content.contentLink }}" target="_blank" rel="noreferrer noopener">Link</a></td>
                                 <td>

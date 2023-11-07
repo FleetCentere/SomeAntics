@@ -358,3 +358,31 @@ NameError: name 'a' is not defined
 >>> all[4].day=edate
 >>> all[4].author=andrew
 >>> db.session.commit()
+
+------
+Revised homepage / Org thoughts on weekly/education
+Homepage: 
+- Left gutter with key daily pieces (time, day, weather?)
+- Section with tracker
+- Section with each bucket as a card with the key stats in the card
+- Section with news pulled in
+
+
+Buckets:
+- Computer Science
+- Company investment work
+- Tasks to do
+
+Computer Science bucket:
+- add a post, each linked to a tag
+- add tag through js popup
+- card shows table with tags, and posts per tag
+- tags: css, html, js, architecture, python, flask, node, odinproject
+
+Content bucket:
+- each item has one or more posts
+- item is created once, post denotes progress (can have as few as 0 posts, as many as several)
+- 0 posts denote not yet started, 
+- creation: author, category, date created, link, who referred if applicable
+- post: date consumed, notes about it, rating
+- card shows each category with number of items in each

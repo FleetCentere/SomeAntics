@@ -4,9 +4,14 @@
     .container {
         padding: 5px;
         display: grid;
-        grid-template-columns: 1fr 2fr;
+        grid-template-columns: 1fr 3fr;
         grid-gap: 2px;
         border: black solid 1px;
+    }
+
+    table {
+        width: 99%;
+        margin: 3px;
     }
 
     .form-container,
@@ -15,6 +20,7 @@
         border-radius: 3px;
         padding: 3px;
     }
+
 </style>
 {% endblock %}
 
@@ -45,6 +51,13 @@
                     <span>[{{ error }}]</span>
                 {% endfor %}
             </div>
+            <div>
+                <label>Probability</label>
+                {{ form.probability }}
+                {% for error in form.probability.errors %}
+                    <span>[{{ error }}]</span>
+                {% endfor %}
+            </div>
             {{ form.submit }}
         </form>
     </div>
@@ -55,6 +68,7 @@
                     <th>#</th>
                     <th>Job</th>
                     <th>Date Added</th>
+                    <th>Probability</th>
                     <th>Contact</th>
                     <th>Last Update</th>
                     <th>Status</th>
@@ -65,9 +79,10 @@
                 {% for job in jobs %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{job.job}}</td>
-                    <td>{{job.dateAdded}}</td>
-                    <td>{{job.contact}}</td>
+                    <td>{{ job.job }}</td>
+                    <td>{{ job.dateAdded }}</td>
+                    <td>{{ job.probability }}</td>
+                    <td>{{ job.contact }}</td>
                     <td>
                         {% if job.dateUpdated %}
                             {{ job.dateUpdated }}

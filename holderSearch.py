@@ -1,5 +1,5 @@
 import csv, sys
-from ProjectFiles.cusipLookup import cusipLookup
+from ProjectFiles.companyInfo import cusipLookup
 
 def holderSearch(ticker, c):
     infotable = "C:/Users/mcgra/OneDrive/Desktop/AHM Docs/Coding/Project/ProjectFiles/SECDocs/INFOTABLE.tsv"
