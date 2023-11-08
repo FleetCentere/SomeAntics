@@ -6,11 +6,13 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm, computerSciencePosts, jobForm
-from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts, jobTable
+from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm, computerSciencePosts, jobForm, financeForm, postForm
+from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts, jobTable, financePostsTable
 from ProjectFiles.stockPrice import sp500
 from ProjectFiles.newsRun import newsRun
 from ProjectFiles.companyInfo import getInfo, getRandomTicker, cusipLookup
+from ProjectFiles.tableIDLookup import idLookup
+from ProjectFiles.secJSON import filingHistory, getCIK
 
 @app.route("/")
 @app.route("/home")
@@ -63,6 +65,82 @@ def home():
                             articles=articles,
                             days=days,
                             contents=contents)
+
+@app.route("/financePosts/<string:post_id>", methods=["GET", "POST"])
+@app.route("/financePosts", defaults={"post_id": None}, methods=["GET", "POST"])
+@login_required
+def financePosts(post_id):
+    form = financeForm()
+    posts = financePostsTable.query.filter_by(user_id=current_user.id).all()
+    if form.validate_on_submit():
+        today = datetime.now().date()
+        day = dayTable.query.filter(dayTable.date==today).filter(dayTable.user_id==current_user.id).first()
+        if day is None:
+            day = dayTable(date=today, author=current_user)
+            db.session.add(day)
+            db.session.commit()
+        if post_id is None:
+            post = financePostsTable(user_id=current_user.id,
+                                    day_id=day.id,
+                                    title=form.title.data,
+                                    link=form.link.data,
+                                    product=form.product.data,
+                                    size=form.size.data,
+                                    ticker=form.ticker.data,
+                                    note=form.note.data)
+            db.session.add(post)
+            db.session.commit()
+            return redirect(url_for("financePosts"))
+        else:
+            post = financePostsTable.query.get_or_404(post_id)
+            post.title = form.title.data
+            post.link = form.link.data
+            post.product = form.product.data
+            post.size = form.size.data
+            post.ticker = form.ticker.data
+            post.note = form.note.data
+            db.session.commit()
+            return redirect(url_for("financePosts"))
+    if post_id is not None:
+        post = financePostsTable.query.get_or_404(post_id)
+        if post.user_id != current_user.id:
+            flash("You are not authorized to edit that post")
+            return redirect(url_for("financePosts"))
+        form.title.data = post.title
+        form.link.data = post.link
+        form.product.data = post.product
+        form.size.data = post.size
+        form.ticker.data = post.ticker
+        form.note.data = post.note
+    return render_template("financePosts.html",
+                            user=current_user,
+                            form=form,
+                            posts=posts)
+
+@app.route("/new_post/<string:category>/<int:parent_id>/<int:post_id>", methods=["GET", "POST"])
+@app.route("/new_post/<string:category>/<int:parent_id>", defaults={"post_id": None}, methods=["GET", "POST"])
+@app.route("/new_post/<string:category>", defaults={"parent_id": None, "post_id": None}, methods=["GET", "POST"])
+@login_required
+def new_post(category, parent_id, post_id):
+    form = postForm()
+    if form.validate_on_submit():
+        if post_id is None:
+            today = datetime.now().date()
+            day = dayTable.query.filter(dayTable.date==today).filter(dayTable.user_id==current_user.id).first()
+            if day is None:
+                day = dayTable(date=today, author=current_user)
+                db.session.add(day)
+                db.session.commit()
+            parent = idLookup(category, parent_id)
+            newPost = csPosts(user_id=current_user.id, day_id=day.id, note=form.note.data, title=form.title.data)
+            db.session.add(newPost)
+            db.session.commit()
+        return redirect("new_post", category=category, parent_id=parent_id)
+    return render_template("new_post.html",
+                            user=current_user,
+                            form=form)
+
+
 
 @app.route("/cards/<string:category>", methods=["GET", "POST"])
 @login_required
@@ -742,10 +820,11 @@ def companies(ticker):
     # share price, 1 day perf, 1 week perf, 1 year perf, date of latest SEC filing, 
     # link to latest SEC filing, link to SEC page, last earnings, next earnings
     for company in companyList:
+        last_filing_date, last_filing_url, last_filing_type = filingHistory(company.ticker.upper())
         companyDict[company.ticker] = {}
         companyDict[company.ticker]["ticker"] = company.ticker.upper()
         companyDict[company.ticker]["Date"] = company.dateAdded
-        companyDict[company.ticker]["marketCap"] = 10000
+        companyDict[company.ticker]["marketCap"] = ""
         companyData = sp500(company.ticker.upper())
         if companyData[0] == "na":
             companyDict[company.ticker]["sharePrice"] = "na"
@@ -755,13 +834,15 @@ def companies(ticker):
         else:
             companyDict[company.ticker]["sharePrice"] = f"{companyData[2]:.2f}"
             companyDict[company.ticker]["oneDayPerf"] = f"{(companyData[2]/companyData[1]-1)*100:.2f}"
-            companyDict[company.ticker]["oneWeekPerf"] = -0.05
-            companyDict[company.ticker]["oneYearPerf"] = 0.2
-        companyDict[company.ticker]["lastSECFilingDate"] = datetime(2023, 8, 20)
-        companyDict[company.ticker]["lastSECFilingLink"] = "https://www.espn.com"
-        companyDict[company.ticker]["SECPage"] = "https://www.google.com"
-        companyDict[company.ticker]["lastEarningsDate"] = datetime(2023,7,10)
-        companyDict[company.ticker]["nextEarningsDate"] = datetime(2023,10,10)
+            companyDict[company.ticker]["oneWeekPerf"] = ""
+            companyDict[company.ticker]["oneYearPerf"] = ""
+        companyDict[company.ticker]["lastSECFilingDate"] = last_filing_date
+        companyDict[company.ticker]["lastSECFilingLink"] = last_filing_url
+        companyDict[company.ticker]["lastFilingType"] = last_filing_type
+        CIK = getCIK(company.ticker.upper())
+        companyDict[company.ticker]["SECPage"] = f"https://www.sec.gov/edgar/browse/?CIK={CIK}"
+        companyDict[company.ticker]["lastEarningsDate"] = ""
+        companyDict[company.ticker]["nextEarningsDate"] = ""
     if lForm.validate_on_submit():
         ticker = lForm.ticker.data
         date = datetime.now().date()

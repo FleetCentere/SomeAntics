@@ -28,6 +28,7 @@ class userTable(UserMixin, db.Model):
     jobs = db.relationship("jobTable", backref="author", lazy="dynamic")
     cs  = db.relationship("csTable", backref="author", lazy="dynamic")
     csPosts  = db.relationship("csPosts", backref="author", lazy="dynamic")
+    financePosts  = db.relationship("financePostsTable", backref="author", lazy="dynamic")
     days = db.relationship("dayTable", backref="author", lazy="dynamic")
     # peopleEvents = db.relationship("peopleEvents", backref="author", lazy="dynamic")
 
@@ -52,6 +53,8 @@ class dayTable(db.Model):
     news = db.relationship("newsTable", backref="day", lazy="dynamic")
     exercises = db.relationship("exerciseTable", backref="day", lazy="dynamic")
     tasks = db.relationship("taskTable", backref="day", lazy="dynamic")
+    posts = db.relationship("csPosts", backref="day", lazy="dynamic")
+    financePosts  = db.relationship("financePostsTable", backref="day", lazy="dynamic")
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_day"))
 
     def __repr__(self):
@@ -69,6 +72,7 @@ class taskTable(db.Model):
     dateEdited = db.Column(db.Date, default=None, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_task"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_task"))
+    posts = db.relationship("csPosts", backref="task", lazy="dynamic")
 
     def __repr__(self):
         return f"{self.taskName} on {self.dateEntered}"
@@ -85,6 +89,7 @@ class newsTable(db.Model):
     newsDateEntered = db.Column(db.Date, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_news"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_news"))
+    posts = db.relationship("csPosts", backref="news", lazy="dynamic")
     
     def __repr__(self):
         return f"{self.newsType}: {self.newsTitle} on {self.newsDatePosted}"
@@ -104,6 +109,7 @@ class eventTable(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_event"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_event"))
     attendees = db.relationship("personsTable", secondary=event_attendees, back_populates="events_attended_event")
+    posts = db.relationship("csPosts", backref="event", lazy="dynamic")
 
     def __repr__(self):
         return f"{self.eventType} at {self.eventLocation}"
@@ -117,6 +123,7 @@ class personsTable(db.Model):
     personCategory = db.Column(db.String(50))
     personCompany = db.Column(db.String(50))
     events_attended_event = db.relationship("eventTable", secondary=event_attendees, back_populates="attendees")
+    posts = db.relationship("csPosts", backref="person", lazy="dynamic")
 
     def __repr__(self):
         return f"{self.person}"
@@ -135,6 +142,7 @@ class contentTable(db.Model):
     contentNote = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_content"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_content"))
+    posts = db.relationship("csPosts", backref="content", lazy="dynamic")
 
     def __repr__(self):
         return f"{self.contentType} by {self.contentCreator} about {self.contentSubject}"
@@ -146,6 +154,7 @@ class exerciseTable(db.Model):
     exerciseDuration = db.Column(db.Integer)
     exerciseType = db.Column(db.String(50))
     exerciseDistance = db.Column(db.Float)
+    posts = db.relationship("csPosts", backref="exercise", lazy="dynamic")
 
 class ideaTable(db.Model):  
     id = db.Column(db.Integer, primary_key=True)
@@ -162,6 +171,7 @@ class companyTable(db.Model):
     ticker = db.Column(db.String(10))
     dateAdded = db.Column(db.Date)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_company"))
+    posts = db.relationship("csPosts", backref="company", lazy="dynamic")
 
 class csTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -172,14 +182,6 @@ class csTable(db.Model):
     dateAdded = db.Column(db.Date)
     posts = db.relationship("csPosts", backref="csName", lazy="dynamic")
 
-class csPosts(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_cs_posts"))
-    cs_id = db.Column(db.Integer, db.ForeignKey("cs_table.id", name="fk_cs_post"))
-    title = db.Column(db.String(200))
-    note = db.Column(db.Text)
-    dateAdded = db.Column(db.Date)
-
 class jobTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_jobs"))
@@ -189,3 +191,36 @@ class jobTable(db.Model):
     probability = db.Column(db.Integer)
     dateAdded = db.Column(db.Date)
     dateUpdated = db.Column(db.Date)
+    posts = db.relationship("csPosts", backref="job", lazy="dynamic")
+
+class csPosts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200))
+    note = db.Column(db.Text)
+    dateAdded = db.Column(db.Date)
+    # foreign keys for date and user
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_cs_posts"))
+    day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_cs_posts"))
+
+    # depending on the type of post
+    task_id = db.Column(db.Integer, db.ForeignKey("task_table.id", name="fk_task_cs_posts"))
+    exercise_id = db.Column(db.Integer, db.ForeignKey("exercise_table.id", name="fk_exercise_cs_posts"))
+    job_id = db.Column(db.Integer, db.ForeignKey("job_table.id", name="fk_job_cs_posts"))
+    people_id = db.Column(db.Integer, db.ForeignKey("persons_table.id", name="fk_people_cs_posts"))
+    news_id = db.Column(db.Integer, db.ForeignKey("news_table.id", name="fk_news_cs_posts"))
+    event_id = db.Column(db.Integer, db.ForeignKey("event_table.id", name="fk_event_cs_posts"))
+    content_id = db.Column(db.Integer, db.ForeignKey("content_table.id", name="fk_content_cs_posts"))
+    company_id = db.Column(db.Integer, db.ForeignKey("company_table.id", name="fk_company_cs_posts"))
+    cs_id = db.Column(db.Integer, db.ForeignKey("cs_table.id", name="fk_cs_post"))
+
+class financePostsTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200))
+    link = db.Column(db.String(200))
+    product = db.Column(db.String(200))
+    size = db.Column(db.Integer)
+    ticker = db.Column(db.String(200))
+    note = db.Column(db.Text)
+    # foreign keys for date and user
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_finance_posts"))
+    day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_finance_posts"))

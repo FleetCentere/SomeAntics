@@ -58,6 +58,7 @@
                         <th>Category</th>
                         <th>Task</th>
                         <th>Options</th>
+                        <th>Posts</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,6 +69,7 @@
                             <td>{{ task.taskName }}</td>
                             <td><a href="{{ url_for('daily_task', task_id=task.id) }}">Edit</a> / 
                                 <button class="deleteButton" data-delete-url="{{ url_for('delete_task', task_id=task.id) }}">Delete</button></td>
+                            <td><a href="{{ url_for('new_post', category='task', parent_id=task.id) }}">Posts</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>

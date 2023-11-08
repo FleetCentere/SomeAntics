@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% block css %}
+    <style>
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            grid-gap: 20px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<div class="main-container">
+    <div class="form-container">
+        <form action="" novalidate method="POST" autocomplete="off">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="title">Title</label>
+                {{ form.title(class="form-control", id="title") }}
+                {% for error in form.title.errors %}
+                    <span class="errorMessage">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="link">Link</label>
+                {{ form.link(class="form-control", id="link") }}
+                {% for error in form.link.errors %}
+                    <span class="errorMessage">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="product">Product</label>
+                {{ form.product(class="form-control", id="product") }}
+                {% for error in form.product.errors %}
+                    <span class="errorMessage">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="size">Size</label>
+                {{ form.size(class="form-control", id="size") }}
+                {% for error in form.size.errors %}
+                    <span class="errorMessage">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="ticker">Ticker</label>
+                {{ form.ticker(class="form-control", id="ticker") }}
+                {% for error in form.ticker.errors %}
+                    <span class="errorMessage">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="note">Note</label>
+                {{ form.note(class="form-control", id="note") }}
+                {% for error in form.note.errors %}
+                    <span class="errorMessage">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
+    <div class="posts-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Title</th>
+                    <th>Product</th>
+                    <th>Ticker</th>
+                    <th>Size</th>
+                    <th>Link</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr>
+                    <td>{{ post.day.date }}</td>
+                    <td>{{ post.title }}</td>
+                    <td>{{ post.product }}</td>
+                    <td>{{ post.ticker }}</td>
+                    <td>{{ post.size }}</td>
+                    <td><a rel="noreferrer noopener" target="_blank" href="{{ post.link }}">Link</a></td>
+                    <td><a href="{{ url_for('financePosts', post_id=post.id) }}">Edit</a> / Delete</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

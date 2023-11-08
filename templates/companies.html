@@ -1,6 +1,18 @@
 {% extends "layout.html" %}
 {% block css %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='companies.css') }}">
+<style>
+    .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 5px;
+}
+
+    .left-side,
+    .right-side {
+        border: black solid 2px;
+        padding: 5px;    
+    }
+</style>    
 {% endblock %}
 {% block content %}
 
@@ -26,6 +38,7 @@
                     <th>1 Year Perf</th>
                     <th>Date of Last SEC Filing</th>
                     <th>Link to Last Filing</th>
+                    <th>Filing Type</th>
                     <th>Link to SEC Page</th>
                     <th>Last Earnings Date</th>
                     <th>Next Earnings Date</th>
@@ -44,6 +57,7 @@
                         <td>{{ companyDict[company.ticker]["oneYearPerf"] }}</td>
                         <td>{{ companyDict[company.ticker]["lastSECFilingDate"] }}</td>
                         <td><a href="{{ companyDict[company.ticker]['lastSECFilingLink'] }}" target="_blank" rel="noreferrer noopener">Link</a></td>
+                        <td>{{ companyDict[company.ticker]["lastFilingType"] }}</td>
                         <td><a href="{{ companyDict[company.ticker]['SECPage'] }}" target="_blank" rel="noreferrer noopener">Link</a></td>
                         <td>{{ companyDict[company.ticker]["lastEarningsDate"] }}</td>
                         <td>{{ companyDict[company.ticker]["nextEarningsDate"] }}</td>

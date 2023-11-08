@@ -134,3 +134,18 @@ class jobForm(FlaskForm):
     status = TextAreaField("Status")
     probability = IntegerField("Probability")
     submit = SubmitField("Submit")
+
+class financeForm(FlaskForm):
+    title = StringField("Title")
+    link = StringField("Link")
+    product = StringField("Product")
+    size = IntegerField("Size")
+    ticker = StringField("Ticker")
+    note = TextAreaField("Note")
+    date = DateField("Date")
+    submit = SubmitField("Submit")
+
+class postForm(FlaskForm):
+    title = StringField("Title")
+    note = TextAreaField("Note")
+    submit = SubmitField("Submit")
