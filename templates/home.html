@@ -18,7 +18,7 @@
             <h4>Top News</h4>
             {% for article in articles %}
                 <ul>
-                    <li><a href="{{ article['url'] }}">-{{ article['source']['name'] }}: {{ article["title"] }}</a></li>
+                    <li><a target="_blank" rel="noreferrer noopener" href="{{ article['url'] }}">-{{ article['source']['name'] }}: {{ article["title"] }}</a></li>
                 </ul>
             {% endfor %}
         </div>

@@ -48,9 +48,9 @@ def home():
     contents = contentTable.query.filter(current_user.id == contentTable.user_id)
     contents = contents.join(dayTable).order_by(desc(dayTable.date)).limit(n).all()
     try:
-        t_minus_1 = (prices[2]/prices[1])-1
-        t_minus_2 = (prices[2]/prices[0])-1
-        sp = [f"{prices[0]:.2f}", f"{t_minus_1*100:.2f}", f"{t_minus_2:2f}"]
+        t_minus_1 = (prices[2].price/prices[1].price)-1
+        t_minus_2 = (prices[2].price/prices[0].price)-1
+        sp = [f"{prices[0].price:.2f}", f"{t_minus_1*100:.2f}", f"{t_minus_2:2f}"]
     except:
         sp = ["na", "na", "na"]
     return render_template("home.html", 
@@ -820,7 +820,11 @@ def companies(ticker):
     # share price, 1 day perf, 1 week perf, 1 year perf, date of latest SEC filing, 
     # link to latest SEC filing, link to SEC page, last earnings, next earnings
     for company in companyList:
-        last_filing_date, last_filing_url, last_filing_type = filingHistory(company.ticker.upper())
+        CIK = getCIK(company.ticker.upper())
+        try:
+            last_filing_date, last_filing_url, last_filing_type = filingHistory(company.ticker.upper())
+        except: 
+            last_filing_date, last_filing_url, last_filing_type = "na", "na", "na"
         companyDict[company.ticker] = {}
         companyDict[company.ticker]["ticker"] = company.ticker.upper()
         companyDict[company.ticker]["Date"] = company.dateAdded
@@ -832,14 +836,13 @@ def companies(ticker):
             companyDict[company.ticker]["oneWeekPerf"] = "na"
             companyDict[company.ticker]["oneYearPerf"] = "na"    
         else:
-            companyDict[company.ticker]["sharePrice"] = f"{companyData[2]:.2f}"
-            companyDict[company.ticker]["oneDayPerf"] = f"{(companyData[2]/companyData[1]-1)*100:.2f}"
+            companyDict[company.ticker]["sharePrice"] = f"{companyData[2].price:.2f}"
+            companyDict[company.ticker]["oneDayPerf"] = f"{(companyData[2].price/companyData[1].price-1)*100:.2f}"
             companyDict[company.ticker]["oneWeekPerf"] = ""
             companyDict[company.ticker]["oneYearPerf"] = ""
         companyDict[company.ticker]["lastSECFilingDate"] = last_filing_date
         companyDict[company.ticker]["lastSECFilingLink"] = last_filing_url
         companyDict[company.ticker]["lastFilingType"] = last_filing_type
-        CIK = getCIK(company.ticker.upper())
         companyDict[company.ticker]["SECPage"] = f"https://www.sec.gov/edgar/browse/?CIK={CIK}"
         companyDict[company.ticker]["lastEarningsDate"] = ""
         companyDict[company.ticker]["nextEarningsDate"] = ""

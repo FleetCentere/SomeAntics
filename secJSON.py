@@ -7,24 +7,38 @@ def main():
     # define headers dictionary for SEC API
     headers = sec_headers
     # get company tickers from SEC API with headers and convert into JSON format
-    tickers = requests.get("https://www.sec.gov/files/company_tickers.json", headers=headers).json()
-    # print(tickers)
-    with open('secTickersJSON.csv', mode='w', newline='') as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(["Ticker", "CIK Code"])
-        for i, company in enumerate(tickers):
-            # if i > 5:
-            #     break
-            writer.writerow([tickers[company]['ticker'], tickers[company]['cik_str']])
+    try:
+        tickers = requests.get("https://www.sec.gov/files/company_tickers.json", headers=headers).json()
+        # print(tickers)
+        with open('secTickersJSON.csv', mode='w', newline='') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(['cik_str', 'ticker', 'title'])
+            for i, company in enumerate(tickers):
+                if i == 5:
+                    print(tickers[company])
+                writer.writerow([tickers[company]['cik_str'], tickers[company]['ticker'], tickers[company]['title']])
+    except:
+        return 0
 
 def getCIK(ticker):
     headers = sec_headers
-    tickers = requests.get("https://www.sec.gov/files/company_tickers.json", headers=headers).json()
-    for row in tickers:
-        if tickers[row]["ticker"] == ticker.upper():
-            CIK = str(tickers[row]["cik_str"]).zfill(10)
-            break
-    return CIK
+    CIK = "na"
+    try:
+        tickers = requests.get("https://www.sec.gov/files/company_tickers.json", headers=headers).json()
+        for row in tickers:
+            if tickers[row]["ticker"] == ticker.upper():
+                CIK = str(tickers[row]["cik_str"]).zfill(10)
+                break
+        return CIK
+    except:
+        file = "C:/Users/mcgra/OneDrive/Desktop/AHM Docs/Coding/Project/ProjectFiles/SECDocs/cusipLookup.csv"    
+        with open(file, "r", newline="") as csvfile:
+            reader = csv.reader(csvfile)
+            for i, row in enumerate(reader):
+                if row[1] == ticker:
+                    CIK = row[0]
+                    break
+            return CIK
 
 def filingHistory(ticker):
     headers = sec_headers
@@ -59,8 +73,9 @@ def filingHistory(ticker):
     return last_filing_date[0], last_filing_url[0], last_filing_type[0]
 
 if __name__ == "__main__":
-    ticker = sys.argv[1].upper()
     from api_keys import sec_headers
-    a, b = filingHistory(ticker)
-    print(a)
-    print(b)
+    main()
+    # ticker = sys.argv[1].upper()
+    # a, b = filingHistory(ticker)
+    # print(a)
+    # print(b)
