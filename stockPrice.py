@@ -15,11 +15,11 @@ def sp500(ticker=None):
         else:
             y_ticker = yf.Ticker(ticker)
         # Get historical data for the security
-        companyData = y_ticker.history(period="10d")
+        companyData = y_ticker.history(period="4d")
 
         # Get historical data for S&P500 as proxy for dates to use for Company
         spTicker = yf.Ticker("^GSPC")
-        spData = spTicker.history(period="10d")
+        spData = spTicker.history(period="4d")
         numberOfDates = len(spData.index)
 
         # Get the Last Date that the S&P 500 has data

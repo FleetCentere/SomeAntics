@@ -121,6 +121,7 @@ class computerScienceForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     category = StringField("Category", validators=[DataRequired()])
     link = StringField("Link")
+    priority = IntegerField("Priority")
     submit = SubmitField("Submit")
 
 class computerSciencePosts(FlaskForm):
@@ -148,4 +149,8 @@ class financeForm(FlaskForm):
 class postForm(FlaskForm):
     title = StringField("Title")
     note = TextAreaField("Note")
+    submit = SubmitField("Submit")
+
+class thoughtForm(FlaskForm):
+    thought = TextAreaField("Thought")
     submit = SubmitField("Submit")

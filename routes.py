@@ -6,18 +6,19 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm, computerSciencePosts, jobForm, financeForm, postForm
-from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts, jobTable, financePostsTable
+from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm, computerSciencePosts, jobForm, financeForm, postForm, thoughtForm
+from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts, jobTable, financePostsTable, thoughtTable
 from ProjectFiles.stockPrice import sp500
 from ProjectFiles.newsRun import newsRun
 from ProjectFiles.companyInfo import getInfo, getRandomTicker, cusipLookup
 from ProjectFiles.tableIDLookup import idLookup
 from ProjectFiles.secJSON import filingHistory, getCIK
 
-@app.route("/")
-@app.route("/home")
+@app.route("/", methods=["POST", "GET"])
+@app.route("/home", methods=["POST", "GET"])
 @login_required
 def home():
+    form=thoughtForm()
     try:
         articles = newsRun()
     except:
@@ -47,12 +48,24 @@ def home():
     tasks = tasks.order_by(desc(taskTable.dateEntered)).all()
     contents = contentTable.query.filter(current_user.id == contentTable.user_id)
     contents = contents.join(dayTable).order_by(desc(dayTable.date)).limit(n).all()
+    thoughts = thoughtTable.query.filter_by(user_id=current_user.id).all()
     try:
         t_minus_1 = (prices[2].price/prices[1].price)-1
         t_minus_2 = (prices[2].price/prices[0].price)-1
         sp = [f"{prices[0].price:.2f}", f"{t_minus_1*100:.2f}", f"{t_minus_2:2f}"]
     except:
         sp = ["na", "na", "na"]
+    if form.validate_on_submit():
+        today = datetime.now().date()
+        day = dayTable.query.filter(dayTable.date==today).filter(dayTable.user_id==current_user.id).first()
+        if day is None:
+            day = dayTable(date=today, author=current_user)
+            db.session.add(day)
+            db.session.commit()
+        thought = thoughtTable(thought=form.thought.data, user_id=current_user.id, day_id=day.id)
+        db.session.add(thought)
+        db.session.commit()
+        return redirect(url_for("home"))
     return render_template("home.html", 
                             user=current_user,
                             cs=cs,
@@ -64,7 +77,9 @@ def home():
                             sp=sp,
                             articles=articles,
                             days=days,
-                            contents=contents)
+                            contents=contents,
+                            form=form,
+                            thoughts=thoughts)
 
 @app.route("/financePosts/<string:post_id>", methods=["GET", "POST"])
 @app.route("/financePosts", defaults={"post_id": None}, methods=["GET", "POST"])
@@ -182,13 +197,15 @@ def cards(category):
 @login_required
 def computerScience(cat_id):    
     form = computerScienceForm()
-    cs = csTable.query.filter_by(user_id=current_user.id).all()
+    cs = csTable.query.filter_by(user_id=current_user.id)
+    cs = cs.order_by(desc(csTable.priority)).all()    
     if form.validate_on_submit():
         name = form.name.data
         category = form.category.data
         link = form.link.data
+        priority = form.priority.data
         if cat_id is None:
-            cs = csTable(user_id=current_user.id, name=name, category=category, link=form.link.data, dateAdded=datetime.now().date())
+            cs = csTable(user_id=current_user.id, name=name, category=category, link=link, priority=priority, dateAdded=datetime.now().date())
             db.session.add(cs)
             db.session.commit()
             flash("Your category has been added")
@@ -198,6 +215,7 @@ def computerScience(cat_id):
             cat.name = name
             cat.category = category
             cat.link = link
+            cat.priority = priority
             db.session.commit()
             flash("Your category has been updated")
             return redirect(url_for("computerScience"))
@@ -206,6 +224,7 @@ def computerScience(cat_id):
         form.name.data = cat.name
         form.category.data = cat.category
         form.link.data = cat.link
+        form.priority.data = cat.priority
     return render_template("computerScience.html",
                             form=form, 
                             cs=cs,
@@ -333,9 +352,9 @@ def daily_form(day_id):
     displayDay = "/".join(parts)
     prices = sp500()
     try:
-        t_minus_1 = (prices[2]/prices[1])-1
-        t_minus_2 = (prices[2]/prices[0])-1
-        sp = [f"{prices[0]:.2f}", f"{t_minus_1*100:.2f}", f"{t_minus_2:2f}"]
+        t_minus_1 = (prices[2].price/prices[1].price)-1
+        t_minus_2 = (prices[2].price/prices[0].price)-1
+        sp = [f"{prices[0].price:.2f}", f"{t_minus_1*100:.2f}", f"{t_minus_2:2f}"]
     except:
         sp = ["na", "na", "na"]
     if form.validate_on_submit():

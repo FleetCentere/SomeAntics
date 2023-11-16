@@ -52,3 +52,7 @@ ul, li {
 h4 {
     margin: 0;
 }
+
+table {
+    width: 95%;
+}

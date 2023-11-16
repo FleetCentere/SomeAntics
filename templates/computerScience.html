@@ -60,6 +60,14 @@
             </div>
 
             <div>
+                <label for="priority">Priority</label>
+                {{ form.priority }}
+                {% for error in form.priority.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div>
                 {{ form.submit(class="btn btn-primary") }}
             </div>
         </form>
@@ -68,6 +76,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Priority</th>
                     <th>Title</th>
                     <th>Category</th>
                     <th>Link</th>
@@ -79,6 +88,7 @@
             <tbody>
                 {% for cat in cs %}
                 <tr>
+                    <td>{{ cat.priority }}</td>
                     <td>{{ cat.name }}</td>
                     <td>{{ cat.category }}</td>
                     <td><a href="{{ cat.link }}" target="_blank" rel="noreferrer noopener">Link</a></td>

@@ -29,6 +29,7 @@ class userTable(UserMixin, db.Model):
     cs  = db.relationship("csTable", backref="author", lazy="dynamic")
     csPosts  = db.relationship("csPosts", backref="author", lazy="dynamic")
     financePosts  = db.relationship("financePostsTable", backref="author", lazy="dynamic")
+    thoughts = db.relationship("thoughtTable", backref="author", lazy="dynamic")
     days = db.relationship("dayTable", backref="author", lazy="dynamic")
     # peopleEvents = db.relationship("peopleEvents", backref="author", lazy="dynamic")
 
@@ -55,6 +56,7 @@ class dayTable(db.Model):
     tasks = db.relationship("taskTable", backref="day", lazy="dynamic")
     posts = db.relationship("csPosts", backref="day", lazy="dynamic")
     financePosts  = db.relationship("financePostsTable", backref="day", lazy="dynamic")
+    thoughts = db.relationship("thoughtTable", backref="day", lazy="dynamic")
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_day"))
 
     def __repr__(self):
@@ -180,7 +182,9 @@ class csTable(db.Model):
     category = db.Column(db.String(50))
     link = db.Column(db.String(200))
     dateAdded = db.Column(db.Date)
+    priority = db.Column(db.Integer)
     posts = db.relationship("csPosts", backref="csName", lazy="dynamic")
+
 
 class jobTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -222,5 +226,11 @@ class financePostsTable(db.Model):
     ticker = db.Column(db.String(200))
     note = db.Column(db.Text)
     # foreign keys for date and user
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_finance_posts"))
+    day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_finance_posts"))
+
+class thoughtTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    thought = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_finance_posts"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_finance_posts"))
