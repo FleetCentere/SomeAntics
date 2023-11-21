@@ -154,3 +154,8 @@ class postForm(FlaskForm):
 class thoughtForm(FlaskForm):
     thought = TextAreaField("Thought")
     submit = SubmitField("Submit")
+
+class sourcesForm(FlaskForm):
+    source = StringField("Source")
+    author = StringField("Author")
+    submit = SubmitField("Submit")

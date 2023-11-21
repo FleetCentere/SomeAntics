@@ -27,7 +27,7 @@ def sp500(ticker=None):
 
         # Get dates based on S&P info
         dates = []
-        for i, row in enumerate(spData):
+        for i, row in enumerate(spData.index):
             dates.append(spData.index[i].date())
 
         dates = dates[-3:]

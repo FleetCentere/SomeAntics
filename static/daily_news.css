@@ -7,8 +7,15 @@
 .right-side {
     display: flex;
     flex-direction: column;
-    flex: 1 0 48%;
-    margin: 1rem;
+    margin: 5px;
+}
+
+.left-side {
+    flex: 1 0 28%;
+}
+
+.right-side {
+    flex: 1 0 70%;
 }
 
 .news-form {

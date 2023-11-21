@@ -49,14 +49,28 @@
                         <th>Date</th>
                         <th>Exercise</th>
                         <th>Weight</th>
+                        <th>Contents</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for day in days %}
                     <tr>
                         <td>{{ day.date }}</td>
-                        <td></td>
-                        <td>{{ day.weight }}</td>
+                        <td>
+                            {% for exercise in day.exercises %}
+                                {{ exercise.exerciseType }}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if day.weight == None %}
+                            
+                            {% else %}
+                            {{ day.weight }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ day.contents.all() | length }}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -90,10 +104,10 @@
             </ul>
         </div>
     </div>
-    <div class="thoughts">
+    <div class="thought-container">
         <ul>
             {% for thought in thoughts %}
-            <li>{{ thought.thought }}</li>
+            <li class="thought-bullet">{{ thought.thought }}</li>
             {% endfor %}
         </ul>
         <hr>

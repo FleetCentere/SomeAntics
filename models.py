@@ -30,6 +30,7 @@ class userTable(UserMixin, db.Model):
     csPosts  = db.relationship("csPosts", backref="author", lazy="dynamic")
     financePosts  = db.relationship("financePostsTable", backref="author", lazy="dynamic")
     thoughts = db.relationship("thoughtTable", backref="author", lazy="dynamic")
+    sources = db.relationship("newsSourcesTable", backref="author", lazy="dynamic")
     days = db.relationship("dayTable", backref="author", lazy="dynamic")
     # peopleEvents = db.relationship("peopleEvents", backref="author", lazy="dynamic")
 
@@ -57,6 +58,7 @@ class dayTable(db.Model):
     posts = db.relationship("csPosts", backref="day", lazy="dynamic")
     financePosts  = db.relationship("financePostsTable", backref="day", lazy="dynamic")
     thoughts = db.relationship("thoughtTable", backref="day", lazy="dynamic")
+    sources = db.relationship("newsSourcesTable", backref="day", lazy="dynamic")
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_day"))
 
     def __repr__(self):
@@ -234,3 +236,10 @@ class thoughtTable(db.Model):
     thought = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_finance_posts"))
     day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_finance_posts"))
+
+class newsSourcesTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    source = db.Column(db.String(200))
+    author = db.Column(db.String(200))
+    user_id = db.Column(db.Integer, db.ForeignKey("user_table.id", name="fk_user_source"))
+    day_id = db.Column(db.Integer, db.ForeignKey("day_table.id", name="fk_day_source"))

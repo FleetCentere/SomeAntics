@@ -6,8 +6,8 @@ from werkzeug.urls import url_parse
 from ProjectFiles import app, db
 from ProjectFiles.secFinancials import finSearch
 from ProjectFiles.holderSearch import holderSearch
-from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm, computerSciencePosts, jobForm, financeForm, postForm, thoughtForm
-from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts, jobTable, financePostsTable, thoughtTable
+from ProjectFiles.forms import loginForm, RegistrationForm, editProfileForm, newTaskForm, newContentForm, newNewsForm, newEventForm, ideasForm, dailyForm, newExerciseForm, sourcesForm, companyForm, personForm, listForm, computerScienceForm, computerSciencePosts, jobForm, financeForm, postForm, thoughtForm, sourcesForm
+from ProjectFiles.models import userTable, dayTable, taskTable, newsTable, eventTable, contentTable, exerciseTable, personsTable, ideaTable, sourcesTable, companyTable, csTable, csPosts, jobTable, financePostsTable, thoughtTable, newsSourcesTable
 from ProjectFiles.stockPrice import sp500
 from ProjectFiles.newsRun import newsRun
 from ProjectFiles.companyInfo import getInfo, getRandomTicker, cusipLookup
@@ -79,6 +79,38 @@ def home():
                             days=days,
                             contents=contents,
                             form=form,
+                            thoughts=thoughts)
+
+@app.route("/overview", methods=["GET", "POST"])
+@login_required
+def overview():
+    days = dayTable.query.filter_by(user_id=current_user.id).all()
+    tasks = taskTable.query.filter_by(user_id=current_user.id).all()
+    news = newsTable.query.filter_by(user_id=current_user.id).all()
+    events = eventTable.query.filter_by(user_id=current_user.id).all()
+    persons = personsTable.query.filter_by(user_id=current_user.id).all()
+    contents = contentTable.query.filter_by(user_id=current_user.id).all()
+    exercises = exerciseTable.query.filter_by(user_id=current_user.id).all()
+    companies = companyTable.query.filter_by(user_id=current_user.id).all()
+    cs = csTable.query.filter_by(user_id=current_user.id).all()
+    jobs = jobTable.query.filter_by(user_id=current_user.id).all()
+    posts = csPosts.query.filter_by(user_id=current_user.id).all()
+    financePosts = financePostsTable.query.filter_by(user_id=current_user.id).all()
+    thoughts = thoughtTable.query.filter_by(user_id=current_user.id).all()
+    return render_template("overview.html", 
+                            user=current_user,
+                            days=days,
+                            tasks=tasks,
+                            news=news,
+                            events=events,
+                            persons=persons,
+                            contents=contents,
+                            exercises=exercises,
+                            companies=companies,
+                            cs=cs,
+                            jobs=jobs,
+                            posts=posts,
+                            financePosts=financePosts,
                             thoughts=thoughts)
 
 @app.route("/financePosts/<string:post_id>", methods=["GET", "POST"])
@@ -712,8 +744,10 @@ def delete_daily_event(event_id):
 @login_required
 def daily_news(news_id):
     form = newNewsForm()
+    soucesForm = sourcesForm()
     news = newsTable.query.filter_by(user_id = current_user.id)
     news = news.join(dayTable).order_by(desc(dayTable.date)).all()
+    sources = newsSourcesTable.query.filter_by(user_id = current_user.id)
     if form.validate_on_submit():
         if news_id is None:
             newsType = form.newsType.data
@@ -744,6 +778,8 @@ def daily_news(news_id):
             db.session.commit()
             flash("Your news item has been updated")
             return redirect(url_for("daily_news"))
+    if sourcesForm.validate_on_submit():
+
     if request.method == "GET":
         if news_id is not None:
             newsItem = newsTable.query.get_or_404(news_id)
@@ -755,7 +791,12 @@ def daily_news(news_id):
             form.newsNote.data = newsItem.newsNote
             form.newsLink.data = newsItem.newsLink
             form.newsTicker.data = newsItem.newsTicker
-    return render_template("daily_news.html", user=current_user, news=news, form=form)
+    return render_template("daily_news.html", 
+                            user=current_user, 
+                            news=news, 
+                            sources=sources,
+                            form=form,
+                            sourcesForm=sourcesForm)
 
 @app.route("/delete_news/<int:news_id>")
 @login_required
@@ -933,19 +974,49 @@ def people(person_id):
         birthday = form.birthday.data
         category = form.category.data
         company = form.company.data
-        newPerson = personsTable(user_id=current_user.id, 
-                                 person=name, 
-                                 personBackground=background,
-                                 personBirthday=birthday,
-                                 personCategory=category,
-                                 personCompany=company)
-        db.session.add(newPerson)
+        if person_id is None:
+            newPerson = personsTable(user_id=current_user.id, 
+                                    person=name, 
+                                    personBackground=background,
+                                    personBirthday=birthday,
+                                    personCategory=category,
+                                    personCompany=company)
+            db.session.add(newPerson)
+        else:
+            person = personsTable.query.get_or_404(person_id)
+            person.person = name
+            person.personBackground = background
+            person.personBirthday = birthday
+            person.personCategory = category
+            person.personCompany = company
         db.session.commit()
         return redirect(url_for("people"))
+    if person_id is not None:
+        person = personsTable.query.get_or_404(person_id)
+        if person.user_id != current_user.id:
+            flash("User not authorized to edit this person entry")
+            return redirect(url_for("people"))
+        form.name.data = person.person
+        form.background.data = person.personBackground
+        form.birthday.data = person.personBirthday
+        form.category.data = person.personCategory
+        form.company.data = person.personCompany
     return render_template("people.html", 
                             user=current_user, 
                             form=form,
                             people=people)
+
+@app.route("/delete_person/<int:person_id>", methods=["POST", "GET"])
+def delete_person(person_id):
+    person = personsTable.query.get_or_404(person_id)
+    if person.user_id == current_user.id:
+        db.session.delete(person)
+        db.session.commit()
+        flash("Person has been deleted")
+        return redirect(url_for("people"))
+    else:
+        flash("You are not permitted to delete that person")
+        return redirect(url_for("people"))
 
 @app.route("/daily")
 @login_required

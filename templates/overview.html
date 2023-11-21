@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% block css %}
+<style>
+    .container {
+        padding: 5px;
+        border: solid purple 4px;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: 1fr 1fr;
+        grid-gap: 2px
+    }
+
+    .card {
+        padding: 5px;
+        border: solid green 2px;
+    }
+
+    h4 {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h4>Days</h4>
+        <span>{{ days | length }}</span>
+    </div>
+    <div class="card">
+        <h4>Tasks</h4>
+        <span>{{ tasks | length }}</span>
+    </div>
+    <div class="card">
+        <h4>News</h4>
+        <span>{{ news | length }}</span>
+    </div>
+    <div class="card">
+        <h4>Events</h4>
+        <span>{{ events | length }}</span>
+    </div>
+    <div class="card">
+        <h4>People</h4>
+        <span>{{ persons | length }}</span>
+    </div>
+    <div class="card">
+        <h4>Contents</h4>
+        <span>{{ contents | length }}</span>
+    </div>
+    <div class="card">
+        <h4>Exercises</h4>
+        <span>{{ exercises | length }}</span>
+    </div>
+    <div class="card">
+        <h4>Companies</h4>
+        <span>{{ companies | length }}</span>
+    </div>
+    <div class="card">
+        <h4>CS</h4>
+        <span>{{ cs | length }}</span>
+    </div>
+    <div class="card">
+        <h4>Jobs</h4>
+        <span>{{ jobs | length }}</span>
+    </div>
+    <div class="card">
+        <h4>Posts</h4>
+        <span>{{ posts | length }}</span>
+    </div>
+    <div class="card">
+        <h4>Finance Posts</h4>
+        <span>{{ financePosts | length }}</span>
+    </div>
+    <div class="card">
+        <h4>Thoughts</h4>
+        <span>{{ thoughts | length }}</span>
+    </div>
+</div>
+{% endblock %}

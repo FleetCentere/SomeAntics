@@ -1,6 +1,6 @@
 .container {
     display: grid;
-    grid-template-columns: 2fr 3fr 1fr;
+    grid-template-columns: 2fr 4fr 1fr;
     grid-gap: 10px;
     min-height: 60vh;  
     justify-items: stretch; /* center; */
@@ -11,7 +11,7 @@
 .snapshot-container,
 .news-container,
 .card-container,
-.tracker-container {
+.thought-container {
     border:black solid 2px;
     /* padding: 5px; */
 }
@@ -19,13 +19,13 @@
 .snapshot-container,
 .news-container,
 .card-container,
-.tracker-container {
+.thought-container {
     padding: 5px;
 }
 
 .daily-container {
     display: grid;
-    grid-template-rows: 1fr 2fr;
+    grid-template-rows: 1fr 4fr;
     grid-gap: 10px;
     justify-items: stretch; /* center; */
     align-items: stretch; /* start; */
@@ -55,4 +55,9 @@ h4 {
 
 table {
     width: 95%;
+}
+
+.thought-bullet {
+    list-style-type: square;
+    margin-left: 1rem;
 }
